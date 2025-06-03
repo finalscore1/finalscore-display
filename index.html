@@ -38,7 +38,7 @@
       margin: 10px 0 4px;
       font-size: 14px;
     }
-    .sidebar select {
+    .sidebar select, .sidebar input[type="range"] {
       width: 100%;
       padding: 8px;
       border-radius: 8px;
@@ -107,13 +107,8 @@
       <label for="tipTypeFilter">Tip Type</label>
       <select id="tipTypeFilter"><option value="">All Types</option></select>
 
-      <label for="oddsFilter">Odds Range</label>
-      <select id="oddsFilter">
-        <option value="">All Odds</option>
-        <option value="0-1.5">Below 1.5</option>
-        <option value="1.5-2">1.5 - 2.0</option>
-        <option value="2-100">Above 2.0</option>
-      </select>
+      <label for="oddsSlider">Min Odds: <span id="oddsValue">1.00</span></label>
+      <input type="range" id="oddsSlider" min="1" max="20" step="0.01" value="1"/>
     </div>
 
     <div class="content">
@@ -132,8 +127,15 @@
       country: document.getElementById("countryFilter"),
       league: document.getElementById("leagueFilter"),
       tipType: document.getElementById("tipTypeFilter"),
-      odds: document.getElementById("oddsFilter")
+      odds: document.getElementById("oddsSlider")
     };
+
+    const oddsSlider = document.getElementById("oddsSlider");
+    const oddsValue = document.getElementById("oddsValue");
+    oddsSlider.addEventListener("input", () => {
+      oddsValue.textContent = oddsSlider.value;
+      applyFilters();
+    });
 
     let allData = [];
 
@@ -176,9 +178,7 @@
       const c = filters.country.value;
       const l = filters.league.value;
       const t = filters.tipType.value;
-      const o = filters.odds.value;
-
-      const [minOdd, maxOdd] = o ? o.split('-').map(Number) : [null, null];
+      const minSelectedOdd = parseFloat(filters.odds.value);
 
       const filtered = allData.filter(row => {
         const passDate = !d || row.DateKey === d;
@@ -186,7 +186,7 @@
         const passLeague = !l || row.League === l;
         const passTip = !t || row.TipType === t;
         const odds = parseFloat(row.Odds);
-        const passOdds = !o || (odds >= minOdd && odds < maxOdd);
+        const passOdds = isNaN(minSelectedOdd) || odds >= minSelectedOdd;
         return passDate && passCountry && passLeague && passTip && passOdds;
       });
       renderCards(filtered);

@@ -25,31 +25,27 @@
       flex: 0 0 260px;
       background: #1a1a1a;
       border-radius: 16px;
-      padding: 30px 20px;
+      padding: 20px;
       box-shadow: 0 0 10px rgba(0,0,0,0.3);
-      height: 100%;
+      height: fit-content;
     }
     .sidebar h2 {
       font-size: 20px;
-      margin-bottom: 20px;
+      margin-bottom: 12px;
     }
     .sidebar label {
       display: block;
-      margin: 18px 0 6px;
+      margin: 10px 0 4px;
       font-size: 14px;
     }
     .sidebar select {
       width: 100%;
-      padding: 10px;
+      padding: 8px;
       border-radius: 8px;
       background-color: #262626;
       color: #fff;
       border: 1px solid #333;
-      margin-bottom: 12px;
-    }
-    .sidebar input[type=range] {
-      width: 100%;
-      margin-top: 6px;
+      margin-bottom: 10px;
     }
     .content {
       flex: 1;
@@ -111,9 +107,13 @@
       <label for="tipTypeFilter">Tip Type</label>
       <select id="tipTypeFilter"><option value="">All Types</option></select>
 
-      <label for="oddsRange">Odds Range</label>
-      <input type="range" id="oddsRange" min="1" max="5" step="0.1" value="5">
-      <div id="oddsValue" style="margin-top: 4px; font-size: 14px;">Max Odds: 5.00</div>
+      <label for="oddsFilter">Odds Range</label>
+      <select id="oddsFilter">
+        <option value="">All Odds</option>
+        <option value="0-1.5">Below 1.5</option>
+        <option value="1.5-2">1.5 - 2.0</option>
+        <option value="2-100">Above 2.0</option>
+      </select>
     </div>
 
     <div class="content">
@@ -131,10 +131,9 @@
       date: document.getElementById("dateFilter"),
       country: document.getElementById("countryFilter"),
       league: document.getElementById("leagueFilter"),
-      tipType: document.getElementById("tipTypeFilter")
+      tipType: document.getElementById("tipTypeFilter"),
+      odds: document.getElementById("oddsFilter")
     };
-    const oddsSlider = document.getElementById("oddsRange");
-    const oddsValue = document.getElementById("oddsValue");
 
     let allData = [];
 
@@ -143,12 +142,12 @@
       data.forEach(row => {
         const card = document.createElement("div");
         card.className = "bet-card";
-        card.innerHTML = `
+        card.innerHTML = 
           <div class="meta">${row.Date} ${row.Time} &nbsp;&nbsp; ${row.Country} ${row.League}</div>
           <div class="teams">${row.TeamA} vs ${row.TeamB}</div>
           <div class="tip">Tip: <strong>${row.Tip}</strong></div>
           <div class="odds">Odds: ${row.Odds}</div>
-        `;
+        ;
         container.appendChild(card);
       });
     }
@@ -177,8 +176,9 @@
       const c = filters.country.value;
       const l = filters.league.value;
       const t = filters.tipType.value;
-      const maxOdds = parseFloat(oddsSlider.value);
-      oddsValue.textContent = Max Odds: ${maxOdds.toFixed(2)};
+      const o = filters.odds.value;
+
+      const [minOdd, maxOdd] = o ? o.split('-').map(Number) : [null, null];
 
       const filtered = allData.filter(row => {
         const passDate = !d || row.DateKey === d;
@@ -186,7 +186,7 @@
         const passLeague = !l || row.League === l;
         const passTip = !t || row.TipType === t;
         const odds = parseFloat(row.Odds);
-        const passOdds = !isNaN(odds) && odds <= maxOdds;
+        const passOdds = !o || (odds >= minOdd && odds < maxOdd);
         return passDate && passCountry && passLeague && passTip && passOdds;
       });
       renderCards(filtered);
@@ -200,7 +200,6 @@
         populateFilters(allData);
         renderCards(allData);
         Object.values(filters).forEach(el => el.addEventListener('change', applyFilters));
-        oddsSlider.addEventListener('input', applyFilters);
       }
     });
   </script>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Finalscore Featured Bets</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-color: #0f0f0f;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .main {
+      display: flex;
+      flex-direction: row;
+      max-width: 1200px;
+      margin: auto;
+      padding: 40px 20px;
+      gap: 24px;
+    }
+    .sidebar {
+      flex: 0 0 260px;
+      background: #1a1a1a;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      height: 100%;
+    }
+    .sidebar h2 {
+      font-size: 20px;
+      margin-bottom: 16px;
+    }
+    .sidebar label {
+      display: block;
+      margin: 16px 0 6px;
+      font-size: 14px;
+    }
+    .sidebar select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      background-color: #262626;
+      color: #fff;
+      border: 1px solid #333;
+      margin-bottom: 12px;
+    }
+    .sidebar input[type=range] {
+      width: 100%;
+      margin-top: 6px;
+    }
+    .content {
+      flex: 1;
+    }
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    .bet-card {
+      background: #1a1a1a;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+      transition: all 0.3s;
+    }
+    .bet-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+    }
+    .meta {
+      font-size: 13px;
+      color: #aaa;
+      margin-bottom: 8px;
+    }
+    .teams {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .tip {
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    .odds {
+      background: #2e2e2e;
+      padding: 6px 10px;
+      display: inline-block;
+      border-radius: 8px;
+      font-weight: bold;
+      color: #00ff99;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="main">
+    <div class="sidebar">
+      <h2>Filter Bets</h2>
+      <label for="dateFilter">Date</label>
+      <select id="dateFilter"></select>
+
+      <label for="countryFilter">Country</label>
+      <select id="countryFilter"></select>
+
+      <label for="leagueFilter">League</label>
+      <select id="leagueFilter"></select>
+
+      <label for="tipTypeFilter">Tip Type</label>
+      <select id="tipTypeFilter"></select>
+
+      <label for="oddsRange">Odds Range</label>
+      <input type="range" id="oddsRange" min="1" max="5" step="0.1" value="5">
+      <div id="oddsValue" style="margin-top: 4px; font-size: 14px;">Max Odds: 5.00</div>
+    </div>
+
+    <div class="content">
+      <h1>📊 Finalscore Featured Bets</h1>
+      <div class="card-grid" id="cardContainer"></div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+  <script>
+    const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQjgi95CP-CmJ9wIUoNCRMHdeXPEpKlZiUIb_xXJuT30O1TWfB2ZPC2n8Vurlk2Ge2yiVy9gLhPcuUU/pub?output=csv';
+
+    const container = document.getElementById("cardContainer");
+    const dateFilter = document.getElementById("dateFilter");
+    const countryFilter = document.getElementById("countryFilter");
+    const leagueFilter = document.getElementById("leagueFilter");
+    const tipTypeFilter = document.getElementById("tipTypeFilter");
+    const oddsSlider = document.getElementById("oddsRange");
+    const oddsValue = document.getElementById("oddsValue");
+
+    let allData = [];
+
+    function renderCards(data) {
+      container.innerHTML = "";
+      data.forEach(row => {
+        const card = document.createElement("div");
+        card.className = "bet-card";
+        card.innerHTML = `
+          <div class="meta">${row.Date} ${row.Time} &nbsp;&nbsp; ${row.Country} ${row.League}</div>
+          <div class="teams">${row.TeamA} vs ${row.TeamB}</div>
+          <div class="tip">Tip: <strong>${row.Tip}</strong></div>
+          <div class="odds">Odds: ${row.Odds}</div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function populateFilter(filterEl, values) {
+      filterEl.innerHTML = '<option value="">All</option>';
+      const sorted = [...new Set(values)].sort();
+      sorted.forEach(val => {
+        const opt = document.createElement("option");
+        opt.value = val;
+        opt.textContent = val;
+        filterEl.appendChild(opt);
+      });
+    }
+
+    function applyFilters() {
+      const dateVal = dateFilter.value;
+      const countryVal = countryFilter.value;
+      const leagueVal = leagueFilter.value;
+      const tipTypeVal = tipTypeFilter.value;
+      const maxOdds = parseFloat(oddsSlider.value);
+      oddsValue.textContent = Max Odds: ${maxOdds.toFixed(2)};
+
+      const filtered = allData.filter(row => {
+        return (!dateVal || row.DateKey === dateVal)
+          && (!countryVal || row.Country === countryVal)
+          && (!leagueVal || row.League === leagueVal)
+          && (!tipTypeVal || row.TipType === tipTypeVal)
+          && parseFloat(row.Odds) <= maxOdds;
+      });
+
+      renderCards(filtered);
+    }
+
+    Papa.parse(sheetURL, {
+      download: true,
+      header: true,
+      complete: function(results) {
+        allData = results.data.filter(row => row.TeamA && row.TeamB && row.Odds);
+
+        renderCards(allData);
+
+        populateFilter(dateFilter, allData.map(r => r.DateKey));
+        populateFilter(countryFilter, allData.map(r => r.Country));
+        populateFilter(leagueFilter, allData.map(r => r.League));
+        populateFilter(tipTypeFilter, allData.map(r => r.TipType));
+
+        [dateFilter, countryFilter, leagueFilter, tipTypeFilter, oddsSlider]
+          .forEach(el => el.addEventListener('change', applyFilters));
+
+        oddsSlider.addEventListener('input', applyFilters);
+      }
+    });
+  </script>
+</body>
+</html>

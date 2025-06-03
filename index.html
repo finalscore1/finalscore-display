@@ -38,13 +38,17 @@
       margin: 10px 0 4px;
       font-size: 14px;
     }
-    .sidebar select, .sidebar input[type="range"] {
+    .sidebar select {
       width: 100%;
       padding: 8px;
       border-radius: 8px;
       background-color: #262626;
       color: #fff;
       border: 1px solid #333;
+      margin-bottom: 10px;
+    }
+    #oddsSlider {
+      width: 90%;
       margin-bottom: 10px;
     }
     .content {
@@ -88,6 +92,11 @@
       font-weight: bold;
       color: #00ff99;
       font-size: 14px;
+    }
+    .countdown {
+      color: #ccc;
+      font-size: 13px;
+      margin-top: 4px;
     }
   </style>
 </head>
@@ -144,11 +153,25 @@
       data.forEach(row => {
         const card = document.createElement("div");
         card.className = "bet-card";
+
+        const gameDateTime = new Date(${row.Date.replace(" / ", " ")} ${row.Time});
+        const now = new Date();
+        let countdownText = "Started";
+        if (!isNaN(gameDateTime.getTime())) {
+          const diff = gameDateTime - now;
+          if (diff > 0) {
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            countdownText = Starts in ${hours}h ${minutes}m;
+          }
+        }
+
         card.innerHTML = `
           <div class="meta">${row.Date} ${row.Time} &nbsp;&nbsp; ${row.Country} ${row.League}</div>
           <div class="teams">${row.TeamA} vs ${row.TeamB}</div>
           <div class="tip">Tip: <strong>${row.Tip}</strong></div>
           <div class="odds">Odds: ${row.Odds}</div>
+          <div class="countdown">${countdownText}</div>
         `;
         container.appendChild(card);
       });

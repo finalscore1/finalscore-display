@@ -93,6 +93,11 @@
       color: #00ff99;
       font-size: 14px;
     }
+    .countdown {
+      color: #ccc;
+      font-size: 13px;
+      margin-top: 6px;
+    }
   </style>
 </head>
 <body>
@@ -145,14 +150,33 @@
 
     function renderCards(data) {
       container.innerHTML = "";
-      data.forEach(row => {
+      data.forEach((row, index) => {
         const card = document.createElement("div");
         card.className = "bet-card";
+
+        let countdownHTML = "";
+        if (index === 0) {
+          const dateStr = ${row.Date} ${row.Time};
+          const gameTime = new Date(dateStr);
+          if (!isNaN(gameTime)) {
+            const now = new Date();
+            const diff = gameTime - now;
+            if (diff > 0) {
+              const h = Math.floor(diff / (1000 * 60 * 60));
+              const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+              countdownHTML = <div class='countdown'>Starts in ${h}h ${m}m</div>;
+            } else {
+              countdownHTML = <div class='countdown'>Started</div>;
+            }
+          }
+        }
+
         card.innerHTML = `
           <div class="meta">${row.Date} ${row.Time} &nbsp;&nbsp; ${row.Country} ${row.League}</div>
           <div class="teams">${row.TeamA} vs ${row.TeamB}</div>
           <div class="tip">Tip: <strong>${row.Tip}</strong></div>
           <div class="odds">Odds: ${row.Odds}</div>
+          ${countdownHTML}
         `;
         container.appendChild(card);
       });

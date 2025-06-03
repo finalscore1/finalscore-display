@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Finalscore Featured Bets</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-color: #0f0f0f;
+      font-family: 'Inter', sans-serif;
+      color: #fff;
+      margin: 0;
+      padding: 30px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    h1 {
+      text-align: center;
+      font-size: 28px;
+      margin-bottom: 30px;
+    }
+    .filter-row {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .filter-row select {
+      padding: 10px;
+      background-color: #1f1f1f;
+      color: #fff;
+      border: 1px solid #333;
+      border-radius: 8px;
+      margin: 0 10px;
+    }
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+    }
+    .bet-card {
+      background: #1a1a1a;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      transition: 0.3s ease-in-out;
+    }
+    .bet-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.7);
+    }
+    .bet-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      color: #ccc;
+      margin-bottom: 10px;
+    }
+    .teams {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .tip {
+      font-size: 16px;
+      margin-bottom: 6px;
+    }
+    .odds {
+      background: #2e2e2e;
+      padding: 8px 12px;
+      display: inline-block;
+      border-radius: 8px;
+      font-weight: bold;
+      color: #00ff99;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📊 Finalscore Featured Bets</h1>
+    <div class="filter-row">
+      <select id="leagueFilter">
+        <option value="">All Leagues</option>
+      </select>
+    </div>
+    <div class="card-grid" id="cardContainer"></div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+  <script>
+    const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQjgi95CP-CmJ9wIUoNCRMHdeXPEpKlZiUIb_xXJuT30O1TWfB2ZPC2n8Vurlk2Ge2yiVy9gLhPcuUU/pub?output=csv';
+
+    const container = document.getElementById("cardContainer");
+    const leagueFilter = document.getElementById("leagueFilter");
+
+    Papa.parse(sheetURL, {
+      download: true,
+      header: true,
+      complete: function(results) {
+        const data = results.data;
+        const leagues = new Set();
+
+        data.forEach(row => {
+          if (!row.League || !row.TeamA || !row.TeamB) return;
+          leagues.add(row.League);
+
+          const card = document.createElement("div");
+          card.className = "bet-card";
+          card.setAttribute("data-league", row.League);
+
+          card.innerHTML = `
+            <div class="bet-info">
+              <span>${row.Date || ''} ${row.Time || ''}</span>
+              <span>${row.League}</span>
+            </div>
+            <div class="teams">${row.TeamA} vs ${row.TeamB}</div>
+            <div class="tip">Tip: <strong>${row.Tip || 'N/A'}</strong></div>
+            <div class="odds">Odds: ${row.Odds || '—'}</div>
+          `;
+
+          container.appendChild(card);
+        });
+
+        leagues.forEach(league => {
+          const opt = document.createElement("option");
+          opt.value = league;
+          opt.textContent = league;
+          leagueFilter.appendChild(opt);
+        });
+
+        leagueFilter.addEventListener("change", () => {
+          const selected = leagueFilter.value;
+          document.querySelectorAll('.bet-card').forEach(card => {
+            const league = card.getAttribute("data-league");
+            card.style.display = (!selected || league === selected) ? "block" : "none";
+          });
+        });
+      }
+    });
+  </script>
+</body>
+</html>

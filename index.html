@@ -93,6 +93,12 @@
       color: #00ff99;
       font-size: 14px;
     }
+    .flag-icon {
+      width: 18px;
+      height: 12px;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
   </style>
 </head>
 <body>
@@ -105,8 +111,8 @@
       <label for="countryFilter">Country</label>
       <select id="countryFilter"></select>
 
-      <label for="leagueFilter">League</label>
-      <select id="leagueFilter"></select>
+      <label for="leagueFilter" style="display:none;">League</label>
+      <select id="leagueFilter" style="display:none;"></select>
 
       <label for="tipTypeFilter">Tip Type</label>
       <select id="tipTypeFilter"></select>
@@ -139,10 +145,11 @@
     function renderCards(data) {
       container.innerHTML = "";
       data.forEach(row => {
+        const flag = row.CountryCode ? <img class='flag-icon' src='https://flagcdn.com/24x18/${row.CountryCode.toLowerCase()}.png'> : "";
         const card = document.createElement("div");
         card.className = "bet-card";
         card.innerHTML = `
-          <div class="meta">${row.Date} ${row.Time} &nbsp;&nbsp; ${row.Country} ${row.League}</div>
+          <div class="meta">${row.Date} ${row.Time} &nbsp;&nbsp; ${flag}${row.League}</div>
           <div class="teams">${row.TeamA} vs ${row.TeamB}</div>
           <div class="tip">Tip: <strong>${row.Tip}</strong></div>
           <div class="odds">Odds: ${row.Odds}</div>
@@ -152,6 +159,7 @@
     }
 
     function populateFilter(filterEl, values) {
+      filterEl.innerHTML = '<option value="">All</option>';
       const sorted = [...new Set(values)].sort();
       sorted.forEach(val => {
         const opt = document.createElement("option");
@@ -188,13 +196,28 @@
 
         populateFilter(dateFilter, allData.map(r => r.DateKey));
         populateFilter(countryFilter, allData.map(r => r.Country));
-        populateFilter(leagueFilter, allData.map(r => r.League));
         populateFilter(tipTypeFilter, allData.map(r => r.TipType));
+
+        countryFilter.addEventListener('change', function () {
+          const selected = countryFilter.value;
+          const leagues = allData.filter(r => r.Country === selected).map(r => r.League);
+          if (selected) {
+            document.querySelector("label[for='leagueFilter']").style.display = 'block';
+            leagueFilter.style.display = 'block';
+            populateFilter(leagueFilter, leagues);
+          } else {
+            document.querySelector("label[for='leagueFilter']").style.display = 'none';
+            leagueFilter.style.display = 'none';
+          }
+          applyFilters();
+        });
 
         renderCards(allData);
 
-        [dateFilter, countryFilter, leagueFilter, tipTypeFilter, oddsSlider]
+        [dateFilter, leagueFilter, tipTypeFilter, oddsSlider]
           .forEach(el => el.addEventListener('change', applyFilters));
+
+        oddsSlider.addEventListener('input', applyFilters);
       }
     });
   </script>

@@ -208,13 +208,20 @@
     function parseGameDateTime(dateStr, timeStr) {
       if (!dateStr || !timeStr) return null;
       
-      // Handle various date formats
       let date;
-      if (dateStr.includes('/')) {
+      
+      // Handle your specific format: "Tuesday / June 3, 2025"
+      if (dateStr.includes('/') && dateStr.includes(',')) {
+        // Extract the date part after the "/"
+        const datePart = dateStr.split('/')[1].trim(); // "June 3, 2025"
+        date = new Date(datePart);
+      }
+      // Handle standard formats as fallback
+      else if (dateStr.includes('/')) {
         // Format: MM/DD/YYYY or DD/MM/YYYY
         const parts = dateStr.split('/');
         if (parts.length === 3) {
-          // Assuming MM/DD/YYYY format, adjust if needed
+          // Assuming MM/DD/YYYY format
           date = new Date(parts[2], parts[0] - 1, parts[1]);
         }
       } else if (dateStr.includes('-')) {
@@ -225,12 +232,17 @@
         date = new Date(dateStr);
       }
       
-      if (!date || isNaN(date.getTime())) return null;
+      if (!date || isNaN(date.getTime())) {
+        console.log('Failed to parse date:', dateStr);
+        return null;
+      }
       
       // Parse time (assuming HH:MM format)
       const timeParts = timeStr.split(':');
       if (timeParts.length >= 2) {
-        date.setHours(parseInt(timeParts[0]), parseInt(timeParts[1]), 0, 0);
+        const hours = parseInt(timeParts[0]);
+        const minutes = parseInt(timeParts[1]);
+        date.setHours(hours, minutes, 0, 0);
       }
       
       return date;

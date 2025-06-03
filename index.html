@@ -171,7 +171,7 @@
       oddsValue.textContent = Max Odds: ${maxOdds.toFixed(2)};
 
       const filtered = allData.filter(row => {
-        return (!dateVal || row.DateKey === dateVal)
+        return (!dateVal || row.DataKey === dateVal)
           && (!countryVal || row.Country === countryVal)
           && (!leagueVal || row.League === leagueVal)
           && (!tipTypeVal || row.TipType === tipTypeVal)
@@ -187,7 +187,7 @@
       complete: function(results) {
         allData = results.data.filter(row => row.TeamA && row.TeamB && row.Odds);
 
-        populateFilter(dateFilter, allData.map(r => r.DateKey));
+        populateFilter(dateFilter, allData.map(r => r.DataKey));
         populateFilter(countryFilter, allData.map(r => r.Country));
         populateFilter(leagueFilter, allData.map(r => r.League));
         populateFilter(tipTypeFilter, allData.map(r => r.TipType));

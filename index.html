@@ -65,7 +65,6 @@
       padding: 20px;
       box-shadow: 0 6px 16px rgba(0,0,0,0.5);
       transition: all 0.3s;
-      position: relative;
     }
     .bet-card:hover {
       transform: translateY(-4px);
@@ -93,13 +92,6 @@
       font-weight: bold;
       color: #00ff99;
       font-size: 14px;
-    }
-    .countdown {
-      position: absolute;
-      bottom: 16px;
-      right: 16px;
-      color: #ccc;
-      font-size: 12px;
     }
   </style>
 </head>
@@ -150,47 +142,19 @@
     });
 
     let allData = [];
-    let countdownIntervals = [];
 
     function renderCards(data) {
       container.innerHTML = "";
-      countdownIntervals.forEach(clearInterval);
-      countdownIntervals = [];
-
-      data.forEach((row, index) => {
+      data.forEach(row => {
         const card = document.createElement("div");
         card.className = "bet-card";
-
-        const countdownId = countdown-${index};
-
         card.innerHTML = `
           <div class="meta">${row.Date} ${row.Time} &nbsp;&nbsp; ${row.Country} ${row.League}</div>
           <div class="teams">${row.TeamA} vs ${row.TeamB}</div>
           <div class="tip">Tip: <strong>${row.Tip}</strong></div>
           <div class="odds">Odds: ${row.Odds}</div>
-          <div class="countdown" id="${countdownId}">Loading...</div>
         `;
         container.appendChild(card);
-
-        const gameTime = new Date(${row.Date.replace(" / ", " ")} ${row.Time});
-
-        function updateCountdown() {
-          const now = new Date();
-          const diff = gameTime - now;
-          let text = "Started";
-          if (diff > 0) {
-            const hours = Math.floor(diff / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-            text = ⏱️ ${hours}h ${minutes}m ${seconds}s;
-          }
-          const el = document.getElementById(countdownId);
-          if (el) el.textContent = text;
-        }
-
-        updateCountdown();
-        const intervalId = setInterval(updateCountdown, 1000);
-        countdownIntervals.push(intervalId);
       });
     }
 

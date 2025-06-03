@@ -27,25 +27,29 @@
       border-radius: 16px;
       padding: 20px;
       box-shadow: 0 0 10px rgba(0,0,0,0.3);
-      height: fit-content;
+      height: 100%;
     }
     .sidebar h2 {
       font-size: 20px;
-      margin-bottom: 12px;
+      margin-bottom: 16px;
     }
     .sidebar label {
       display: block;
-      margin: 10px 0 4px;
+      margin: 16px 0 6px;
       font-size: 14px;
     }
     .sidebar select {
       width: 100%;
-      padding: 8px;
+      padding: 10px;
       border-radius: 8px;
       background-color: #262626;
       color: #fff;
       border: 1px solid #333;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
+    }
+    .sidebar input[type=range] {
+      width: 100%;
+      margin-top: 6px;
     }
     .content {
       flex: 1;
@@ -96,24 +100,20 @@
     <div class="sidebar">
       <h2>Filter Bets</h2>
       <label for="dateFilter">Date</label>
-      <select id="dateFilter"><option value="">All Dates</option></select>
+      <select id="dateFilter"></select>
 
       <label for="countryFilter">Country</label>
-      <select id="countryFilter"><option value="">All Countries</option></select>
+      <select id="countryFilter"></select>
 
       <label for="leagueFilter">League</label>
-      <select id="leagueFilter"><option value="">All Leagues</option></select>
+      <select id="leagueFilter"></select>
 
       <label for="tipTypeFilter">Tip Type</label>
-      <select id="tipTypeFilter"><option value="">All Types</option></select>
+      <select id="tipTypeFilter"></select>
 
-      <label for="oddsFilter">Odds Range</label>
-      <select id="oddsFilter">
-        <option value="">All Odds</option>
-        <option value="0-1.5">Below 1.5</option>
-        <option value="1.5-2">1.5 - 2.0</option>
-        <option value="2-100">Above 2.0</option>
-      </select>
+      <label for="oddsRange">Odds Range</label>
+      <input type="range" id="oddsRange" min="1" max="5" step="0.1" value="5">
+      <div id="oddsValue" style="margin-top: 4px; font-size: 14px;">Max Odds: 5.00</div>
     </div>
 
     <div class="content">
@@ -127,13 +127,12 @@
     const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQjgi95CP-CmJ9wIUoNCRMHdeXPEpKlZiUIb_xXJuT30O1TWfB2ZPC2n8Vurlk2Ge2yiVy9gLhPcuUU/pub?output=csv';
 
     const container = document.getElementById("cardContainer");
-    const filters = {
-      date: document.getElementById("dateFilter"),
-      country: document.getElementById("countryFilter"),
-      league: document.getElementById("leagueFilter"),
-      tipType: document.getElementById("tipTypeFilter"),
-      odds: document.getElementById("oddsFilter")
-    };
+    const dateFilter = document.getElementById("dateFilter");
+    const countryFilter = document.getElementById("countryFilter");
+    const leagueFilter = document.getElementById("leagueFilter");
+    const tipTypeFilter = document.getElementById("tipTypeFilter");
+    const oddsSlider = document.getElementById("oddsRange");
+    const oddsValue = document.getElementById("oddsValue");
 
     let allData = [];
 
@@ -152,43 +151,32 @@
       });
     }
 
-    function populateFilters(data) {
-      const unique = {date: new Set(), country: new Set(), league: new Set(), tipType: new Set()};
-      data.forEach(row => {
-        if (row.DateKey) unique.date.add(row.DateKey);
-        if (row.Country) unique.country.add(row.Country);
-        if (row.League) unique.league.add(row.League);
-        if (row.TipType) unique.tipType.add(row.TipType);
+    function populateFilter(filterEl, values) {
+      const sorted = [...new Set(values)].sort();
+      sorted.forEach(val => {
+        const opt = document.createElement("option");
+        opt.value = val;
+        opt.textContent = val;
+        filterEl.appendChild(opt);
       });
-      for (const [key, set] of Object.entries(unique)) {
-        const el = filters[key];
-        [...set].sort().forEach(val => {
-          const opt = document.createElement("option");
-          opt.value = val;
-          opt.textContent = val;
-          el.appendChild(opt);
-        });
-      }
     }
 
     function applyFilters() {
-      const d = filters.date.value;
-      const c = filters.country.value;
-      const l = filters.league.value;
-      const t = filters.tipType.value;
-      const o = filters.odds.value;
-
-      const [minOdd, maxOdd] = o ? o.split('-').map(Number) : [null, null];
+      const dateVal = dateFilter.value;
+      const countryVal = countryFilter.value;
+      const leagueVal = leagueFilter.value;
+      const tipTypeVal = tipTypeFilter.value;
+      const maxOdds = parseFloat(oddsSlider.value);
+      oddsValue.textContent = Max Odds: ${maxOdds.toFixed(2)};
 
       const filtered = allData.filter(row => {
-        const passDate = !d || row.DateKey === d;
-        const passCountry = !c || row.Country === c;
-        const passLeague = !l || row.League === l;
-        const passTip = !t || row.TipType === t;
-        const odds = parseFloat(row.Odds);
-        const passOdds = !o || (odds >= minOdd && odds < maxOdd);
-        return passDate && passCountry && passLeague && passTip && passOdds;
+        return (!dateVal || row.DateKey === dateVal)
+          && (!countryVal || row.Country === countryVal)
+          && (!leagueVal || row.League === leagueVal)
+          && (!tipTypeVal || row.TipType === tipTypeVal)
+          && parseFloat(row.Odds) <= maxOdds;
       });
+
       renderCards(filtered);
     }
 
@@ -197,9 +185,16 @@
       header: true,
       complete: function(results) {
         allData = results.data.filter(row => row.TeamA && row.TeamB && row.Odds);
-        populateFilters(allData);
+
+        populateFilter(dateFilter, allData.map(r => r.DateKey));
+        populateFilter(countryFilter, allData.map(r => r.Country));
+        populateFilter(leagueFilter, allData.map(r => r.League));
+        populateFilter(tipTypeFilter, allData.map(r => r.TipType));
+
         renderCards(allData);
-        Object.values(filters).forEach(el => el.addEventListener('change', applyFilters));
+
+        [dateFilter, countryFilter, leagueFilter, tipTypeFilter, oddsSlider]
+          .forEach(el => el.addEventListener('change', applyFilters));
       }
     });
   </script>

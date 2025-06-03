@@ -105,8 +105,8 @@
       <label for="countryFilter">Country</label>
       <select id="countryFilter"></select>
 
-      <label for="leagueFilter" style="display:none;">League</label>
-      <select id="leagueFilter" style="display:none;"></select>
+      <label for="leagueFilter">League</label>
+      <select id="leagueFilter"></select>
 
       <label for="tipTypeFilter">Tip Type</label>
       <select id="tipTypeFilter"></select>
@@ -189,25 +189,12 @@
 
         populateFilter(dateFilter, allData.map(r => r.DateKey));
         populateFilter(countryFilter, allData.map(r => r.Country));
+        populateFilter(leagueFilter, allData.map(r => r.League));
         populateFilter(tipTypeFilter, allData.map(r => r.TipType));
-
-        countryFilter.addEventListener('change', function () {
-          const selected = countryFilter.value;
-          const leagues = allData.filter(r => r.Country === selected).map(r => r.League);
-          if (selected) {
-            document.querySelector("label[for='leagueFilter']").style.display = 'block';
-            leagueFilter.style.display = 'block';
-            populateFilter(leagueFilter, leagues);
-          } else {
-            document.querySelector("label[for='leagueFilter']").style.display = 'none';
-            leagueFilter.style.display = 'none';
-          }
-          applyFilters();
-        });
 
         renderCards(allData);
 
-        [dateFilter, leagueFilter, tipTypeFilter, oddsSlider]
+        [dateFilter, countryFilter, leagueFilter, tipTypeFilter, oddsSlider]
           .forEach(el => el.addEventListener('change', applyFilters));
 
         oddsSlider.addEventListener('input', applyFilters);

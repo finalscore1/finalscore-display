@@ -142,12 +142,12 @@
       data.forEach(row => {
         const card = document.createElement("div");
         card.className = "bet-card";
-        card.innerHTML = 
+        card.innerHTML = `
           <div class="meta">${row.Date} ${row.Time} &nbsp;&nbsp; ${row.Country} ${row.League}</div>
           <div class="teams">${row.TeamA} vs ${row.TeamB}</div>
           <div class="tip">Tip: <strong>${row.Tip}</strong></div>
           <div class="odds">Odds: ${row.Odds}</div>
-        ;
+        `;
         container.appendChild(card);
       });
     }

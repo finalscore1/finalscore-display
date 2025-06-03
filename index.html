@@ -65,10 +65,24 @@
       padding: 20px;
       box-shadow: 0 6px 16px rgba(0,0,0,0.5);
       transition: all 0.3s;
+      position: relative;
     }
     .bet-card:hover {
       transform: translateY(-4px);
       box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+    }
+    .bet-card.expired {
+      opacity: 0.6;
+      background: #1a1a1a;
+    }
+    .bet-card.starting-soon {
+      border: 2px solid #ff6b35;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { border-color: #ff6b35; }
+      50% { border-color: #ff9f00; }
+      100% { border-color: #ff6b35; }
     }
     .meta {
       font-size: 13px;
@@ -92,6 +106,53 @@
       font-weight: bold;
       color: #00ff99;
       font-size: 14px;
+    }
+    .countdown {
+      background: linear-gradient(135deg, #ff6b35, #ff9f00);
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      margin-top: 10px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+    }
+    .countdown.expired {
+      background: #666;
+      color: #ccc;
+    }
+    .countdown.live {
+      background: linear-gradient(135deg, #00ff99, #00cc77);
+      animation: live-pulse 1.5s infinite;
+    }
+    @keyframes live-pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+    .status-indicator {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #666;
+    }
+    .status-indicator.upcoming {
+      background: #00ff99;
+    }
+    .status-indicator.starting-soon {
+      background: #ff6b35;
+      animation: blink 1s infinite;
+    }
+    .status-indicator.live {
+      background: #ff3333;
+      animation: blink 0.5s infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
     }
   </style>
 </head>
@@ -142,19 +203,133 @@
     });
 
     let allData = [];
+    let countdownIntervals = new Map();
+
+    function parseGameDateTime(dateStr, timeStr) {
+      if (!dateStr || !timeStr) return null;
+      
+      // Handle various date formats
+      let date;
+      if (dateStr.includes('/')) {
+        // Format: MM/DD/YYYY or DD/MM/YYYY
+        const parts = dateStr.split('/');
+        if (parts.length === 3) {
+          // Assuming MM/DD/YYYY format, adjust if needed
+          date = new Date(parts[2], parts[0] - 1, parts[1]);
+        }
+      } else if (dateStr.includes('-')) {
+        // Format: YYYY-MM-DD
+        date = new Date(dateStr);
+      } else {
+        // Try to parse as is
+        date = new Date(dateStr);
+      }
+      
+      if (!date || isNaN(date.getTime())) return null;
+      
+      // Parse time (assuming HH:MM format)
+      const timeParts = timeStr.split(':');
+      if (timeParts.length >= 2) {
+        date.setHours(parseInt(timeParts[0]), parseInt(timeParts[1]), 0, 0);
+      }
+      
+      return date;
+    }
+
+    function getCountdownText(gameDateTime) {
+      if (!gameDateTime) return "Time TBD";
+      
+      const now = new Date();
+      const timeDiff = gameDateTime.getTime() - now.getTime();
+      
+      if (timeDiff < 0) {
+        return "LIVE";
+      }
+      
+      const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+      
+      if (days > 0) {
+        return `${days}d ${hours}h ${minutes}m`;
+      } else if (hours > 0) {
+        return `${hours}h ${minutes}m ${seconds}s`;
+      } else if (minutes > 0) {
+        return `${minutes}m ${seconds}s`;
+      } else {
+        return `${seconds}s`;
+      }
+    }
+
+    function getGameStatus(gameDateTime) {
+      if (!gameDateTime) return "unknown";
+      
+      const now = new Date();
+      const timeDiff = gameDateTime.getTime() - now.getTime();
+      
+      if (timeDiff < 0) {
+        return "live";
+      } else if (timeDiff < 30 * 60 * 1000) { // 30 minutes
+        return "starting-soon";
+      } else {
+        return "upcoming";
+      }
+    }
+
+    function updateCountdown(cardId, gameDateTime) {
+      const countdownEl = document.querySelector(`[data-card-id="${cardId}"] .countdown`);
+      const cardEl = document.querySelector(`[data-card-id="${cardId}"]`);
+      const statusEl = document.querySelector(`[data-card-id="${cardId}"] .status-indicator`);
+      
+      if (!countdownEl || !cardEl || !statusEl) return;
+      
+      const countdownText = getCountdownText(gameDateTime);
+      const status = getGameStatus(gameDateTime);
+      
+      countdownEl.textContent = countdownText;
+      
+      // Update card styling based on status
+      cardEl.className = `bet-card ${status === 'starting-soon' ? 'starting-soon' : ''} ${status === 'live' ? 'expired' : ''}`;
+      countdownEl.className = `countdown ${status === 'live' ? 'live' : ''} ${!gameDateTime ? 'expired' : ''}`;
+      statusEl.className = `status-indicator ${status}`;
+    }
 
     function renderCards(data) {
+      // Clear existing intervals
+      countdownIntervals.forEach(interval => clearInterval(interval));
+      countdownIntervals.clear();
+      
       container.innerHTML = "";
-      data.forEach(row => {
+      
+      data.forEach((row, index) => {
+        const cardId = `card-${index}`;
+        const gameDateTime = parseGameDateTime(row.Date, row.Time);
+        const countdownText = getCountdownText(gameDateTime);
+        const status = getGameStatus(gameDateTime);
+        
         const card = document.createElement("div");
-        card.className = "bet-card";
+        card.className = `bet-card ${status === 'starting-soon' ? 'starting-soon' : ''} ${status === 'live' ? 'expired' : ''}`;
+        card.setAttribute('data-card-id', cardId);
+        
         card.innerHTML = `
+          <div class="status-indicator ${status}"></div>
           <div class="meta">${row.Date} ${row.Time} &nbsp;&nbsp; ${row.Country} ${row.League}</div>
           <div class="teams">${row.TeamA} vs ${row.TeamB}</div>
           <div class="tip">Tip: <strong>${row.Tip}</strong></div>
           <div class="odds">Odds: ${row.Odds}</div>
+          <div class="countdown ${status === 'live' ? 'live' : ''} ${!gameDateTime ? 'expired' : ''}">${countdownText}</div>
         `;
+        
         container.appendChild(card);
+        
+        // Set up countdown interval for this card
+        if (gameDateTime) {
+          const interval = setInterval(() => {
+            updateCountdown(cardId, gameDateTime);
+          }, 1000);
+          countdownIntervals.set(cardId, interval);
+        }
       });
     }
 
@@ -205,6 +380,11 @@
         renderCards(allData);
         Object.values(filters).forEach(el => el.addEventListener('change', applyFilters));
       }
+    });
+
+    // Clean up intervals when page is unloaded
+    window.addEventListener('beforeunload', () => {
+      countdownIntervals.forEach(interval => clearInterval(interval));
     });
   </script>
 </body>

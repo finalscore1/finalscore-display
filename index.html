@@ -787,7 +787,7 @@
     .vip-status {
       position: fixed;
       top: 20px;
-      right: 20px;
+      right: 120px;
       background: linear-gradient(135deg, #DAA520, #B8860B);
       color: #000;
       padding: 8px 16px;
@@ -795,8 +795,12 @@
       font-size: 12px;
       font-weight: 600;
       display: none;
-      z-index: 1001;
+      z-index: 999;
       box-shadow: 0 4px 12px rgba(218, 165, 32, 0.3);
+    }
+    
+    .history-container .vip-status {
+      z-index: 999;
     }
     
     .vip-logout-btn {
@@ -812,6 +816,58 @@
     
     .vip-logout-btn:hover {
       background: #dc2626;
+    }
+    
+    .vip-forgot-password {
+      text-align: center;
+      margin: 8px 0;
+    }
+    
+    .vip-forgot-btn {
+      background: none;
+      border: none;
+      color: #DAA520;
+      font-size: 13px;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    
+    .vip-forgot-btn:hover {
+      color: #B8860B;
+    }
+    
+    .vip-forgot-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      z-index: 10001;
+      backdrop-filter: blur(5px);
+    }
+    
+    .vip-forgot-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #1a1a1a;
+      border-radius: 16px;
+      padding: 32px;
+      width: 400px;
+      max-width: 90vw;
+      border: 2px solid #DAA520;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+    }
+    
+    .vip-forgot-success {
+      color: #22c55e;
+      font-size: 13px;
+      margin-top: 12px;
+      text-align: center;
+      display: none;
     }
     .history-count {
       background: #3b82f6;
@@ -924,6 +980,10 @@
           <div class="vip-error" id="passwordError">Please enter your password</div>
         </div>
         
+        <div class="vip-forgot-password">
+          <button type="button" class="vip-forgot-btn" id="vipForgotBtn">Forgot Password?</button>
+        </div>
+        
         <div class="vip-error" id="loginError">Invalid credentials. Please check your username and password.</div>
         
         <div class="vip-buttons">
@@ -932,6 +992,34 @@
         </div>
         
         <div class="vip-loading" id="vipLoading">Verifying credentials...</div>
+      </form>
+    </div>
+  </div>
+
+  <!-- VIP Forgot Password Modal -->
+  <div id="vipForgotModal" class="vip-forgot-modal">
+    <div class="vip-forgot-content">
+      <div class="vip-modal-header">
+        <h2 class="vip-modal-title">Reset Password</h2>
+        <p class="vip-modal-subtitle">Enter your email to receive password reset instructions</p>
+      </div>
+      
+      <form class="vip-form" id="vipForgotForm">
+        <div class="vip-input-group">
+          <label class="vip-input-label" for="vipForgotEmail">Email Address</label>
+          <input type="email" id="vipForgotEmail" class="vip-input" required>
+          <div class="vip-error" id="forgotEmailError">Please enter a valid email address</div>
+        </div>
+        
+        <div class="vip-error" id="forgotError">Email not found in our records.</div>
+        <div class="vip-forgot-success" id="forgotSuccess">Password reset instructions have been sent to your email.</div>
+        
+        <div class="vip-buttons">
+          <button type="button" class="vip-btn vip-btn-secondary" id="vipForgotCancelBtn">Cancel</button>
+          <button type="submit" class="vip-btn vip-btn-primary" id="vipForgotSubmitBtn">Send Reset</button>
+        </div>
+        
+        <div class="vip-loading" id="vipForgotLoading">Sending reset instructions...</div>
       </form>
     </div>
   </div>
@@ -969,6 +1057,9 @@
     const vipLoginBtn = document.getElementById('vipLoginBtn');
     const vipCancelBtn = document.getElementById('vipCancelBtn');
     const vipLogoutBtn = document.getElementById('vipLogoutBtn');
+    const vipForgotBtn = document.getElementById('vipForgotBtn');
+    const vipForgotModal = document.getElementById('vipForgotModal');
+    const vipForgotForm = document.getElementById('vipForgotForm');
     
     // Load VIP credentials from Google Sheets
     async function loadVipCredentials() {
@@ -981,6 +1072,13 @@
       } catch (error) {
         console.error('Error loading VIP credentials:', error);
       }
+    }
+    
+    // Find user by email for password reset
+    function findUserByEmail(email) {
+      return vipCredentials.find(cred => 
+        cred.Email && cred.Email.trim().toLowerCase() === email.trim().toLowerCase()
+      );
     }
     
     // Authenticate VIP user
@@ -1085,6 +1183,64 @@
     vipForm.addEventListener('submit', handleVipLogin);
     vipCancelBtn.addEventListener('click', hideVipModal);
     vipLogoutBtn.addEventListener('click', handleVipLogout);
+    vipForgotBtn.addEventListener('click', () => {
+      hideVipModal();
+      showForgotModal();
+    });
+    
+    // Forgot password functionality
+    function showForgotModal() {
+      vipForgotModal.style.display = 'block';
+      document.getElementById('vipForgotEmail').focus();
+      document.querySelectorAll('#vipForgotModal .vip-error').forEach(el => el.style.display = 'none');
+      document.getElementById('forgotSuccess').style.display = 'none';
+    }
+    
+    function hideForgotModal() {
+      vipForgotModal.style.display = 'none';
+      vipForgotForm.reset();
+      document.querySelectorAll('#vipForgotModal .vip-error').forEach(el => el.style.display = 'none');
+      document.getElementById('forgotSuccess').style.display = 'none';
+    }
+    
+    async function handleForgotPassword(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('vipForgotEmail').value;
+      const loadingEl = document.getElementById('vipForgotLoading');
+      const errorEl = document.getElementById('forgotError');
+      const successEl = document.getElementById('forgotSuccess');
+      
+      loadingEl.style.display = 'block';
+      errorEl.style.display = 'none';
+      successEl.style.display = 'none';
+      
+      // Simulate processing time
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      const user = findUserByEmail(email);
+      
+      loadingEl.style.display = 'none';
+      
+      if (user) {
+        successEl.style.display = 'block';
+        // In a real implementation, you would send an email here
+        console.log('Password reset for user:', user.Username, 'Password:', user.Password);
+      } else {
+        errorEl.style.display = 'block';
+      }
+    }
+    
+    // Forgot password event listeners
+    vipForgotForm.addEventListener('submit', handleForgotPassword);
+    document.getElementById('vipForgotCancelBtn').addEventListener('click', hideForgotModal);
+    
+    // Close modals when clicking outside
+    vipForgotModal.addEventListener('click', (e) => {
+      if (e.target === vipForgotModal) {
+        hideForgotModal();
+      }
+    });
     
     // Close modal when clicking outside
     vipModal.addEventListener('click', (e) => {
@@ -1346,7 +1502,7 @@
           <div class="status-indicator" style="background: #666;"></div>
           <div class="meta">${gameData.Date} ${gameData.Time} &nbsp;&nbsp; ${gameData.League}</div>
           <div class="teams">${gameData.TeamA} vs ${gameData.TeamB}</div>
-          <div class="tip">Tip: <strong>${gameData.Tip}</strong></div>
+          <div class="tip ${isVip && isVipAuthenticated ? 'vip-unlocked' : ''}">Tip: <strong>${gameData.Tip}</strong></div>
           <div class="odds">Odds: ${gameData.Odds}</div>
           <div class="countdown ended" style="background: ${won ? '#22c55e' : (lost ? '#ef4444' : '#666')}; color: white; ${isVip ? 'position: relative; z-index: 5; border: 2px solid #DAA520; box-shadow: 0 0 10px rgba(218, 165, 32, 0.4); font-weight: 700;' : ''}">
             ${resultLabel}

@@ -816,4 +816,42 @@
         const sportMatch = selectedSport === 'all' || row.Sport === selectedSport;
         
         // Country/League filter
-        const passCountryLeague = (selectedCountries.size === 0 && selectedLeagues
+        const passCountryLeague = (selectedCountries.size === 0 && selectedLeagues.size === 0) ||
+          selectedCountries.has(row.Country) ||
+          selectedLeagues.has(row.League);
+        
+        // Tip type filter
+        const passTip = !t || row.TipType === t;
+        
+        // Odds filter
+        const odds = parseFloat(row.Odds);
+        const passOdds = isNaN(minSelectedOdd) || odds >= minSelectedOdd;
+        
+        return searchMatch && sportMatch && passCountryLeague && passTip && passOdds;
+      });
+      
+      renderCards(filtered);
+    }
+
+    Papa.parse(sheetURL, {
+      download: true,
+      header: true,
+      complete: function(results) {
+        allData = results.data.filter(row => row.TeamA && row.TeamB && row.Odds);
+        populateFilters(allData);
+        renderCards(allData);
+        Object.values(filters).forEach(el => {
+          if (el && el.addEventListener) {
+            el.addEventListener('change', applyFilters);
+          }
+        });
+      }
+    });
+
+    // Clean up intervals when page is unloaded
+    window.addEventListener('beforeunload', () => {
+      countdownIntervals.forEach(interval => clearInterval(interval));
+    });
+  </script>
+</body>
+</html>

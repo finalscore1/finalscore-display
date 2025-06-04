@@ -61,6 +61,45 @@
       outline: none;
       border-color: #4a90e2;
     }
+    .sport-filters {
+      margin-bottom: 20px;
+    }
+    .sport-filters h3 {
+      font-size: 16px;
+      margin-bottom: 10px;
+      color: #fff;
+    }
+    .sport-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .sport-btn {
+      padding: 8px 14px;
+      border-radius: 20px;
+      background-color: #262626;
+      color: #aaa;
+      border: 1px solid #333;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .sport-btn:hover {
+      background-color: #333;
+      border-color: #444;
+    }
+    .sport-btn.active {
+      background-color: #4a90e2;
+      color: white;
+      border-color: #4a90e2;
+    }
+    .sport-btn .sport-icon {
+      font-size: 16px;
+    }
     .country-league-container {
       max-height: 300px;
       overflow-y: auto;
@@ -237,6 +276,20 @@
       0%, 100% { opacity: 1; }
       50% { opacity: 0.3; }
     }
+    .sport-badge {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      background: #333;
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
     .history-btn {
       background: linear-gradient(135deg, #4a90e2, #357abd);
       color: white;
@@ -309,13 +362,16 @@
 <body>
   <div class="main">
     <div class="sidebar">
-      <h2>🔍 Search & Filter</h2>
+      <h2>🔍</h2>
       
-      <label for="searchFilter">Search Teams/Countries/Leagues</label>
       <input type="text" id="searchFilter" placeholder="Search..." />
 
-      <label for="dateFilter">Date</label>
-      <select id="dateFilter"><option value="">All Dates</option></select>
+      <div class="sport-filters">
+        <h3>Sports</h3>
+        <div class="sport-buttons" id="sportButtons">
+          <!-- Sport buttons will be dynamically added here -->
+        </div>
+      </div>
 
       <label for="countryLeagueFilter">Countries & Leagues</label>
       <div class="country-league-container">
@@ -354,7 +410,6 @@
     const container = document.getElementById("cardContainer");
     const filters = {
       search: document.getElementById("searchFilter"),
-      date: document.getElementById("dateFilter"),
       countryLeague: document.getElementById("countryLeagueFilter"),
       tipType: document.getElementById("tipTypeFilter"),
       odds: document.getElementById("oddsSlider")
@@ -362,6 +417,26 @@
 
     let selectedCountries = new Set();
     let selectedLeagues = new Set();
+    let selectedSports = new Set();
+
+    // Sport icons mapping
+    const sportIcons = {
+      'Soccer': '⚽',
+      'Basketball': '🏀',
+      'Hockey': '🏒',
+      'Tennis': '🎾',
+      'Baseball': '⚾',
+      'Football': '🏈',
+      'Volleyball': '🏐',
+      'Cricket': '🏏',
+      'Rugby': '🏉',
+      'Boxing': '🥊',
+      'MMA': '🥋',
+      'Golf': '⛳',
+      'Racing': '🏁',
+      'Esports': '🎮',
+      'Default': '⚡'
+    };
 
     // Country code to flag mapping (using flag-icon-css style URLs)
     const getCountryFlag = (countryCode) => {
@@ -405,6 +480,17 @@
         historyContainer.style.display = "none";
       }
     });
+
+    function getSportIcon(sport) {
+      if (!sport) return sportIcons.Default;
+      // Try exact match first
+      if (sportIcons[sport]) return sportIcons[sport];
+      // Try case-insensitive match
+      const sportKey = Object.keys(sportIcons).find(key => 
+        key.toLowerCase() === sport.toLowerCase()
+      );
+      return sportKey ? sportIcons[sportKey] : sportIcons.Default;
+    }
 
     function parseGameDateTime(dateStr, timeStr) {
       if (!dateStr || !timeStr) return null;
@@ -549,12 +635,15 @@
         const cardId = `card-${gameData.index}`;
         const countdownText = getCountdownText(gameData.gameDateTime);
         const status = getGameStatus(gameData.gameDateTime);
+        const sport = gameData.Sport || 'Default';
+        const sportIcon = getSportIcon(sport);
         
         const card = document.createElement("div");
         card.className = `bet-card ${status === 'starting-soon' ? 'starting-soon' : ''} ${status === 'live' ? 'expired' : ''}`;
         card.setAttribute('data-card-id', cardId);
         
         card.innerHTML = `
+          <div class="sport-badge">${sportIcon} ${sport}</div>
           <div class="status-indicator ${status}"></div>
           <div class="meta">${gameData.Date} ${gameData.Time} &nbsp;&nbsp; ${gameData.Country} ${gameData.League}</div>
           <div class="teams">${gameData.TeamA} vs ${gameData.TeamB}</div>
@@ -583,10 +672,14 @@
       historyCards.innerHTML = "";
       
       historyGames.forEach((gameData, index) => {
+        const sport = gameData.Sport || 'Default';
+        const sportIcon = getSportIcon(sport);
+        
         const card = document.createElement("div");
         card.className = "bet-card ended";
         
         card.innerHTML = `
+          <div class="sport-badge">${sportIcon} ${sport}</div>
           <div class="status-indicator" style="background: #666;"></div>
           <div class="meta">${gameData.Date} ${gameData.Time} &nbsp;&nbsp; ${gameData.Country} ${gameData.League}</div>
           <div class="teams">${gameData.TeamA} vs ${gameData.TeamB}</div>
@@ -603,14 +696,41 @@
       }
     }
 
+    function populateSportButtons(sports) {
+      const sportButtonsContainer = document.getElementById("sportButtons");
+      sportButtonsContainer.innerHTML = '';
+      
+      const sortedSports = Array.from(sports).sort();
+      
+      sortedSports.forEach(sport => {
+        const button = document.createElement("button");
+        button.className = "sport-btn";
+        button.innerHTML = `<span class="sport-icon">${getSportIcon(sport)}</span> ${sport}`;
+        
+        button.addEventListener("click", () => {
+          button.classList.toggle("active");
+          
+          if (button.classList.contains("active")) {
+            selectedSports.add(sport);
+          } else {
+            selectedSports.delete(sport);
+          }
+          
+          applyFilters();
+        });
+        
+        sportButtonsContainer.appendChild(button);
+      });
+    }
+
     function populateFilters(data) {
-      const unique = {date: new Set(), country: new Set(), tipType: new Set()};
+      const unique = {country: new Set(), tipType: new Set(), sport: new Set()};
       const countryLeagues = new Map();
       
       data.forEach(row => {
-        if (row.DateKey) unique.date.add(row.DateKey);
         if (row.Country) unique.country.add(row.Country);
         if (row.TipType) unique.tipType.add(row.TipType);
+        if (row.Sport) unique.sport.add(row.Sport);
         
         // Group leagues by country
         if (row.Country && row.League) {
@@ -624,9 +744,12 @@
         }
       });
       
-      // Populate date and tip type filters
+      // Populate sport buttons
+      populateSportButtons(unique.sport);
+      
+      // Populate tip type filter
       for (const [key, set] of Object.entries(unique)) {
-        if (key === 'country') continue; // Skip country, we handle it separately
+        if (key === 'country' || key === 'sport') continue; // Skip country and sport
         const el = filters[key];
         if (el) {
           [...set].sort().forEach(val => {

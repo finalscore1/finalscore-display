@@ -349,126 +349,191 @@
       color: #ccc;
     }
     .bet-card.vip {
-      background: linear-gradient(135deg, #f7dc6f, #f4d03f, #f7dc6f);
-      border: 2px solid #f39c12;
-      box-shadow: 
-        0 8px 25px rgba(243, 156, 18, 0.4),
-        0 0 20px rgba(243, 156, 18, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.8) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 223, 0, 0.8) 0%, transparent 50%),
+        linear-gradient(135deg, #FFD700 0%, #FFC107 25%, #FF8F00 50%, #FFC107 75%, #FFD700 100%);
+      background-size: 300% 300%;
+      border: 3px solid;
+      border-image: linear-gradient(45deg, #FFD700, #FF8F00, #FFC107, #FFD700) 1;
       position: relative;
       overflow: hidden;
-      animation: vipPulse 3s ease-in-out infinite;
-    }
-    .bet-card.vip:hover {
-      transform: translateY(-8px);
+      transform-style: preserve-3d;
+      animation: 
+        vipBackgroundShift 6s ease-in-out infinite,
+        vipGentlePulse 4s ease-in-out infinite;
       box-shadow: 
-        0 15px 40px rgba(243, 156, 18, 0.6),
-        0 0 30px rgba(243, 156, 18, 0.5),
-        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+        inset 0 1px 0 rgba(255, 255, 255, 0.5),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.1),
+        0 4px 15px rgba(255, 215, 0, 0.3),
+        0 2px 8px rgba(255, 215, 0, 0.2);
     }
+    
+    .bet-card.vip:hover {
+      transform: translateY(-12px) rotateX(5deg);
+      animation-play-state: paused;
+      box-shadow: 
+        inset 0 1px 0 rgba(255, 255, 255, 0.6),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.15),
+        0 8px 25px rgba(255, 215, 0, 0.4),
+        0 4px 15px rgba(255, 215, 0, 0.3),
+        0 0 20px rgba(255, 215, 0, 0.2);
+    }
+    
     .bet-card.vip .meta,
     .bet-card.vip .teams,
     .bet-card.vip .tip {
       color: #1a1a1a;
       position: relative;
-      z-index: 3;
-      text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
+      z-index: 5;
+      text-shadow: 0 1px 2px rgba(255, 255, 255, 0.4);
+      font-weight: 600;
     }
+    
+    .bet-card.vip .teams {
+      text-shadow: 0 2px 4px rgba(255, 215, 0, 0.3);
+      font-weight: 700;
+    }
+    
     .bet-card.vip .odds {
-      background: linear-gradient(135deg, #1a1a1a, #2c2c2c);
-      color: #f39c12;
+      background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+      color: #FFD700;
       position: relative;
-      z-index: 3;
-      border: 1px solid #f39c12;
+      z-index: 5;
+      border: 2px solid #FFD700;
+      box-shadow: 
+        0 0 10px rgba(255, 215, 0, 0.4),
+        inset 0 1px 0 rgba(255, 215, 0, 0.2);
+      font-weight: 700;
     }
+    
     .bet-card.vip .status-indicator {
-      border: 2px solid #f39c12;
-      z-index: 3;
-      box-shadow: 0 0 10px rgba(243, 156, 18, 0.5);
+      border: 3px solid #FFD700;
+      z-index: 5;
+      background: #FFD700;
+      box-shadow: 
+        0 0 15px rgba(255, 215, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
     }
+    
+    /* Luxury shine sweep effect */
     .bet-card.vip::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.2) 20%,
+        rgba(255, 255, 255, 0.5) 50%,
+        rgba(255, 255, 255, 0.2) 80%,
+        transparent 100%
+      );
+      animation: luxuryShine 3s ease-in-out infinite;
+      z-index: 2;
+      transform: skewX(-20deg);
+    }
+    
+    /* Floating particles effect */
+    .bet-card.vip::after {
       content: '';
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
-      animation: shimmer 2.5s ease-in-out infinite;
+      background-image: 
+        radial-gradient(circle at 25% 25%, #FFD700 1px, transparent 2px),
+        radial-gradient(circle at 75% 75%, #FFC107 1px, transparent 2px),
+        radial-gradient(circle at 50% 50%, #FF8F00 0.5px, transparent 1px);
+      background-size: 50px 50px, 70px 70px, 30px 30px;
+      background-position: 0 0, 25px 25px, 40px 40px;
+      opacity: 0.3;
+      animation: floatingParticles 8s linear infinite;
       z-index: 1;
+      mix-blend-mode: overlay;
     }
-    .bet-card.vip::after {
-      content: '';
-      position: absolute;
-      top: -3px;
-      left: -3px;
-      right: -3px;
-      bottom: -3px;
-      background: linear-gradient(60deg, #f39c12, #f7dc6f, #f4d03f, #f39c12);
-      background-size: 300% 300%;
-      border-radius: 20px;
-      z-index: -1;
-      animation: borderFlow 4s ease infinite;
-      opacity: 0.8;
-    }
-    @keyframes vipPulse {
+    
+    @keyframes vipBackgroundShift {
       0%, 100% {
-        box-shadow: 
-          0 8px 25px rgba(243, 156, 18, 0.4),
-          0 0 20px rgba(243, 156, 18, 0.3),
-          inset 0 1px 0 rgba(255, 255, 255, 0.4);
-      }
-      50% {
-        box-shadow: 
-          0 12px 35px rgba(243, 156, 18, 0.6),
-          0 0 30px rgba(243, 156, 18, 0.5),
-          inset 0 1px 0 rgba(255, 255, 255, 0.5);
-      }
-    }
-    @keyframes shimmer {
-      0% {
-        transform: translateX(-100%);
-      }
-      100% {
-        transform: translateX(100%);
-      }
-    }
-    @keyframes borderFlow {
-      0% {
         background-position: 0% 50%;
       }
-      50% {
+      33% {
         background-position: 100% 50%;
       }
+      66% {
+        background-position: 50% 100%;
+      }
+    }
+    
+    @keyframes vipGentlePulse {
+      0%, 100% {
+        box-shadow: 
+          inset 0 1px 0 rgba(255, 255, 255, 0.5),
+          inset 0 -1px 0 rgba(0, 0, 0, 0.1),
+          0 4px 15px rgba(255, 215, 0, 0.3),
+          0 2px 8px rgba(255, 215, 0, 0.2);
+      }
+      50% {
+        box-shadow: 
+          inset 0 1px 0 rgba(255, 255, 255, 0.6),
+          inset 0 -1px 0 rgba(0, 0, 0, 0.15),
+          0 6px 20px rgba(255, 215, 0, 0.4),
+          0 3px 12px rgba(255, 215, 0, 0.3);
+      }
+    }
+    
+    @keyframes luxuryShine {
+      0% {
+        left: -100%;
+        opacity: 0;
+      }
+      50% {
+        opacity: 1;
+      }
       100% {
-        background-position: 0% 50%;
+        left: 100%;
+        opacity: 0;
+      }
+    }
+    
+    @keyframes floatingParticles {
+      0% {
+        transform: translateY(0px) rotate(0deg);
+      }
+      100% {
+        transform: translateY(-20px) rotate(360deg);
       }
     }
     .vip-filter-btn {
-      background: linear-gradient(135deg, #f4d03f, #f39c12) !important;
+      background: linear-gradient(135deg, #FFD700 0%, #FFC107 50%, #FF8F00 100%) !important;
       color: #1a1a1a !important;
-      border: 1px solid #f39c12 !important;
-      box-shadow: 0 2px 8px rgba(243, 156, 18, 0.4);
-      animation: vip-button-glow 2s ease-in-out infinite;
-      font-weight: 600;
+      border: 2px solid #FFD700 !important;
+      box-shadow: 0 3px 10px rgba(255, 215, 0, 0.4);
+      animation: vip-button-glow 3s ease-in-out infinite;
+      font-weight: 700;
+      text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
     }
     .vip-filter-btn:hover {
-      background: linear-gradient(135deg, #f39c12, #f4d03f) !important;
-      box-shadow: 0 4px 12px rgba(243, 156, 18, 0.6);
-      transform: translateY(-1px);
+      background: linear-gradient(135deg, #FF8F00 0%, #FFC107 50%, #FFD700 100%) !important;
+      box-shadow: 0 5px 15px rgba(255, 215, 0, 0.6);
+      transform: translateY(-2px);
     }
     .vip-filter-btn.active {
-      background: linear-gradient(135deg, #1a1a1a, #2c2c2c) !important;
-      color: #f39c12 !important;
-      border-color: #f39c12 !important;
-      box-shadow: 0 4px 12px rgba(243, 156, 18, 0.8);
+      background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%) !important;
+      color: #FFD700 !important;
+      border-color: #FFD700 !important;
+      box-shadow: 0 5px 15px rgba(255, 215, 0, 0.8);
     }
     @keyframes vip-button-glow {
       0%, 100% { 
-        box-shadow: 0 2px 8px rgba(243, 156, 18, 0.4);
+        box-shadow: 0 3px 10px rgba(255, 215, 0, 0.4);
       }
       50% { 
-        box-shadow: 0 4px 12px rgba(243, 156, 18, 0.7);
+        box-shadow: 0 5px 15px rgba(255, 215, 0, 0.6);
       }
     }
     .history-result {
@@ -759,7 +824,7 @@
           <div class="teams">${gameData.TeamA} vs ${gameData.TeamB}</div>
           <div class="tip">Tip: <strong>${gameData.Tip}</strong></div>
           <div class="odds">Odds: ${gameData.Odds}</div>
-          <div class="countdown ${status === 'live' ? 'live' : ''} ${!gameData.gameDateTime ? 'expired' : ''}" style="${isVip ? 'background: linear-gradient(135deg, #1a1a1a, #2c2c2c); color: #f39c12; position: relative; z-index: 4; border: 1px solid #f39c12;' : ''}">${countdownText}</div>
+          <div class="countdown ${status === 'live' ? 'live' : ''} ${!gameData.gameDateTime ? 'expired' : ''}" style="${isVip ? 'background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%); color: #FFD700; position: relative; z-index: 5; border: 2px solid #FFD700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.4), inset 0 1px 0 rgba(255, 215, 0, 0.2); font-weight: 700;' : ''}">${countdownText}</div>
         `;
         
         container.appendChild(card);
@@ -807,7 +872,7 @@
           <div class="teams">${gameData.TeamA} vs ${gameData.TeamB}</div>
           <div class="tip">Tip: <strong>${gameData.Tip}</strong></div>
           <div class="odds">Odds: ${gameData.Odds}</div>
-          <div class="countdown ended" style="background: ${won ? '#22c55e' : (lost ? '#ef4444' : '#666')}; color: white; ${isVip ? 'position: relative; z-index: 4; border: 1px solid #f39c12;' : ''}">
+          <div class="countdown ended" style="background: ${won ? '#22c55e' : (lost ? '#ef4444' : '#666')}; color: white; ${isVip ? 'position: relative; z-index: 5; border: 2px solid #FFD700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.4); font-weight: 700;' : ''}">
             ${resultLabel}
           </div>
         `;

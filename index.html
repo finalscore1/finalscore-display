@@ -348,6 +348,70 @@
       background: #666;
       color: #ccc;
     }
+    .bet-card.vip {
+      background: linear-gradient(135deg, #ffd700, #ffed4a, #ffd700);
+      border: 2px solid #ffd700;
+      box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+      animation: vip-glow 3s ease-in-out infinite;
+    }
+    .bet-card.vip:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 10px 30px rgba(255, 215, 0, 0.6);
+    }
+    .bet-card.vip .meta,
+    .bet-card.vip .teams,
+    .bet-card.vip .tip {
+      color: #000;
+    }
+    .bet-card.vip .odds {
+      background: #000;
+      color: #ffd700;
+    }
+    .bet-card.vip .countdown {
+      background: linear-gradient(135deg, #000, #333);
+      color: #ffd700;
+    }
+    .bet-card.vip .status-indicator {
+      border: 2px solid #ffd700;
+    }
+    @keyframes vip-glow {
+      0%, 100% { 
+        box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+      }
+      50% { 
+        box-shadow: 0 8px 25px rgba(255, 215, 0, 0.7);
+      }
+    }
+    .vip-filter-btn {
+      padding: 10px 16px;
+      border-radius: 25px;
+      background: linear-gradient(135deg, #ffd700, #ffed4a);
+      color: #000;
+      border: 2px solid #ffd700;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+      animation: vip-button-glow 3s ease-in-out infinite;
+    }
+    .vip-filter-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(255, 215, 0, 0.5);
+    }
+    .vip-filter-btn.active {
+      background: linear-gradient(135deg, #000, #333);
+      color: #ffd700;
+      border-color: #ffd700;
+    }
+    @keyframes vip-button-glow {
+      0%, 100% { 
+        box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+      }
+      50% { 
+        box-shadow: 0 6px 16px rgba(255, 215, 0, 0.6);
+      }
+    }
   </style>
 </head>
 <body>
@@ -360,6 +424,11 @@
       <div class="sport-filters">
         <h3>Sports</h3>
         <div id="sportButtons" class="sport-buttons"></div>
+      </div>
+
+      <div class="sport-filters">
+        <h3>VIP Bets</h3>
+        <button id="vipFilterBtn" class="vip-filter-btn">✨ VIP ONLY ✨</button>
       </div>
 
       <label for="countryLeagueFilter">Countries & Leagues</label>

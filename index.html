@@ -351,29 +351,37 @@
     .bet-card.vip {
       background-color: #d4af37;
       border: 2px solid #c9a034;
-      box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+      box-shadow: 
+        0 6px 20px rgba(212, 175, 55, 0.4),
+        0 0 0 1px rgba(212, 175, 55, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
       position: relative;
       overflow: hidden;
+      animation: vipGlow 4s ease-in-out infinite;
     }
     .bet-card.vip:hover {
       transform: translateY(-6px);
-      box-shadow: 0 10px 30px rgba(212, 175, 55, 0.6);
+      box-shadow: 
+        0 12px 35px rgba(212, 175, 55, 0.6),
+        0 0 0 2px rgba(212, 175, 55, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
     }
     .bet-card.vip .meta,
     .bet-card.vip .teams,
     .bet-card.vip .tip {
       color: #000;
+      position: relative;
+      z-index: 2;
     }
     .bet-card.vip .odds {
       background: #000;
       color: #d4af37;
-    }
-    .bet-card.vip .countdown {
-      background: linear-gradient(135deg, #000, #333);
-      color: #d4af37;
+      position: relative;
+      z-index: 2;
     }
     .bet-card.vip .status-indicator {
       border: 2px solid #c9a034;
+      z-index: 2;
     }
     .bet-card.vip::before {
       content: '';
@@ -389,6 +397,45 @@
       animation: sparkleMove 7s linear infinite;
       z-index: 1;
       mix-blend-mode: screen;
+    }
+    .bet-card.vip::after {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, #d4af37, #f4d03f, #d4af37, #c9a034);
+      background-size: 400% 400%;
+      border-radius: 18px;
+      z-index: -1;
+      animation: gradientShift 3s ease infinite;
+      opacity: 0.7;
+    }
+    @keyframes vipGlow {
+      0%, 100% {
+        box-shadow: 
+          0 6px 20px rgba(212, 175, 55, 0.4),
+          0 0 0 1px rgba(212, 175, 55, 0.3),
+          inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      }
+      50% {
+        box-shadow: 
+          0 8px 30px rgba(212, 175, 55, 0.6),
+          0 0 0 2px rgba(212, 175, 55, 0.5),
+          inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      }
+    }
+    @keyframes gradientShift {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
     }
     @keyframes sparkleMove {
       0% {
@@ -713,7 +760,7 @@
           <div class="teams">${gameData.TeamA} vs ${gameData.TeamB}</div>
           <div class="tip">Tip: <strong>${gameData.Tip}</strong></div>
           <div class="odds">Odds: ${gameData.Odds}</div>
-          <div class="countdown ${status === 'live' ? 'live' : ''} ${!gameData.gameDateTime ? 'expired' : ''}">${countdownText}</div>
+          <div class="countdown ${status === 'live' ? 'live' : ''} ${!gameData.gameDateTime ? 'expired' : ''}" style="${isVip ? 'background: linear-gradient(135deg, #000, #333); color: #d4af37; position: relative; z-index: 2;' : ''}">${countdownText}</div>
         `;
         
         container.appendChild(card);
@@ -761,8 +808,8 @@
           <div class="teams">${gameData.TeamA} vs ${gameData.TeamB}</div>
           <div class="tip">Tip: <strong>${gameData.Tip}</strong></div>
           <div class="odds">Odds: ${gameData.Odds}</div>
-          <div class="countdown ended">
-            <div class="history-result ${resultClass}">${resultLabel}</div>
+          <div class="countdown ended" style="background: ${won ? '#22c55e' : (lost ? '#ef4444' : '#666')}; color: white;">
+            ${resultLabel}
           </div>
         `;
         

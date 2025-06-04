@@ -349,14 +349,15 @@
       color: #ccc;
     }
     .bet-card.vip {
-      background: linear-gradient(135deg, #ffd700, #ffed4a, #ffd700);
-      border: 2px solid #ffd700;
-      box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
-      animation: vip-glow 3s ease-in-out infinite;
+      background-color: #d4af37;
+      border: 2px solid #c9a034;
+      box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+      position: relative;
+      overflow: hidden;
     }
     .bet-card.vip:hover {
       transform: translateY(-6px);
-      box-shadow: 0 10px 30px rgba(255, 215, 0, 0.6);
+      box-shadow: 0 10px 30px rgba(212, 175, 55, 0.6);
     }
     .bet-card.vip .meta,
     .bet-card.vip .teams,
@@ -365,49 +366,84 @@
     }
     .bet-card.vip .odds {
       background: #000;
-      color: #ffd700;
+      color: #d4af37;
     }
     .bet-card.vip .countdown {
       background: linear-gradient(135deg, #000, #333);
-      color: #ffd700;
+      color: #d4af37;
     }
     .bet-card.vip .status-indicator {
-      border: 2px solid #ffd700;
+      border: 2px solid #c9a034;
     }
-    @keyframes vip-glow {
-      0%, 100% { 
-        box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+    .bet-card.vip::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background-image: radial-gradient(#fff9cc 1px, transparent 1px);
+      background-size: 20px 20px;
+      opacity: 0.25;
+      animation: sparkleMove 7s linear infinite;
+      z-index: 1;
+      mix-blend-mode: screen;
+    }
+    @keyframes sparkleMove {
+      0% {
+        background-position: 0 0;
       }
-      50% { 
-        box-shadow: 0 8px 25px rgba(255, 215, 0, 0.7);
+      100% {
+        background-position: 100px 100px;
       }
     }
     .vip-filter-btn {
-      background: linear-gradient(135deg, #ffd700, #ffed4a) !important;
+      background: linear-gradient(135deg, #d4af37, #c9a034) !important;
       color: #000 !important;
-      border: 1px solid #ffd700 !important;
-      box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
+      border: 1px solid #c9a034 !important;
+      box-shadow: 0 2px 8px rgba(212, 175, 55, 0.4);
       animation: vip-button-glow 2s ease-in-out infinite;
       font-weight: 600;
     }
     .vip-filter-btn:hover {
-      background: linear-gradient(135deg, #ffed4a, #ffd700) !important;
-      box-shadow: 0 4px 12px rgba(255, 215, 0, 0.6);
+      background: linear-gradient(135deg, #c9a034, #d4af37) !important;
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.6);
       transform: translateY(-1px);
     }
     .vip-filter-btn.active {
       background: linear-gradient(135deg, #000, #333) !important;
-      color: #ffd700 !important;
-      border-color: #ffd700 !important;
-      box-shadow: 0 4px 12px rgba(255, 215, 0, 0.8);
+      color: #d4af37 !important;
+      border-color: #c9a034 !important;
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.8);
     }
     @keyframes vip-button-glow {
       0%, 100% { 
-        box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
+        box-shadow: 0 2px 8px rgba(212, 175, 55, 0.4);
       }
       50% { 
-        box-shadow: 0 4px 12px rgba(255, 215, 0, 0.7);
+        box-shadow: 0 4px 12px rgba(212, 175, 55, 0.7);
       }
+    }
+    .history-result {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+    .history-result.won {
+      background: #22c55e;
+      color: white;
+    }
+    .history-result.lost {
+      background: #ef4444;
+      color: white;
+    }
+    .history-result.ended {
+      background: #666;
+      color: #ccc;
     }
   </style>
 </head>
@@ -702,6 +738,19 @@
       historyGames.forEach((gameData, index) => {
         const sport = gameData.Sport || 'Unknown';
         const isVip = gameData.VIP && gameData.VIP.toLowerCase() === 'yes';
+        const won = gameData.Won && gameData.Won.toLowerCase() === 'yes';
+        const lost = gameData.Won && gameData.Won.toLowerCase() === 'no';
+        
+        let resultLabel = 'Ended';
+        let resultClass = 'ended';
+        
+        if (won) {
+          resultLabel = 'Won';
+          resultClass = 'won';
+        } else if (lost) {
+          resultLabel = 'Lost';
+          resultClass = 'lost';
+        }
         
         const card = document.createElement("div");
         card.className = `bet-card ended ${isVip ? 'vip' : ''}`;
@@ -712,7 +761,9 @@
           <div class="teams">${gameData.TeamA} vs ${gameData.TeamB}</div>
           <div class="tip">Tip: <strong>${gameData.Tip}</strong></div>
           <div class="odds">Odds: ${gameData.Odds}</div>
-          <div class="countdown ended">Ended</div>
+          <div class="countdown ended">
+            <div class="history-result ${resultClass}">${resultLabel}</div>
+          </div>
         `;
         
         historyCards.appendChild(card);

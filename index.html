@@ -350,12 +350,12 @@
     }
     .bet-card.vip {
       background: 
-        radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.8) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(255, 223, 0, 0.8) 0%, transparent 50%),
-        linear-gradient(135deg, #FFD700 0%, #FFC107 25%, #FF8F00 50%, #FFC107 75%, #FFD700 100%);
+        radial-gradient(circle at 20% 80%, rgba(218, 165, 32, 0.8) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(184, 134, 11, 0.8) 0%, transparent 50%),
+        linear-gradient(135deg, #DAA520 0%, #B8860B 25%, #CD853F 50%, #B8860B 75%, #DAA520 100%);
       background-size: 300% 300%;
       border: 3px solid;
-      border-image: linear-gradient(45deg, #FFD700, #FF8F00, #FFC107, #FFD700) 1;
+      border-image: linear-gradient(45deg, #DAA520, #CD853F, #B8860B, #DAA520) 1;
       position: relative;
       overflow: hidden;
       transform-style: preserve-3d;
@@ -363,26 +363,25 @@
         vipBackgroundShift 6s ease-in-out infinite,
         vipGentlePulse 4s ease-in-out infinite;
       box-shadow: 
-        inset 0 1px 0 rgba(255, 255, 255, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3),
         inset 0 -1px 0 rgba(0, 0, 0, 0.1),
-        0 4px 15px rgba(255, 215, 0, 0.3),
-        0 2px 8px rgba(255, 215, 0, 0.2);
+        0 4px 15px rgba(218, 165, 32, 0.3),
+        0 2px 8px rgba(218, 165, 32, 0.2);
     }
     
     .bet-card.vip:hover {
       transform: translateY(-12px) rotateX(5deg);
       animation-play-state: paused;
       box-shadow: 
-        inset 0 1px 0 rgba(255, 255, 255, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4),
         inset 0 -1px 0 rgba(0, 0, 0, 0.15),
-        0 8px 25px rgba(255, 215, 0, 0.4),
-        0 4px 15px rgba(255, 215, 0, 0.3),
-        0 0 20px rgba(255, 215, 0, 0.2);
+        0 8px 25px rgba(218, 165, 32, 0.4),
+        0 4px 15px rgba(218, 165, 32, 0.3),
+        0 0 20px rgba(218, 165, 32, 0.2);
     }
     
     .bet-card.vip .meta,
-    .bet-card.vip .teams,
-    .bet-card.vip .tip {
+    .bet-card.vip .teams {
       color: #1a1a1a;
       position: relative;
       z-index: 5;
@@ -390,29 +389,39 @@
       font-weight: 600;
     }
     
+    .bet-card.vip .tip {
+      color: #1a1a1a;
+      position: relative;
+      z-index: 5;
+      text-shadow: 0 1px 2px rgba(255, 255, 255, 0.4);
+      font-weight: 600;
+      filter: blur(4px);
+      transition: filter 0.3s ease;
+    }
+    
     .bet-card.vip .teams {
-      text-shadow: 0 2px 4px rgba(255, 215, 0, 0.3);
+      text-shadow: 0 2px 4px rgba(218, 165, 32, 0.3);
       font-weight: 700;
     }
     
     .bet-card.vip .odds {
       background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
-      color: #FFD700;
+      color: #DAA520;
       position: relative;
       z-index: 5;
-      border: 2px solid #FFD700;
+      border: 2px solid #DAA520;
       box-shadow: 
-        0 0 10px rgba(255, 215, 0, 0.4),
-        inset 0 1px 0 rgba(255, 215, 0, 0.2);
+        0 0 10px rgba(218, 165, 32, 0.4),
+        inset 0 1px 0 rgba(218, 165, 32, 0.2);
       font-weight: 700;
     }
     
     .bet-card.vip .status-indicator {
-      border: 3px solid #FFD700;
+      border: 3px solid #DAA520;
       z-index: 5;
-      background: #FFD700;
+      background: #DAA520;
       box-shadow: 
-        0 0 15px rgba(255, 215, 0, 0.6),
+        0 0 15px rgba(218, 165, 32, 0.6),
         inset 0 1px 0 rgba(255, 255, 255, 0.3);
     }
     
@@ -427,9 +436,9 @@
       background: linear-gradient(
         90deg,
         transparent 0%,
-        rgba(255, 255, 255, 0.2) 20%,
-        rgba(255, 255, 255, 0.5) 50%,
-        rgba(255, 255, 255, 0.2) 80%,
+        rgba(255, 255, 255, 0.15) 20%,
+        rgba(255, 255, 255, 0.3) 50%,
+        rgba(255, 255, 255, 0.15) 80%,
         transparent 100%
       );
       animation: luxuryShine 3s ease-in-out infinite;
@@ -446,12 +455,12 @@
       width: 100%;
       height: 100%;
       background-image: 
-        radial-gradient(circle at 25% 25%, #FFD700 1px, transparent 2px),
-        radial-gradient(circle at 75% 75%, #FFC107 1px, transparent 2px),
-        radial-gradient(circle at 50% 50%, #FF8F00 0.5px, transparent 1px);
+        radial-gradient(circle at 25% 25%, #DAA520 1px, transparent 2px),
+        radial-gradient(circle at 75% 75%, #B8860B 1px, transparent 2px),
+        radial-gradient(circle at 50% 50%, #CD853F 0.5px, transparent 1px);
       background-size: 50px 50px, 70px 70px, 30px 30px;
       background-position: 0 0, 25px 25px, 40px 40px;
-      opacity: 0.3;
+      opacity: 0.2;
       animation: floatingParticles 8s linear infinite;
       z-index: 1;
       mix-blend-mode: overlay;
@@ -472,17 +481,17 @@
     @keyframes vipGentlePulse {
       0%, 100% {
         box-shadow: 
-          inset 0 1px 0 rgba(255, 255, 255, 0.5),
+          inset 0 1px 0 rgba(255, 255, 255, 0.3),
           inset 0 -1px 0 rgba(0, 0, 0, 0.1),
-          0 4px 15px rgba(255, 215, 0, 0.3),
-          0 2px 8px rgba(255, 215, 0, 0.2);
+          0 4px 15px rgba(218, 165, 32, 0.3),
+          0 2px 8px rgba(218, 165, 32, 0.2);
       }
       50% {
         box-shadow: 
-          inset 0 1px 0 rgba(255, 255, 255, 0.6),
+          inset 0 1px 0 rgba(255, 255, 255, 0.4),
           inset 0 -1px 0 rgba(0, 0, 0, 0.15),
-          0 6px 20px rgba(255, 215, 0, 0.4),
-          0 3px 12px rgba(255, 215, 0, 0.3);
+          0 6px 20px rgba(218, 165, 32, 0.4),
+          0 3px 12px rgba(218, 165, 32, 0.3);
       }
     }
     
@@ -509,32 +518,103 @@
       }
     }
     .vip-filter-btn {
-      background: linear-gradient(135deg, #FFD700 0%, #FFC107 50%, #FF8F00 100%) !important;
+      background: linear-gradient(135deg, #DAA520 0%, #B8860B 50%, #CD853F 100%) !important;
       color: #1a1a1a !important;
-      border: 2px solid #FFD700 !important;
-      box-shadow: 0 3px 10px rgba(255, 215, 0, 0.4);
+      border: 2px solid #DAA520 !important;
+      box-shadow: 0 3px 10px rgba(218, 165, 32, 0.4);
       animation: vip-button-glow 3s ease-in-out infinite;
       font-weight: 700;
       text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
     }
     .vip-filter-btn:hover {
-      background: linear-gradient(135deg, #FF8F00 0%, #FFC107 50%, #FFD700 100%) !important;
-      box-shadow: 0 5px 15px rgba(255, 215, 0, 0.6);
+      background: linear-gradient(135deg, #CD853F 0%, #B8860B 50%, #DAA520 100%) !important;
+      box-shadow: 0 5px 15px rgba(218, 165, 32, 0.6);
       transform: translateY(-2px);
     }
     .vip-filter-btn.active {
       background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%) !important;
-      color: #FFD700 !important;
-      border-color: #FFD700 !important;
-      box-shadow: 0 5px 15px rgba(255, 215, 0, 0.8);
+      color: #DAA520 !important;
+      border-color: #DAA520 !important;
+      box-shadow: 0 5px 15px rgba(218, 165, 32, 0.8);
     }
     @keyframes vip-button-glow {
       0%, 100% { 
-        box-shadow: 0 3px 10px rgba(255, 215, 0, 0.4);
+        box-shadow: 0 3px 10px rgba(218, 165, 32, 0.4);
       }
       50% { 
-        box-shadow: 0 5px 15px rgba(255, 215, 0, 0.6);
+        box-shadow: 0 5px 15px rgba(218, 165, 32, 0.6);
       }
+    }
+    .main-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding: 20px 0;
+      border-bottom: 2px solid #333;
+    }
+    .main-title {
+      background: linear-gradient(135deg, #4a90e2, #357abd, #2c5aa0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: 32px;
+      font-weight: 800;
+      margin: 0;
+      text-shadow: 0 2px 4px rgba(74, 144, 226, 0.3);
+      letter-spacing: -0.5px;
+    }
+    .main-title::before {
+      content: '📈';
+      margin-right: 12px;
+      -webkit-text-fill-color: #4a90e2;
+    }
+    .history-btn {
+      background: linear-gradient(135deg, #4a90e2, #357abd, #2c5aa0);
+      color: white;
+      border: none;
+      padding: 16px 24px;
+      border-radius: 16px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 
+        0 6px 20px rgba(74, 144, 226, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+    .history-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 
+        0 10px 25px rgba(74, 144, 226, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+    .history-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s ease;
+    }
+    .history-btn:hover::before {
+      left: 100%;
+    }
+    .history-btn-icon {
+      font-size: 18px;
+      margin-right: 8px;
+    }
+    .history-count {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-left: 8px;
     }
     .history-result {
       display: inline-block;
@@ -583,10 +663,12 @@
     </div>
 
     <div class="content">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h1>📊 Finalscore Featured Bets</h1>
+      <div class="main-header">
+        <h1 class="main-title">Finalscore Featured Bets</h1>
         <button id="historyBtn" class="history-btn">
-          📚 History (<span id="historyCount">0</span>)
+          <span class="history-btn-icon">📚</span>
+          <span>History</span>
+          <span class="history-count" id="historyCount">0</span>
         </button>
       </div>
       <div class="card-grid" id="cardContainer"></div>
@@ -824,7 +906,7 @@
           <div class="teams">${gameData.TeamA} vs ${gameData.TeamB}</div>
           <div class="tip">Tip: <strong>${gameData.Tip}</strong></div>
           <div class="odds">Odds: ${gameData.Odds}</div>
-          <div class="countdown ${status === 'live' ? 'live' : ''} ${!gameData.gameDateTime ? 'expired' : ''}" style="${isVip ? 'background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%); color: #FFD700; position: relative; z-index: 5; border: 2px solid #FFD700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.4), inset 0 1px 0 rgba(255, 215, 0, 0.2); font-weight: 700;' : ''}">${countdownText}</div>
+          <div class="countdown ${status === 'live' ? 'live' : ''} ${!gameData.gameDateTime ? 'expired' : ''}" style="${isVip ? 'background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%); color: #DAA520; position: relative; z-index: 5; border: 2px solid #DAA520; box-shadow: 0 0 10px rgba(218, 165, 32, 0.4), inset 0 1px 0 rgba(218, 165, 32, 0.2); font-weight: 700;' : ''}">${countdownText}</div>
         `;
         
         container.appendChild(card);
@@ -872,7 +954,7 @@
           <div class="teams">${gameData.TeamA} vs ${gameData.TeamB}</div>
           <div class="tip">Tip: <strong>${gameData.Tip}</strong></div>
           <div class="odds">Odds: ${gameData.Odds}</div>
-          <div class="countdown ended" style="background: ${won ? '#22c55e' : (lost ? '#ef4444' : '#666')}; color: white; ${isVip ? 'position: relative; z-index: 5; border: 2px solid #FFD700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.4); font-weight: 700;' : ''}">
+          <div class="countdown ended" style="background: ${won ? '#22c55e' : (lost ? '#ef4444' : '#666')}; color: white; ${isVip ? 'position: relative; z-index: 5; border: 2px solid #DAA520; box-shadow: 0 0 10px rgba(218, 165, 32, 0.4); font-weight: 700;' : ''}">
             ${resultLabel}
           </div>
         `;

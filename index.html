@@ -1516,7 +1516,15 @@
           timestamp: new Date().toISOString()
         };
         
-        // Call your Google Apps Script web app
+        // Temporarily disable Google Sheets update to test if this is causing the issue
+        console.log('Google Sheets update temporarily disabled for testing');
+        console.log('Update data that would be sent:', updateData);
+        
+        // Return success for now to isolate the issue
+        return { success: true, message: "Update disabled for testing" };
+        
+        /* 
+        // Re-enable this when ready to test Google Sheets integration
         const response = await fetch('https://script.google.com/macros/s/AKfycbwykxNZDb4cH65uuh7ohioTs880K53sk3_z6FifSgAanmvSmKtXk0C_wNeaAbP-83sI/exec', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -1527,6 +1535,7 @@
         console.log('Google Sheets update result:', result);
         
         return result;
+        */
         
       } catch (error) {
         console.error('Error updating subscription:', error);

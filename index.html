@@ -22,7 +22,7 @@
       gap: 24px;
     }
     .sidebar {
-      flex: 0 0 280px;
+      flex: 0 0 260px;
       background: #1a1a1a;
       border-radius: 16px;
       padding: 20px;
@@ -46,214 +46,6 @@
       color: #fff;
       border: 1px solid #333;
       margin-bottom: 10px;
-    }
-    .sidebar input[type="text"] {
-      width: calc(100% - 16px);
-      padding: 8px;
-      border-radius: 8px;
-      background-color: #262626;
-      color: #fff;
-      border: 1px solid #333;
-      margin-bottom: 10px;
-      font-size: 14px;
-    }
-    .sidebar input[type="text"]:focus {
-      outline: none;
-      border-color: #4a90e2;
-    }
-    
-    /* Calendar Styles */
-    .calendar-container {
-      background-color: #262626;
-      border: 1px solid #333;
-      border-radius: 8px;
-      padding: 10px;
-      margin-bottom: 10px;
-    }
-    .calendar-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    .calendar-nav {
-      background: #333;
-      border: none;
-      color: #fff;
-      padding: 5px 10px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 12px;
-    }
-    .calendar-nav:hover {
-      background: #444;
-    }
-    .calendar-month {
-      font-size: 14px;
-      font-weight: 600;
-    }
-    .calendar-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 2px;
-      text-align: center;
-    }
-    .calendar-day-header {
-      font-size: 11px;
-      color: #aaa;
-      padding: 4px 2px;
-      font-weight: 600;
-    }
-    .calendar-day {
-      padding: 6px 2px;
-      font-size: 11px;
-      cursor: pointer;
-      border-radius: 4px;
-      transition: all 0.2s;
-      min-height: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .calendar-day:hover {
-      background: #333;
-    }
-    .calendar-day.other-month {
-      color: #555;
-    }
-    .calendar-day.today {
-      background: #4a90e2;
-      color: white;
-      font-weight: 600;
-    }
-    .calendar-day.selected {
-      background: #00ff99;
-      color: black;
-      font-weight: 600;
-    }
-    .calendar-day.has-games {
-      border: 1px solid #ff6b35;
-    }
-    
-    /* Odds Histogram */
-    .odds-histogram {
-      background: #262626;
-      border: 1px solid #333;
-      border-radius: 8px;
-      padding: 10px;
-      margin-top: 5px;
-      height: 120px;
-      position: relative;
-    }
-    .histogram-title {
-      font-size: 12px;
-      color: #aaa;
-      margin-bottom: 8px;
-      text-align: center;
-    }
-    .histogram-bars {
-      display: flex;
-      align-items: end;
-      height: 80px;
-      gap: 2px;
-      justify-content: space-between;
-    }
-    .histogram-bar {
-      background: linear-gradient(to top, #00ff99, #4a90e2);
-      border-radius: 2px 2px 0 0;
-      position: relative;
-      min-width: 8px;
-      transition: all 0.3s;
-    }
-    .histogram-bar:hover {
-      background: linear-gradient(to top, #ff6b35, #ff9f00);
-    }
-    .histogram-bar::after {
-      content: attr(data-count);
-      position: absolute;
-      top: -15px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 10px;
-      color: #aaa;
-      white-space: nowrap;
-    }
-    .histogram-labels {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 5px;
-      font-size: 10px;
-      color: #aaa;
-    }
-    
-    .country-league-container {
-      max-height: 300px;
-      overflow-y: auto;
-      border: 1px solid #333;
-      border-radius: 8px;
-      background-color: #262626;
-      margin-bottom: 10px;
-    }
-    .country-item {
-      border-bottom: 1px solid #333;
-    }
-    .country-item:last-child {
-      border-bottom: none;
-    }
-    .country-header {
-      display: flex;
-      align-items: center;
-      padding: 10px 12px;
-      cursor: pointer;
-      background-color: #2a2a2a;
-      transition: background-color 0.2s;
-    }
-    .country-header:hover {
-      background-color: #333;
-    }
-    .country-header.selected {
-      background-color: #4a90e2;
-    }
-    .country-flag {
-      width: 20px;
-      height: 15px;
-      margin-right: 8px;
-      border-radius: 2px;
-      object-fit: cover;
-    }
-    .country-name {
-      flex: 1;
-      font-size: 14px;
-      font-weight: 500;
-    }
-    .expand-icon {
-      font-size: 12px;
-      color: #aaa;
-      transition: transform 0.2s;
-    }
-    .country-item.expanded .expand-icon {
-      transform: rotate(90deg);
-    }
-    .leagues-list {
-      display: none;
-      background-color: #1a1a1a;
-    }
-    .country-item.expanded .leagues-list {
-      display: block;
-    }
-    .league-item {
-      padding: 8px 40px;
-      font-size: 13px;
-      color: #ccc;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-    .league-item:hover {
-      background-color: #333;
-    }
-    .league-item.selected {
-      background-color: #4a90e2;
-      color: white;
     }
     #oddsSlider {
       width: 95%;
@@ -286,10 +78,6 @@
     .bet-card.starting-soon {
       border: 2px solid #ff6b35;
       animation: pulse 2s infinite;
-    }
-    .bet-card.favorited {
-      border: 2px solid #ffd700;
-      box-shadow: 0 6px 16px rgba(255, 215, 0, 0.3);
     }
     @keyframes pulse {
       0% { border-color: #ff6b35; }
@@ -331,9 +119,8 @@
       box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
     }
     .countdown.expired {
-      background: linear-gradient(135deg, #ff4444, #cc0000);
-      color: #fff;
-      animation: none;
+      background: #666;
+      color: #ccc;
     }
     .countdown.live {
       background: linear-gradient(135deg, #00ff99, #00cc77);
@@ -346,7 +133,7 @@
     .status-indicator {
       position: absolute;
       top: 15px;
-      right: 50px;
+      right: 15px;
       width: 12px;
       height: 12px;
       border-radius: 50%;
@@ -367,28 +154,7 @@
       0%, 100% { opacity: 1; }
       50% { opacity: 0.3; }
     }
-    
-    /* Favorite Button */
-    .favorite-btn {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      background: none;
-      border: none;
-      font-size: 20px;
-      cursor: pointer;
-      transition: all 0.3s;
-      color: #666;
-    }
-    .favorite-btn:hover {
-      transform: scale(1.2);
-    }
-    .favorite-btn.favorited {
-      color: #ffd700;
-      text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
-    }
-    
-    .history-btn, .favorites-btn {
+    .history-btn {
       background: linear-gradient(135deg, #4a90e2, #357abd);
       color: white;
       border: none;
@@ -399,20 +165,12 @@
       cursor: pointer;
       transition: all 0.3s;
       box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
-      margin-left: 10px;
     }
-    .favorites-btn {
-      background: linear-gradient(135deg, #ffd700, #ffb700);
-      box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
-    }
-    .history-btn:hover, .favorites-btn:hover {
+    .history-btn:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 16px rgba(74, 144, 226, 0.4);
     }
-    .favorites-btn:hover {
-      box-shadow: 0 6px 16px rgba(255, 215, 0, 0.4);
-    }
-    .history-container, .favorites-container {
+    .history-container {
       position: fixed;
       top: 0;
       left: 0;
@@ -423,7 +181,7 @@
       padding: 20px;
       overflow-y: auto;
     }
-    .history-header, .favorites-header {
+    .history-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -432,11 +190,11 @@
       margin-left: auto;
       margin-right: auto;
     }
-    .history-header h2, .favorites-header h2 {
+    .history-header h2 {
       color: #fff;
       margin: 0;
     }
-    .close-history-btn, .close-favorites-btn {
+    .close-history-btn {
       background: #ff4444;
       color: white;
       border: none;
@@ -447,11 +205,11 @@
       cursor: pointer;
       transition: all 0.3s;
     }
-    .close-history-btn:hover, .close-favorites-btn:hover {
+    .close-history-btn:hover {
       background: #ff6666;
       transform: translateY(-1px);
     }
-    #historyCards, #favoritesCards {
+    #historyCards {
       max-width: 1200px;
       margin: 0 auto;
     }
@@ -460,77 +218,45 @@
       border: 1px solid #444;
     }
     .bet-card.ended .countdown {
-      background: linear-gradient(135deg, #ff4444, #cc0000);
-      color: #fff;
+      background: #666;
+      color: #ccc;
     }
   </style>
 </head>
 <body>
   <div class="main">
     <div class="sidebar">
-      <h2>🔍 Search & Filter</h2>
-      
-      <label for="searchFilter">Search Teams/Countries/Leagues</label>
-      <input type="text" id="searchFilter" placeholder="Search..." />
+      <h2>Filter Bets</h2>
+      <label for="dateFilter">Date</label>
+      <select id="dateFilter"><option value="">All Dates</option></select>
 
-      <label>📅 Date Calendar</label>
-      <div class="calendar-container">
-        <div class="calendar-header">
-          <button class="calendar-nav" id="prevMonth">◀</button>
-          <div class="calendar-month" id="currentMonth"></div>
-          <button class="calendar-nav" id="nextMonth">▶</button>
-        </div>
-        <div class="calendar-grid" id="calendarGrid"></div>
-      </div>
+      <label for="countryFilter">Country</label>
+      <select id="countryFilter"><option value="">All Countries</option></select>
 
-      <label for="countryLeagueFilter">Countries & Leagues</label>
-      <div class="country-league-container">
-        <div id="countryLeagueFilter" class="country-league-filter"></div>
-      </div>
+      <label for="leagueFilter">League</label>
+      <select id="leagueFilter"><option value="">All Leagues</option></select>
 
       <label for="tipTypeFilter">Tip Type</label>
       <select id="tipTypeFilter"><option value="">All Types</option></select>
 
       <label for="oddsSlider">Min Odds: <span id="oddsValue">1.00</span></label>
       <input type="range" id="oddsSlider" min="1" max="20" step="0.01" value="1"/>
-      
-      <div class="odds-histogram">
-        <div class="histogram-title">📊 Odds Distribution</div>
-        <div class="histogram-bars" id="histogramBars"></div>
-        <div class="histogram-labels" id="histogramLabels"></div>
-      </div>
     </div>
 
     <div class="content">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h1>📊 Finalscore Featured Bets</h1>
-        <div>
-          <button id="favoritesBtn" class="favorites-btn">
-            ⭐ Favorites (<span id="favoritesCount">0</span>)
-          </button>
-          <button id="historyBtn" class="history-btn">
-            📚 History (<span id="historyCount">0</span>)
-          </button>
-        </div>
+        <button id="historyBtn" class="history-btn">
+          📚 History (<span id="historyCount">0</span>)
+        </button>
       </div>
       <div class="card-grid" id="cardContainer"></div>
-      
-      <!-- History Container -->
       <div id="historyContainer" class="history-container" style="display: none;">
         <div class="history-header">
           <h2>📚 Game History - Ended Games</h2>
           <button id="closeHistoryBtn" class="close-history-btn">✕ Close</button>
         </div>
         <div class="card-grid" id="historyCards"></div>
-      </div>
-      
-      <!-- Favorites Container -->
-      <div id="favoritesContainer" class="favorites-container" style="display: none;">
-        <div class="favorites-header">
-          <h2>⭐ Your Favorite Games</h2>
-          <button id="closeFavoritesBtn" class="close-favorites-btn">✕ Close</button>
-        </div>
-        <div class="card-grid" id="favoritesCards"></div>
       </div>
     </div>
   </div>
@@ -541,26 +267,12 @@
 
     const container = document.getElementById("cardContainer");
     const filters = {
-      search: document.getElementById("searchFilter"),
-      countryLeague: document.getElementById("countryLeagueFilter"),
+      date: document.getElementById("dateFilter"),
+      country: document.getElementById("countryFilter"),
+      league: document.getElementById("leagueFilter"),
       tipType: document.getElementById("tipTypeFilter"),
       odds: document.getElementById("oddsSlider")
     };
-
-    let selectedCountries = new Set();
-    let selectedLeagues = new Set();
-    let selectedDate = null;
-    let currentCalendarDate = new Date();
-    let favoriteGames = new Set();
-
-    // Country code to flag mapping
-    const getCountryFlag = (countryCode) => {
-      if (!countryCode) return '';
-      return https://flagcdn.com/24x18/${countryCode.toLowerCase()}.png;
-    };
-
-    // Search functionality
-    filters.search.addEventListener("input", applyFilters);
 
     const oddsSlider = document.getElementById("oddsSlider");
     const oddsValue = document.getElementById("oddsValue");
@@ -572,150 +284,6 @@
     let allData = [];
     let countdownIntervals = new Map();
     let historyGames = [];
-
-    // Calendar functionality
-    function initCalendar() {
-      const prevBtn = document.getElementById("prevMonth");
-      const nextBtn = document.getElementById("nextMonth");
-      const currentMonth = document.getElementById("currentMonth");
-      const calendarGrid = document.getElementById("calendarGrid");
-
-      prevBtn.addEventListener("click", () => {
-        currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
-        renderCalendar();
-      });
-
-      nextBtn.addEventListener("click", () => {
-        currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
-        renderCalendar();
-      });
-
-      renderCalendar();
-    }
-
-    function renderCalendar() {
-      const currentMonth = document.getElementById("currentMonth");
-      const calendarGrid = document.getElementById("calendarGrid");
-      
-      const year = currentCalendarDate.getFullYear();
-      const month = currentCalendarDate.getMonth();
-      
-      currentMonth.textContent = new Date(year, month).toLocaleDateString('en-US', { 
-        month: 'long', 
-        year: 'numeric' 
-      });
-
-      // Clear calendar
-      calendarGrid.innerHTML = '';
-
-      // Add day headers
-      const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-      dayHeaders.forEach(day => {
-        const dayHeader = document.createElement('div');
-        dayHeader.className = 'calendar-day-header';
-        dayHeader.textContent = day;
-        calendarGrid.appendChild(dayHeader);
-      });
-
-      // Get first day of month and number of days
-      const firstDay = new Date(year, month, 1);
-      const lastDay = new Date(year, month + 1, 0);
-      const daysInMonth = lastDay.getDate();
-      const startingDayOfWeek = firstDay.getDay();
-
-      // Add empty cells for days before month starts
-      for (let i = 0; i < startingDayOfWeek; i++) {
-        const emptyDay = document.createElement('div');
-        emptyDay.className = 'calendar-day other-month';
-        calendarGrid.appendChild(emptyDay);
-      }
-
-      // Add days of the month
-      const today = new Date();
-      const gameDates = getGameDates();
-
-      for (let day = 1; day <= daysInMonth; day++) {
-        const dayElement = document.createElement('div');
-        dayElement.className = 'calendar-day';
-        dayElement.textContent = day;
-
-        const currentDate = new Date(year, month, day);
-        const dateString = formatDateForComparison(currentDate);
-
-        // Check if this is today
-        if (currentDate.toDateString() === today.toDateString()) {
-          dayElement.classList.add('today');
-        }
-
-        // Check if this date has games
-        if (gameDates.has(dateString)) {
-          dayElement.classList.add('has-games');
-        }
-
-        // Check if this date is selected
-        if (selectedDate && selectedDate === dateString) {
-          dayElement.classList.add('selected');
-        }
-
-        dayElement.addEventListener('click', () => {
-          // Remove previous selection
-          document.querySelectorAll('.calendar-day.selected').forEach(el => {
-            el.classList.remove('selected');
-          });
-
-          // Toggle selection
-          if (selectedDate === dateString) {
-            selectedDate = null;
-          } else {
-            selectedDate = dateString;
-            dayElement.classList.add('selected');
-          }
-
-          applyFilters();
-        });
-
-        calendarGrid.appendChild(dayElement);
-      }
-    }
-
-    function getGameDates() {
-      const dates = new Set();
-      allData.forEach(row => {
-        if (row.Date) {
-          const gameDate = parseGameDateTime(row.Date, row.Time || "00:00");
-          if (gameDate) {
-            dates.add(formatDateForComparison(gameDate));
-          }
-        }
-      });
-      return dates;
-    }
-
-    function formatDateForComparison(date) {
-      return date.toISOString().split('T')[0];
-    }
-
-    // Favorites functionality
-    const favoritesBtn = document.getElementById("favoritesBtn");
-    const favoritesContainer = document.getElementById("favoritesContainer");
-    const closeFavoritesBtn = document.getElementById("closeFavoritesBtn");
-    const favoritesCount = document.getElementById("favoritesCount");
-    const favoritesCards = document.getElementById("favoritesCards");
-
-    favoritesBtn.addEventListener("click", () => {
-      favoritesContainer.style.display = "block";
-      renderFavoritesCards();
-    });
-
-    closeFavoritesBtn.addEventListener("click", () => {
-      favoritesContainer.style.display = "none";
-    });
-
-    favoritesContainer.addEventListener("click", (e) => {
-      if (e.target === favoritesContainer) {
-        favoritesContainer.style.display = "none";
-      }
-    });
 
     // History button functionality
     const historyBtn = document.getElementById("historyBtn");
@@ -733,6 +301,7 @@
       historyContainer.style.display = "none";
     });
 
+    // Close history when clicking outside
     historyContainer.addEventListener("click", (e) => {
       if (e.target === historyContainer) {
         historyContainer.style.display = "none";
@@ -744,18 +313,25 @@
       
       let date;
       
+      // Handle your specific format: "Tuesday / June 3, 2025"
       if (dateStr.includes('/') && dateStr.includes(',')) {
-        const datePart = dateStr.split('/')[1].trim();
+        // Extract the date part after the "/"
+        const datePart = dateStr.split('/')[1].trim(); // "June 3, 2025"
         date = new Date(datePart);
       }
+      // Handle standard formats as fallback
       else if (dateStr.includes('/')) {
+        // Format: MM/DD/YYYY or DD/MM/YYYY
         const parts = dateStr.split('/');
         if (parts.length === 3) {
+          // Assuming MM/DD/YYYY format
           date = new Date(parts[2], parts[0] - 1, parts[1]);
         }
       } else if (dateStr.includes('-')) {
+        // Format: YYYY-MM-DD
         date = new Date(dateStr);
       } else {
+        // Try to parse as is
         date = new Date(dateStr);
       }
       
@@ -764,6 +340,7 @@
         return null;
       }
       
+      // Parse time (assuming HH:MM format)
       const timeParts = timeStr.split(':');
       if (timeParts.length >= 2) {
         const hours = parseInt(timeParts[0]);
@@ -780,12 +357,13 @@
       const now = new Date();
       const timeDiff = gameDateTime.getTime() - now.getTime();
       
+      // Game ended more than 125 minutes ago
       if (timeDiff < -125 * 60 * 1000) {
         return "Ended";
       }
       
       if (timeDiff < 0) {
-        return "LIVE NOW";
+        return "LIVE";
       }
       
       const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
@@ -810,13 +388,14 @@
       const now = new Date();
       const timeDiff = gameDateTime.getTime() - now.getTime();
       
+      // Game ended more than 125 minutes ago
       if (timeDiff < -125 * 60 * 1000) {
         return "ended";
       }
       
       if (timeDiff < 0) {
         return "live";
-      } else if (timeDiff < 30 * 60 * 1000) {
+      } else if (timeDiff < 30 * 60 * 1000) { // 30 minutes
         return "starting-soon";
       } else {
         return "upcoming";
@@ -835,85 +414,150 @@
       
       countdownEl.textContent = countdownText;
       
+      // Update card styling based on status
       cardEl.className = bet-card ${status === 'starting-soon' ? 'starting-soon' : ''} ${status === 'live' ? 'expired' : ''};
-      countdownEl.className = countdown ${status === 'live' ? 'live' : ''} ${status === 'ended' ? 'expired' : ''};
+      countdownEl.className = countdown ${status === 'live' ? 'live' : ''} ${!gameDateTime ? 'expired' : ''};
       statusEl.className = status-indicator ${status};
     }
 
-   // Favorite toggle and persistence
-function toggleFavorite(cardId) {
-  if (favoriteGames.has(cardId)) {
-    favoriteGames.delete(cardId);
-  } else {
-    favoriteGames.add(cardId);
-  }
-  localStorage.setItem('favorites', JSON.stringify([...favoriteGames]));
-  applyFilters();
-}
+    function renderCards(data) {
+      // Clear existing intervals
+      countdownIntervals.forEach(interval => clearInterval(interval));
+      countdownIntervals.clear();
+      
+      container.innerHTML = "";
+      
+      // Separate active games from ended games
+      const activeGames = [];
+      const endedGames = [];
+      
+      data.forEach((row, index) => {
+        const gameDateTime = parseGameDateTime(row.Date, row.Time);
+        const status = getGameStatus(gameDateTime);
+        
+        if (status === 'ended') {
+          endedGames.push({...row, index, gameDateTime});
+        } else {
+          activeGames.push({...row, index, gameDateTime});
+        }
+      });
+      
+      // Update history games and counter
+      historyGames = endedGames;
+      historyCount.textContent = historyGames.length;
+      
+      // Render only active games
+      activeGames.forEach((gameData) => {
+        const cardId = card-${gameData.index};
+        const countdownText = getCountdownText(gameData.gameDateTime);
+        const status = getGameStatus(gameData.gameDateTime);
+        
+        const card = document.createElement("div");
+        card.className = bet-card ${status === 'starting-soon' ? 'starting-soon' : ''} ${status === 'live' ? 'expired' : ''};
+        card.setAttribute('data-card-id', cardId);
+        
+        card.innerHTML = `
+          <div class="status-indicator ${status}"></div>
+          <div class="meta">${gameData.Date} ${gameData.Time} &nbsp;&nbsp; ${gameData.Country} ${gameData.League}</div>
+          <div class="teams">${gameData.TeamA} vs ${gameData.TeamB}</div>
+          <div class="tip">Tip: <strong>${gameData.Tip}</strong></div>
+          <div class="odds">Odds: ${gameData.Odds}</div>
+          <div class="countdown ${status === 'live' ? 'live' : ''} ${!gameData.gameDateTime ? 'expired' : ''}">${countdownText}</div>
+        `;
+        
+        container.appendChild(card);
+        
+        // Set up countdown interval for this card
+        if (gameData.gameDateTime) {
+          const interval = setInterval(() => {
+            updateCountdown(cardId, gameData.gameDateTime);
+            // Check if game should move to history
+            if (getGameStatus(gameData.gameDateTime) === 'ended') {
+              applyFilters(); // Re-render to move game to history
+            }
+          }, 1000);
+          countdownIntervals.set(cardId, interval);
+        }
+      });
+    }
 
-function loadFavorites() {
-  const stored = localStorage.getItem('favorites');
-  if (stored) {
-    favoriteGames = new Set(JSON.parse(stored));
-  }
-}
+    function renderHistoryCards() {
+      historyCards.innerHTML = "";
+      
+      historyGames.forEach((gameData, index) => {
+        const card = document.createElement("div");
+        card.className = "bet-card ended";
+        
+        card.innerHTML = `
+          <div class="status-indicator" style="background: #666;"></div>
+          <div class="meta">${gameData.Date} ${gameData.Time} &nbsp;&nbsp; ${gameData.Country} ${gameData.League}</div>
+          <div class="teams">${gameData.TeamA} vs ${gameData.TeamB}</div>
+          <div class="tip">Tip: <strong>${gameData.Tip}</strong></div>
+          <div class="odds">Odds: ${gameData.Odds}</div>
+          <div class="countdown ended">Ended</div>
+        `;
+        
+        historyCards.appendChild(card);
+      });
+      
+      if (historyGames.length === 0) {
+        historyCards.innerHTML = '<div style="text-align: center; color: #aaa; padding: 40px;">No ended games yet</div>';
+      }
+    }
 
-// Updated renderCards with favorite button and live/ended styling
-function renderCards(data) {
-  countdownIntervals.forEach(clearInterval);
-  countdownIntervals.clear();
-  container.innerHTML = "";
+    function populateFilters(data) {
+      const unique = {date: new Set(), country: new Set(), league: new Set(), tipType: new Set()};
+      data.forEach(row => {
+        if (row.DateKey) unique.date.add(row.DateKey);
+        if (row.Country) unique.country.add(row.Country);
+        if (row.League) unique.league.add(row.League);
+        if (row.TipType) unique.tipType.add(row.TipType);
+      });
+      for (const [key, set] of Object.entries(unique)) {
+        const el = filters[key];
+        [...set].sort().forEach(val => {
+          const opt = document.createElement("option");
+          opt.value = val;
+          opt.textContent = val;
+          el.appendChild(opt);
+        });
+      }
+    }
 
-  const activeGames = [], endedGames = [];
-  data.forEach((row, index) => {
-    const gameDateTime = parseGameDateTime(row.Date, row.Time);
-    const status = getGameStatus(gameDateTime);
-    const cardId = card-${index};
-    (status === 'ended' ? endedGames : activeGames).push({ ...row, index, gameDateTime, status, cardId });
-  });
+    function applyFilters() {
+      const d = filters.date.value;
+      const c = filters.country.value;
+      const l = filters.league.value;
+      const t = filters.tipType.value;
+      const minSelectedOdd = parseFloat(filters.odds.value);
 
-  historyGames = endedGames;
-  historyCount.textContent = historyGames.length;
-  favoritesCount.textContent = favoriteGames.size;
+      const filtered = allData.filter(row => {
+        const passDate = !d || row.DateKey === d;
+        const passCountry = !c || row.Country === c;
+        const passLeague = !l || row.League === l;
+        const passTip = !t || row.TipType === t;
+        const odds = parseFloat(row.Odds);
+        const passOdds = isNaN(minSelectedOdd) || odds >= minSelectedOdd;
+        return passDate && passCountry && passLeague && passTip && passOdds;
+      });
+      renderCards(filtered);
+    }
 
-  activeGames.forEach(game => {
-    const card = document.createElement("div");
-    card.className = bet-card ${game.status};
-    card.setAttribute('data-card-id', game.cardId);
-    
-    const isFav = favoriteGames.has(game.cardId);
-
-    card.innerHTML = `
-      <div class="status-indicator ${game.status}"></div>
-      <button class="favorite-btn ${isFav ? 'favorited' : ''}" title="Toggle Favorite">
-        ${isFav ? '★' : '☆'}
-      </button>
-      <div class="meta">${game.Date} ${game.Time} &nbsp;&nbsp; ${game.Country} ${game.League}</div>
-      <div class="teams">${game.TeamA} vs ${game.TeamB}</div>
-      <div class="tip">Tip: <strong>${game.Tip}</strong></div>
-      <div class="odds">Odds: ${game.Odds}</div>
-      <div class="countdown ${game.status === 'live' ? 'live' : ''} ${game.status === 'ended' ? 'expired' : ''}">
-        ${game.status === 'ended' ? 'Ended' : getCountdownText(game.gameDateTime)}
-      </div>
-    `;
-
-    card.querySelector('.favorite-btn').addEventListener('click', (e) => {
-      e.stopPropagation();
-      toggleFavorite(game.cardId);
+    Papa.parse(sheetURL, {
+      download: true,
+      header: true,
+      complete: function(results) {
+        allData = results.data.filter(row => row.TeamA && row.TeamB && row.Odds);
+        populateFilters(allData);
+        renderCards(allData);
+        Object.values(filters).forEach(el => el.addEventListener('change', applyFilters));
+      }
     });
 
-    container.appendChild(card);
-
-    if (game.gameDateTime && game.status !== 'ended') {
-      const interval = setInterval(() => {
-        updateCountdown(game.cardId, game.gameDateTime);
-        if (getGameStatus(game.gameDateTime) === 'ended') applyFilters();
-      }, 1000);
-      countdownIntervals.set(game.cardId, interval);
-    }
-  });
-}
-
-// Call at app start
-loadFavorites();
-</script>
+    // Clean up intervals when page is unloaded
+    window.addEventListener('beforeunload', () => {
+      countdownIntervals.forEach(interval => clearInterval(interval));
+    });
+  </script>
+</body>
+</html>

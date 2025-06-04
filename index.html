@@ -399,6 +399,10 @@
       transition: filter 0.3s ease;
     }
     
+    .bet-card.vip .tip.vip-unlocked {
+      filter: none;
+    }
+    
     .bet-card.vip .teams {
       text-shadow: 0 2px 4px rgba(218, 165, 32, 0.3);
       font-weight: 700;
@@ -639,6 +643,176 @@
     .tooltip-link:hover {
       text-decoration: underline;
     }
+    
+    /* VIP Authentication Modal */
+    .vip-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      z-index: 10000;
+      backdrop-filter: blur(5px);
+    }
+    
+    .vip-modal-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #1a1a1a;
+      border-radius: 16px;
+      padding: 32px;
+      width: 400px;
+      max-width: 90vw;
+      border: 2px solid #DAA520;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+    }
+    
+    .vip-modal-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    
+    .vip-modal-title {
+      background: linear-gradient(135deg, #DAA520, #B8860B);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: 24px;
+      font-weight: 700;
+      margin: 0 0 8px 0;
+    }
+    
+    .vip-modal-subtitle {
+      color: #aaa;
+      font-size: 14px;
+      margin: 0;
+    }
+    
+    .vip-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    .vip-input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    
+    .vip-input-label {
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    
+    .vip-input {
+      padding: 12px 16px;
+      border: 2px solid #333;
+      border-radius: 8px;
+      background: #262626;
+      color: #fff;
+      font-size: 14px;
+      transition: border-color 0.3s ease;
+    }
+    
+    .vip-input:focus {
+      outline: none;
+      border-color: #DAA520;
+      box-shadow: 0 0 0 3px rgba(218, 165, 32, 0.1);
+    }
+    
+    .vip-error {
+      color: #ef4444;
+      font-size: 13px;
+      margin-top: 4px;
+      display: none;
+    }
+    
+    .vip-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    
+    .vip-btn {
+      flex: 1;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .vip-btn-primary {
+      background: linear-gradient(135deg, #DAA520, #B8860B);
+      color: #000;
+    }
+    
+    .vip-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(218, 165, 32, 0.4);
+    }
+    
+    .vip-btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .vip-btn-secondary {
+      background: #333;
+      color: #fff;
+      border: 1px solid #555;
+    }
+    
+    .vip-btn-secondary:hover {
+      background: #444;
+    }
+    
+    .vip-loading {
+      display: none;
+      text-align: center;
+      color: #DAA520;
+      font-size: 14px;
+      margin-top: 12px;
+    }
+    
+    .vip-status {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #DAA520, #B8860B);
+      color: #000;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      display: none;
+      z-index: 1001;
+      box-shadow: 0 4px 12px rgba(218, 165, 32, 0.3);
+    }
+    
+    .vip-logout-btn {
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      cursor: pointer;
+      margin-left: 8px;
+    }
+    
+    .vip-logout-btn:hover {
+      background: #dc2626;
+    }
     .history-count {
       background: #3b82f6;
       padding: 2px 6px;
@@ -729,9 +903,49 @@
     </div>
   </div>
 
+  <!-- VIP Authentication Modal -->
+  <div id="vipModal" class="vip-modal">
+    <div class="vip-modal-content">
+      <div class="vip-modal-header">
+        <h2 class="vip-modal-title">VIP Access</h2>
+        <p class="vip-modal-subtitle">Enter your credentials to view exclusive VIP predictions</p>
+      </div>
+      
+      <form class="vip-form" id="vipForm">
+        <div class="vip-input-group">
+          <label class="vip-input-label" for="vipUsername">Username</label>
+          <input type="text" id="vipUsername" class="vip-input" required>
+          <div class="vip-error" id="usernameError">Please enter your username</div>
+        </div>
+        
+        <div class="vip-input-group">
+          <label class="vip-input-label" for="vipPassword">Password</label>
+          <input type="password" id="vipPassword" class="vip-input" required>
+          <div class="vip-error" id="passwordError">Please enter your password</div>
+        </div>
+        
+        <div class="vip-error" id="loginError">Invalid credentials. Please check your username and password.</div>
+        
+        <div class="vip-buttons">
+          <button type="button" class="vip-btn vip-btn-secondary" id="vipCancelBtn">Cancel</button>
+          <button type="submit" class="vip-btn vip-btn-primary" id="vipLoginBtn">Login</button>
+        </div>
+        
+        <div class="vip-loading" id="vipLoading">Verifying credentials...</div>
+      </form>
+    </div>
+  </div>
+
+  <!-- VIP Status Indicator -->
+  <div id="vipStatus" class="vip-status">
+    VIP Active
+    <button class="vip-logout-btn" id="vipLogoutBtn">Logout</button>
+  </div>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
   <script>
     const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQjgi95CP-CmJ9wIUoNCRMHdeXPEpKlZiUIb_xXJuT30O1TWfB2ZPC2n8Vurlk2Ge2yiVy9gLhPcuUU/pub?output=csv';
+    const vipCredentialsURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSF4VQJoKDa6zvZHvlcQ1e55BvnYngtlge6VjmCCMUR1dGBa5uNgkYdhzJdQojPNJHRFfKDjbW0eKjd/pub?output=csv';
 
     const container = document.getElementById("cardContainer");
     const filters = {
@@ -745,6 +959,139 @@
     let selectedLeagues = new Set();
     let selectedSports = new Set();
     let vipFilterActive = false;
+    let isVipAuthenticated = false;
+    let vipCredentials = [];
+
+    // VIP Authentication System
+    const vipModal = document.getElementById('vipModal');
+    const vipForm = document.getElementById('vipForm');
+    const vipStatus = document.getElementById('vipStatus');
+    const vipLoginBtn = document.getElementById('vipLoginBtn');
+    const vipCancelBtn = document.getElementById('vipCancelBtn');
+    const vipLogoutBtn = document.getElementById('vipLogoutBtn');
+    
+    // Load VIP credentials from Google Sheets
+    async function loadVipCredentials() {
+      try {
+        const response = await fetch(vipCredentialsURL);
+        const csvText = await response.text();
+        const parsed = Papa.parse(csvText, { header: true });
+        vipCredentials = parsed.data.filter(row => row.Username && row.Password);
+        console.log('VIP credentials loaded:', vipCredentials.length, 'users');
+      } catch (error) {
+        console.error('Error loading VIP credentials:', error);
+      }
+    }
+    
+    // Authenticate VIP user
+    function authenticateVip(username, password) {
+      const user = vipCredentials.find(cred => 
+        cred.Username.trim().toLowerCase() === username.trim().toLowerCase() && 
+        cred.Password.trim() === password.trim()
+      );
+      
+      if (user) {
+        // Check subscription status and expiry if available
+        const now = new Date();
+        if (user.ExpiryDate) {
+          const expiryDate = new Date(user.ExpiryDate);
+          if (now > expiryDate) {
+            return { success: false, message: 'Subscription expired' };
+          }
+        }
+        
+        if (user.SubscriptionStatus && user.SubscriptionStatus.toLowerCase() !== 'active') {
+          return { success: false, message: 'Subscription inactive' };
+        }
+        
+        return { success: true, user: user };
+      }
+      
+      return { success: false, message: 'Invalid credentials' };
+    }
+    
+    // Show VIP login modal
+    function showVipModal() {
+      vipModal.style.display = 'block';
+      document.getElementById('vipUsername').focus();
+      // Clear previous errors
+      document.querySelectorAll('.vip-error').forEach(el => el.style.display = 'none');
+    }
+    
+    // Hide VIP modal
+    function hideVipModal() {
+      vipModal.style.display = 'none';
+      vipForm.reset();
+      document.querySelectorAll('.vip-error').forEach(el => el.style.display = 'none');
+    }
+    
+    // Handle VIP login
+    async function handleVipLogin(e) {
+      e.preventDefault();
+      
+      const username = document.getElementById('vipUsername').value;
+      const password = document.getElementById('vipPassword').value;
+      const loadingEl = document.getElementById('vipLoading');
+      const errorEl = document.getElementById('loginError');
+      
+      // Show loading
+      loadingEl.style.display = 'block';
+      vipLoginBtn.disabled = true;
+      errorEl.style.display = 'none';
+      
+      // Simulate network delay for better UX
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const result = authenticateVip(username, password);
+      
+      loadingEl.style.display = 'none';
+      vipLoginBtn.disabled = false;
+      
+      if (result.success) {
+        isVipAuthenticated = true;
+        hideVipModal();
+        vipStatus.style.display = 'block';
+        
+        // Auto-activate VIP filter if not already active
+        if (!vipFilterActive) {
+          const vipBtn = document.getElementById('vipFilterBtn');
+          vipBtn.classList.add('active');
+          vipFilterActive = true;
+        }
+        
+        applyFilters();
+      } else {
+        errorEl.textContent = result.message || 'Invalid credentials. Please check your username and password.';
+        errorEl.style.display = 'block';
+      }
+    }
+    
+    // Handle VIP logout
+    function handleVipLogout() {
+      isVipAuthenticated = false;
+      vipStatus.style.display = 'none';
+      
+      // Deactivate VIP filter
+      const vipBtn = document.getElementById('vipFilterBtn');
+      if (vipBtn) {
+        vipBtn.classList.remove('active');
+        vipFilterActive = false;
+      }
+      
+      applyFilters();
+    }
+    
+    // Event listeners for VIP system
+    vipForm.addEventListener('submit', handleVipLogin);
+    vipCancelBtn.addEventListener('click', hideVipModal);
+    vipLogoutBtn.addEventListener('click', handleVipLogout);
+    
+    // Close modal when clicking outside
+    vipModal.addEventListener('click', (e) => {
+      if (e.target === vipModal) {
+        hideVipModal();
+      }
+    });
 
     // Country code to flag mapping (using flag-icon-css style URLs)
     const getCountryFlag = (countryCode) => {
@@ -951,7 +1298,7 @@
           <div class="status-indicator ${status}"></div>
           <div class="meta">${gameData.Date} ${gameData.Time} &nbsp;&nbsp; ${gameData.League}</div>
           <div class="teams">${gameData.TeamA} vs ${gameData.TeamB}</div>
-          <div class="tip">Tip: <strong>${gameData.Tip}</strong></div>
+          <div class="tip ${isVip && isVipAuthenticated ? 'vip-unlocked' : ''}">Tip: <strong>${gameData.Tip}</strong></div>
           <div class="odds">Odds: ${gameData.Odds}</div>
           <div class="countdown ${status === 'live' ? 'live' : ''} ${!gameData.gameDateTime ? 'expired' : ''}" style="${isVip ? 'background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%); color: #DAA520; position: relative; z-index: 5; border: 2px solid #DAA520; box-shadow: 0 0 10px rgba(218, 165, 32, 0.4), inset 0 1px 0 rgba(218, 165, 32, 0.2); font-weight: 700;' : ''}">${countdownText}</div>
         `;
@@ -1024,6 +1371,16 @@
       vipButton.className = "sport-btn vip-filter-btn";
       vipButton.textContent = "VIP";
       vipButton.addEventListener("click", () => {
+        // Check if user wants to activate VIP filter
+        if (!vipButton.classList.contains('active')) {
+          // Check if user is authenticated
+          if (!isVipAuthenticated) {
+            showVipModal();
+            return;
+          }
+        }
+        
+        // Toggle VIP filter
         vipButton.classList.toggle("active");
         vipFilterActive = vipButton.classList.contains("active");
         applyFilters();
@@ -1221,6 +1578,9 @@
         });
       }
     });
+
+    // Load VIP credentials on page load
+    loadVipCredentials();
 
     // Clean up intervals when page is unloaded
     window.addEventListener('beforeunload', () => {

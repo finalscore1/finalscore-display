@@ -1731,6 +1731,8 @@
       }
     });
 
+    console.log('All VIP event listeners added...');
+
     // Country code to flag mapping (using flag-icon-css style URLs)
     const getCountryFlag = (countryCode) => {
       if (!countryCode) return '';
@@ -2218,31 +2220,70 @@
     });
 
     console.log('About to parse main data sheet...');
+    console.log('PapaParse available:', typeof Papa);
+    
+    if (typeof Papa === 'undefined') {
+      console.error('❌ PapaParse library not loaded!');
+      if (container) {
+        container.innerHTML = '<div style="color: red; padding: 20px;">❌ PapaParse library failed to load</div>';
+      }
+      return;
+    }
+    
     Papa.parse(sheetURL, {
       download: true,
       header: true,
       complete: function(results) {
-        console.log('Papa.parse complete callback triggered');
+        console.log('🎉 Papa.parse complete callback triggered');
         console.log('Raw results:', results);
+        
+        if (results.errors && results.errors.length > 0) {
+          console.error('CSV parsing errors:', results.errors);
+        }
+        
+        if (!results.data || results.data.length === 0) {
+          console.error('❌ No data received from Google Sheets');
+          if (container) {
+            container.innerHTML = '<div style="color: red; padding: 20px;">❌ No data received from Google Sheets</div>';
+          }
+          return;
+        }
+        
         allData = results.data.filter(row => row.TeamA && row.TeamB && row.Odds);
         console.log('Filtered data:', allData.length, 'rows');
         console.log('Sample data:', allData[0]);
         
+        if (allData.length === 0) {
+          console.error('❌ No valid betting data found after filtering');
+          if (container) {
+            container.innerHTML = '<div style="color: orange; padding: 20px;">⚠️ No valid betting data found</div>';
+          }
+          return;
+        }
+        
+        // Clear test message
+        if (container) {
+          container.innerHTML = '';
+        }
+        
         populateFilters(allData);
-        console.log('Filters populated');
+        console.log('✅ Filters populated');
         
         renderCards(allData);
-        console.log('Cards rendered');
+        console.log('✅ Cards rendered');
         
         Object.values(filters).forEach(el => {
           if (el && el.addEventListener) {
             el.addEventListener('change', applyFilters);
           }
         });
-        console.log('Filter event listeners added');
+        console.log('✅ Filter event listeners added');
       },
       error: function(error) {
-        console.error('Papa.parse error:', error);
+        console.error('❌ Papa.parse error:', error);
+        if (container) {
+          container.innerHTML = '<div style="color: red; padding: 20px;">❌ Error loading data: ' + error.message + '</div>';
+        }
       }
     });
 

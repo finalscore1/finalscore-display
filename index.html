@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Finalscore Featured Bets</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-color: #0f0f0f;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .main {
+      display: flex;
+      flex-direction: row;
+      max-width: 1200px;
+      margin: auto;
+      padding: 40px 20px;
+      gap: 24px;
+    }
+    .sidebar {
+      flex: 0 0 260px;
+      background: #1a1a1a;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      height: fit-content;
+    }
+    .sidebar h2 {
+      font-size: 20px;
+      margin-bottom: 12px;
+    }
+    .sidebar label {
+      display: block;
+      margin: 10px 0 4px;
+      font-size: 14px;
+    }
+    .sidebar select {
+      width: 100%;
+      padding: 8px;
+      border-radius: 8px;
+      background-color: #262626;
+      color: #fff;
+      border: 1px solid #333;
+      margin-bottom: 10px;
+    }
+    .sidebar input[type="text"] {
+      width: calc(100% - 16px);
+      padding: 8px;
+      border-radius: 8px;
+      background-color: #262626;
+      color: #fff;
+      border: 1px solid #333;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+    .sidebar input[type="text"]:focus {
+      outline: none;
+      border-color: #4a90e2;
+    }
+    .country-league-container {
+      max-height: 300px;
+      overflow-y: auto;
+      border: 1px solid #333;
+      border-radius: 8px;
+      background-color: #262626;
+      margin-bottom: 10px;
+    }
+    .country-item {
+      border-bottom: 1px solid #333;
+    }
+    .country-item:last-child {
+      border-bottom: none;
+    }
+    .country-header {
+      display: flex;
+      align-items: center;
+      padding: 10px 12px;
+      cursor: pointer;
+      background-color: #2a2a2a;
+      transition: background-color 0.2s;
+    }
+    .country-header:hover {
+      background-color: #333;
+    }
+    .country-header.selected {
+      background-color: #4a90e2;
+    }
+    .country-flag {
+      width: 20px;
+      height: 15px;
+      margin-right: 8px;
+      border-radius: 2px;
+      object-fit: cover;
+    }
+    .country-name {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .expand-icon {
+      font-size: 12px;
+      color: #aaa;
+      transition: transform 0.2s;
+    }
+    .country-item.expanded .expand-icon {
+      transform: rotate(90deg);
+    }
+    .leagues-list {
+      display: none;
+      background-color: #1a1a1a;
+    }
+    .country-item.expanded .leagues-list {
+      display: block;
+    }
+    .league-item {
+      padding: 8px 40px;
+      font-size: 13px;
+      color: #ccc;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .league-item:hover {
+      background-color: #333;
+    }
+    .league-item.selected {
+      background-color: #4a90e2;
+      color: white;
+    }
+    #oddsSlider {
+      width: 95%;
+      margin-bottom: 10px;
+    }
+    .content {
+      flex: 1;
+    }
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    .bet-card {
+      background: #1a1a1a;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+      transition: all 0.3s;
+      position: relative;
+    }
+    .bet-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+    }
+    .bet-card.expired {
+      opacity: 0.6;
+      background: #1a1a1a;
+    }
+    .bet-card.starting-soon {
+      border: 2px solid #ff6b35;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { border-color: #ff6b35; }
+      50% { border-color: #ff9f00; }
+      100% { border-color: #ff6b35; }
+    }
+    .meta {
+      font-size: 13px;
+      color: #aaa;
+      margin-bottom: 8px;
+    }
+    .teams {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .tip {
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    .odds {
+      background: #2e2e2e;
+      padding: 6px 10px;
+      display: inline-block;
+      border-radius: 8px;
+      font-weight: bold;
+      color: #00ff99;
+      font-size: 14px;
+    }
+    .countdown {
+      background: linear-gradient(135deg, #ff6b35, #ff9f00);
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      margin-top: 10px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+    }
+    .countdown.expired {
+      background: #666;
+      color: #ccc;
+    }
+    .countdown.live {
+      background: linear-gradient(135deg, #00ff99, #00cc77);
+      animation: live-pulse 1.5s infinite;
+    }
+    @keyframes live-pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+    .status-indicator {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #666;
+    }
+    .status-indicator.upcoming {
+      background: #00ff99;
+    }
+    .status-indicator.starting-soon {
+      background: #ff6b35;
+      animation: blink 1s infinite;
+    }
+    .status-indicator.live {
+      background: #ff3333;
+      animation: blink 0.5s infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    .history-btn {
+      background: linear-gradient(135deg, #4a90e2, #357abd);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+    }
+    .history-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(74, 144, 226, 0.4);
+    }
+    .history-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 1000;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .history-header h2 {
+      color: #fff;
+      margin: 0;
+    }
+    .close-history-btn {
+      background: #ff4444;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .close-history-btn:hover {
+      background: #ff6666;
+      transform: translateY(-1px);
+    }
+    #historyCards {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .bet-card.ended {
+      background: #2a2a2a;
+      border: 1px solid #444;
+    }
+    .bet-card.ended .countdown {
+      background: #666;
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <div class="main">
+    <div class="sidebar">
+      <h2>🔍 Search & Filter</h2>
+      
+      <label for="searchFilter">Search Teams/Countries/Leagues</label>
+      <input type="text" id="searchFilter" placeholder="Search..." />
+
+      <label for="dateFilter">Date</label>
+      <select id="dateFilter"><option value="">All Dates</option></select>
+
+      <label for="countryLeagueFilter">Countries & Leagues</label>
+      <div class="country-league-container">
+        <div id="countryLeagueFilter" class="country-league-filter"></div>
+      </div>
+
+      <label for="tipTypeFilter">Tip Type</label>
+      <select id="tipTypeFilter"><option value="">All Types</option></select>
+
+      <label for="oddsSlider">Min Odds: <span id="oddsValue">1.00</span></label>
+      <input type="range" id="oddsSlider" min="1" max="20" step="0.01" value="1"/>
+    </div>
+
+    <div class="content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1>📊 Finalscore Featured Bets</h1>
+        <button id="historyBtn" class="history-btn">
+          📚 History (<span id="historyCount">0</span>)
+        </button>
+      </div>
+      <div class="card-grid" id="cardContainer"></div>
+      <div id="historyContainer" class="history-container" style="display: none;">
+        <div class="history-header">
+          <h2>📚 Game History - Ended Games</h2>
+          <button id="closeHistoryBtn" class="close-history-btn">✕ Close</button>
+        </div>
+        <div class="card-grid" id="historyCards"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+  <script>
+    const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQjgi95CP-CmJ9wIUoNCRMHdeXPEpKlZiUIb_xXJuT30O1TWfB2ZPC2n8Vurlk2Ge2yiVy9gLhPcuUU/pub?output=csv';
+
+    const container = document.getElementById("cardContainer");
+    const filters = {
+      search: document.getElementById("searchFilter"),
+      date: document.getElementById("dateFilter"),
+      countryLeague: document.getElementById("countryLeagueFilter"),
+      tipType: document.getElementById("tipTypeFilter"),
+      odds: document.getElementById("oddsSlider")
+    };
+
+    let selectedCountries = new Set();
+    let selectedLeagues = new Set();
+
+    // Country code to flag mapping (using flag-icon-css style URLs)
+    const getCountryFlag = (countryCode) => {
+      if (!countryCode) return '';
+      return `https://flagcdn.com/24x18/${countryCode.toLowerCase()}.png`;
+    };
+
+    // Search functionality
+    filters.search.addEventListener("input", applyFilters);
+
+    const oddsSlider = document.getElementById("oddsSlider");
+    const oddsValue = document.getElementById("oddsValue");
+    oddsSlider.addEventListener("input", () => {
+      oddsValue.textContent = oddsSlider.value;
+      applyFilters();
+    });
+
+    let allData = [];
+    let countdownIntervals = new Map();
+    let historyGames = [];
+
+    // History button functionality
+    const historyBtn = document.getElementById("historyBtn");
+    const historyContainer = document.getElementById("historyContainer");
+    const closeHistoryBtn = document.getElementById("closeHistoryBtn");
+    const historyCount = document.getElementById("historyCount");
+    const historyCards = document.getElementById("historyCards");
+
+    historyBtn.addEventListener("click", () => {
+      historyContainer.style.display = "block";
+      renderHistoryCards();
+    });
+
+    closeHistoryBtn.addEventListener("click", () => {
+      historyContainer.style.display = "none";
+    });
+
+    // Close history when clicking outside
+    historyContainer.addEventListener("click", (e) => {
+      if (e.target === historyContainer) {
+        historyContainer.style.display = "none";
+      }
+    });
+
+    function parseGameDateTime(dateStr, timeStr) {
+      if (!dateStr || !timeStr) return null;
+      
+      let date;
+      
+      // Handle your specific format: "Tuesday / June 3, 2025"
+      if (dateStr.includes('/') && dateStr.includes(',')) {
+        // Extract the date part after the "/"
+        const datePart = dateStr.split('/')[1].trim(); // "June 3, 2025"
+        date = new Date(datePart);
+      }
+      // Handle standard formats as fallback
+      else if (dateStr.includes('/')) {
+        // Format: MM/DD/YYYY or DD/MM/YYYY
+        const parts = dateStr.split('/');
+        if (parts.length === 3) {
+          // Assuming MM/DD/YYYY format
+          date = new Date(parts[2], parts[0] - 1, parts[1]);
+        }
+      } else if (dateStr.includes('-')) {
+        // Format: YYYY-MM-DD
+        date = new Date(dateStr);
+      } else {
+        // Try to parse as is
+        date = new Date(dateStr);
+      }
+      
+      if (!date || isNaN(date.getTime())) {
+        console.log('Failed to parse date:', dateStr);
+        return null;
+      }
+      
+      // Parse time (assuming HH:MM format)
+      const timeParts = timeStr.split(':');
+      if (timeParts.length >= 2) {
+        const hours = parseInt(timeParts[0]);
+        const minutes = parseInt(timeParts[1]);
+        date.setHours(hours, minutes, 0, 0);
+      }
+      
+      return date;
+    }
+
+    function getCountdownText(gameDateTime) {
+      if (!gameDateTime) return "Time TBD";
+      
+      const now = new Date();
+      const timeDiff = gameDateTime.getTime() - now.getTime();
+      
+      // Game ended more than 125 minutes ago
+      if (timeDiff < -125 * 60 * 1000) {
+        return "Ended";
+      }
+      
+      if (timeDiff < 0) {
+        return "LIVE";
+      }
+      
+      const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+      
+      if (days > 0) {
+        return `${days}d ${hours}h ${minutes}m`;
+      } else if (hours > 0) {
+        return `${hours}h ${minutes}m ${seconds}s`;
+      } else if (minutes > 0) {
+        return `${minutes}m ${seconds}s`;
+      } else {
+        return `${seconds}s`;
+      }
+    }
+
+    function getGameStatus(gameDateTime) {
+      if (!gameDateTime) return "unknown";
+      
+      const now = new Date();
+      const timeDiff = gameDateTime.getTime() - now.getTime();
+      
+      // Game ended more than 125 minutes ago
+      if (timeDiff < -125 * 60 * 1000) {
+        return "ended";
+      }
+      
+      if (timeDiff < 0) {
+        return "live";
+      } else if (timeDiff < 30 * 60 * 1000) { // 30 minutes
+        return "starting-soon";
+      } else {
+        return "upcoming";
+      }
+    }
+
+    function updateCountdown(cardId, gameDateTime) {
+      const countdownEl = document.querySelector(`[data-card-id="${cardId}"] .countdown`);
+      const cardEl = document.querySelector(`[data-card-id="${cardId}"]`);
+      const statusEl = document.querySelector(`[data-card-id="${cardId}"] .status-indicator`);
+      
+      if (!countdownEl || !cardEl || !statusEl) return;
+      
+      const countdownText = getCountdownText(gameDateTime);
+      const status = getGameStatus(gameDateTime);
+      
+      countdownEl.textContent = countdownText;
+      
+      // Update card styling based on status
+      cardEl.className = `bet-card ${status === 'starting-soon' ? 'starting-soon' : ''} ${status === 'live' ? 'expired' : ''}`;
+      countdownEl.className = `countdown ${status === 'live' ? 'live' : ''} ${!gameDateTime ? 'expired' : ''}`;
+      statusEl.className = `status-indicator ${status}`;
+    }
+
+    function renderCards(data) {
+      // Clear existing intervals
+      countdownIntervals.forEach(interval => clearInterval(interval));
+      countdownIntervals.clear();
+      
+      container.innerHTML = "";
+      
+      // Separate active games from ended games
+      const activeGames = [];
+      const endedGames = [];
+      
+      data.forEach((row, index) => {
+        const gameDateTime = parseGameDateTime(row.Date, row.Time);
+        const status = getGameStatus(gameDateTime);
+        
+        if (status === 'ended') {
+          endedGames.push({...row, index, gameDateTime});
+        } else {
+          activeGames.push({...row, index, gameDateTime});
+        }
+      });
+      
+      // Update history games and counter
+      historyGames = endedGames;
+      historyCount.textContent = historyGames.length;
+      
+      // Render only active games
+      activeGames.forEach((gameData) => {
+        const cardId = `card-${gameData.index}`;
+        const countdownText = getCountdownText(gameData.gameDateTime);
+        const status = getGameStatus(gameData.gameDateTime);
+        
+        const card = document.createElement("div");
+        card.className = `bet-card ${status === 'starting-soon' ? 'starting-soon' : ''} ${status === 'live' ? 'expired' : ''}`;
+        card.setAttribute('data-card-id', cardId);
+        
+        card.innerHTML = `
+          <div class="status-indicator ${status}"></div>
+          <div class="meta">${gameData.Date} ${gameData.Time} &nbsp;&nbsp; ${gameData.Country} ${gameData.League}</div>
+          <div class="teams">${gameData.TeamA} vs ${gameData.TeamB}</div>
+          <div class="tip">Tip: <strong>${gameData.Tip}</strong></div>
+          <div class="odds">Odds: ${gameData.Odds}</div>
+          <div class="countdown ${status === 'live' ? 'live' : ''} ${!gameData.gameDateTime ? 'expired' : ''}">${countdownText}</div>
+        `;
+        
+        container.appendChild(card);
+        
+        // Set up countdown interval for this card
+        if (gameData.gameDateTime) {
+          const interval = setInterval(() => {
+            updateCountdown(cardId, gameData.gameDateTime);
+            // Check if game should move to history
+            if (getGameStatus(gameData.gameDateTime) === 'ended') {
+              applyFilters(); // Re-render to move game to history
+            }
+          }, 1000);
+          countdownIntervals.set(cardId, interval);
+        }
+      });
+    }
+
+    function renderHistoryCards() {
+      historyCards.innerHTML = "";
+      
+      historyGames.forEach((gameData, index) => {
+        const card = document.createElement("div");
+        card.className = "bet-card ended";
+        
+        card.innerHTML = `
+          <div class="status-indicator" style="background: #666;"></div>
+          <div class="meta">${gameData.Date} ${gameData.Time} &nbsp;&nbsp; ${gameData.Country} ${gameData.League}</div>
+          <div class="teams">${gameData.TeamA} vs ${gameData.TeamB}</div>
+          <div class="tip">Tip: <strong>${gameData.Tip}</strong></div>
+          <div class="odds">Odds: ${gameData.Odds}</div>
+          <div class="countdown ended">Ended</div>
+        `;
+        
+        historyCards.appendChild(card);
+      });
+      
+      if (historyGames.length === 0) {
+        historyCards.innerHTML = '<div style="text-align: center; color: #aaa; padding: 40px;">No ended games yet</div>';
+      }
+    }
+
+    function populateFilters(data) {
+      const unique = {date: new Set(), country: new Set(), tipType: new Set()};
+      const countryLeagues = new Map();
+      
+      data.forEach(row => {
+        if (row.DateKey) unique.date.add(row.DateKey);
+        if (row.Country) unique.country.add(row.Country);
+        if (row.TipType) unique.tipType.add(row.TipType);
+        
+        // Group leagues by country
+        if (row.Country && row.League) {
+          if (!countryLeagues.has(row.Country)) {
+            countryLeagues.set(row.Country, {
+              leagues: new Set(),
+              countryCode: row.CountryCode || null
+            });
+          }
+          countryLeagues.get(row.Country).leagues.add(row.League);
+        }
+      });
+      
+      // Populate date and tip type filters
+      for (const [key, set] of Object.entries(unique)) {
+        if (key === 'country') continue; // Skip country, we handle it separately
+        const el = filters[key];
+        if (el) {
+          [...set].sort().forEach(val => {
+            const opt = document.createElement("option");
+            opt.value = val;
+            opt.textContent = val;
+            el.appendChild(opt);
+          });
+        }
+      }
+      
+      // Populate country-league filter
+      populateCountryLeagueFilter(countryLeagues);
+    }
+
+    function populateCountryLeagueFilter(countryLeagues) {
+      const container = filters.countryLeague;
+      container.innerHTML = '';
+      
+      // Sort countries alphabetically
+      const sortedCountries = Array.from(countryLeagues.keys()).sort();
+      
+      sortedCountries.forEach(country => {
+        const countryData = countryLeagues.get(country);
+        const leagues = Array.from(countryData.leagues).sort();
+        
+        const countryItem = document.createElement('div');
+        countryItem.className = 'country-item';
+        
+        const countryHeader = document.createElement('div');
+        countryHeader.className = 'country-header';
+        countryHeader.innerHTML = `
+          ${countryData.countryCode ? `<img src="${getCountryFlag(countryData.countryCode)}" alt="${country}" class="country-flag" onerror="this.style.display='none'">` : ''}
+          <span class="country-name">${country}</span>
+          <span class="expand-icon">▶</span>
+        `;
+        
+        const leaguesList = document.createElement('div');
+        leaguesList.className = 'leagues-list';
+        
+        leagues.forEach(league => {
+          const leagueItem = document.createElement('div');
+          leagueItem.className = 'league-item';
+          leagueItem.textContent = league;
+          leagueItem.addEventListener('click', (e) => {
+            e.stopPropagation();
+            leagueItem.classList.toggle('selected');
+            
+            if (leagueItem.classList.contains('selected')) {
+              selectedLeagues.add(league);
+            } else {
+              selectedLeagues.delete(league);
+            }
+            applyFilters();
+          });
+          
+          leaguesList.appendChild(leagueItem);
+        });
+        
+        countryHeader.addEventListener('click', () => {
+          countryItem.classList.toggle('expanded');
+          const isExpanded = countryItem.classList.contains('expanded');
+          
+          // Toggle country selection
+          countryHeader.classList.toggle('selected');
+          
+          if (countryHeader.classList.contains('selected')) {
+            selectedCountries.add(country);
+          } else {
+            selectedCountries.delete(country);
+            // Deselect all leagues from this country
+            leagues.forEach(league => {
+              selectedLeagues.delete(league);
+            });
+            // Update visual state
+            leaguesList.querySelectorAll('.league-item').forEach(item => {
+              item.classList.remove('selected');
+            });
+          }
+          applyFilters();
+        });
+        
+        countryItem.appendChild(countryHeader);
+        countryItem.appendChild(leaguesList);
+        container.appendChild(countryItem);
+      });
+    }
+
+    function applyFilters() {
+      const searchTerm = filters.search.value.toLowerCase().trim();
+      const d = filters.date.value;
+      const t = filters.tipType.value;
+      const minSelectedOdd = parseFloat(filters.odds.value);
+
+      const filtered = allData.filter(row => {
+        // Search filter
+        const searchMatch = !searchTerm || 
+          row.TeamA?.toLowerCase().includes(searchTerm) ||
+          row.TeamB?.toLowerCase().includes(searchTerm) ||
+          row.Country?.toLowerCase().includes(searchTerm) ||
+          row.League?.toLowerCase().includes(searchTerm);
+        
+        // Date filter
+        const passDate = !d || row.DateKey === d;
+        
+        // Country/League filter
+        const passCountryLeague = (selectedCountries.size === 0 && selectedLeagues.size === 0) ||
+          selectedCountries.has(row.Country) ||
+          selectedLeagues.has(row.League);
+        
+        // Tip type filter
+        const passTip = !t || row.TipType === t;
+        
+        // Odds filter
+        const odds = parseFloat(row.Odds);
+        const passOdds = isNaN(minSelectedOdd) || odds >= minSelectedOdd;
+        
+        return searchMatch && passDate && passCountryLeague && passTip && passOdds;
+      });
+      
+      renderCards(filtered);
+    }
+
+    Papa.parse(sheetURL, {
+      download: true,
+      header: true,
+      complete: function(results) {
+        allData = results.data.filter(row => row.TeamA && row.TeamB && row.Odds);
+        populateFilters(allData);
+        renderCards(allData);
+        Object.values(filters).forEach(el => {
+          if (el && el.addEventListener) {
+            el.addEventListener('change', applyFilters);
+          }
+        });
+      }
+    });
+
+    // Clean up intervals when page is unloaded
+    window.addEventListener('beforeunload', () => {
+      countdownIntervals.forEach(interval => clearInterval(interval));
+    });
+  </script>
+</body>
+</html>

@@ -417,7 +417,7 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
   <script>
-    // REPLACE THIS URL WITH YOUR ACTUAL GOOGLE SHEETS CSV URL
+    // Your actual Google Sheets CSV URL
     const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQjgi95CP-CmJ9wIUoNCRMHdeXPEpKlZiUIb_xXJuT30O1TWfB2ZPC2n8Vurlk2Ge2yiVy9gLhPcuUU/pub?output=csv';
     
     // Debug: Let's add some logging to see what's happening
@@ -840,45 +840,106 @@
     Papa.parse(sheetURL, {
       download: true,
       header: true,
+      skipEmptyLines: true,
       complete: function(results) {
         console.log('CSV Parse Results:', results);
         console.log('Data received:', results.data);
+        console.log('Number of rows:', results.data?.length);
         console.log('Errors:', results.errors);
+        console.log('Meta info:', results.meta);
         
         if (results.errors && results.errors.length > 0) {
           console.error('CSV parsing errors:', results.errors);
-          container.innerHTML = '<div style="color: #ff4444; padding: 20px; text-align: center;">Error loading data. Check console for details.</div>';
+          container.innerHTML = `<div style="color: #ff4444; padding: 20px; text-align: center;">
+            <h3>Error loading data</h3>
+            <p>CSV parsing errors detected. Check console for details.</p>
+            <p>Errors: ${JSON.stringify(results.errors)}</p>
+          </div>`;
           return;
         }
         
         if (!results.data || results.data.length === 0) {
           console.error('No data received from CSV');
-          container.innerHTML = '<div style="color: #ff4444; padding: 20px; text-align: center;">No data received from Google Sheets. Please check the URL.</div>';
+          container.innerHTML = `<div style="color: #ff4444; padding: 20px; text-align: center;">
+            <h3>No data received</h3>
+            <p>Please check:</p>
+            <ul style="text-align: left; display: inline-block;">
+              <li>Google Sheets is published to web</li>
+              <li>Sheet is publicly accessible</li>
+              <li>URL format is correct</li>
+            </ul>
+          </div>`;
           return;
         }
         
-        console.log('Sample row:', results.data[0]);
-        allData = results.data.filter(row => row.TeamA && row.TeamB && row.Odds);
-        console.log('Filtered data length:', allData.length);
-        
-        if (allData.length === 0) {
-          container.innerHTML = '<div style="color: #ffaa00; padding: 20px; text-align: center;">No valid betting data found. Check that your sheet has TeamA, TeamB, and Odds columns with data.</div>';
-          return;
-        }
-        
-        populateFilters(allData);
-        renderCards(allData);
-        Object.values(filters).forEach(el => {
-          if (el && el.addEventListener) {
-            el.addEventListener('change', applyFilters);
-          }
+        console.log('First few rows of raw data:');
+        results.data.slice(0, 3).forEach((row, i) => {
+          console.log(`Row ${i}:`, row);
         });
         
-        console.log('Data loaded successfully!');
+        // Check if we have the required columns
+        const firstRow = results.data[0];
+        const requiredColumns = ['TeamA', 'TeamB', 'Odds', 'Sport', 'VIP'];
+        const missingColumns = requiredColumns.filter(col => !(col in firstRow));
+        
+        if (missingColumns.length > 0) {
+          console.error('Missing required columns:', missingColumns);
+          container.innerHTML = `<div style="color: #ff4444; padding: 20px; text-align: center;">
+            <h3>Missing Required Columns</h3>
+            <p>Your Google Sheets is missing these columns: <strong>${missingColumns.join(', ')}</strong></p>
+            <p>Available columns: ${Object.keys(firstRow).join(', ')}</p>
+          </div>`;
+          return;
+        }
+        
+        allData = results.data.filter(row => {
+          const hasRequiredData = row.TeamA && row.TeamB && row.Odds;
+          if (!hasRequiredData) {
+            console.log('Filtering out row with missing data:', row);
+          }
+          return hasRequiredData;
+        });
+        
+        console.log('Original data length:', results.data.length);
+        console.log('Filtered data length:', allData.length);
+        console.log('Sample filtered row:', allData[0]);
+        
+        if (allData.length === 0) {
+          container.innerHTML = `<div style="color: #ffaa00; padding: 20px; text-align: center;">
+            <h3>No valid betting data found</h3>
+            <p>Check that your sheet has data in TeamA, TeamB, and Odds columns.</p>
+            <p>Total rows received: ${results.data.length}</p>
+          </div>`;
+          return;
+        }
+        
+        try {
+          populateFilters(allData);
+          renderCards(allData);
+          Object.values(filters).forEach(el => {
+            if (el && el.addEventListener) {
+              el.addEventListener('change', applyFilters);
+            }
+          });
+          
+          console.log('✅ Data loaded successfully!');
+          console.log(`✅ Showing ${allData.length} betting cards`);
+        } catch (error) {
+          console.error('Error in rendering:', error);
+          container.innerHTML = `<div style="color: #ff4444; padding: 20px; text-align: center;">
+            <h3>Rendering Error</h3>
+            <p>Error occurred while displaying the data: ${error.message}</p>
+          </div>`;
+        }
       },
       error: function(error) {
         console.error('Error fetching CSV:', error);
-        container.innerHTML = '<div style="color: #ff4444; padding: 20px; text-align: center;">Error fetching data from Google Sheets. Check console for details.</div>';
+        container.innerHTML = `<div style="color: #ff4444; padding: 20px; text-align: center;">
+          <h3>Connection Error</h3>
+          <p>Failed to fetch data from Google Sheets.</p>
+          <p>Error: ${error}</p>
+          <p>Please check your internet connection and try again.</p>
+        </div>`;
       }
     });
 

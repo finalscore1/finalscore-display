@@ -383,33 +383,30 @@
       }
     }
     .vip-filter-btn {
-      padding: 10px 16px;
-      border-radius: 25px;
-      background: linear-gradient(135deg, #ffd700, #ffed4a);
-      color: #000;
-      border: 2px solid #ffd700;
-      cursor: pointer;
-      transition: all 0.3s;
-      font-size: 14px;
+      background: linear-gradient(135deg, #ffd700, #ffed4a) !important;
+      color: #000 !important;
+      border: 1px solid #ffd700 !important;
+      box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
+      animation: vip-button-glow 2s ease-in-out infinite;
       font-weight: 600;
-      box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
-      animation: vip-button-glow 3s ease-in-out infinite;
     }
     .vip-filter-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(255, 215, 0, 0.5);
+      background: linear-gradient(135deg, #ffed4a, #ffd700) !important;
+      box-shadow: 0 4px 12px rgba(255, 215, 0, 0.6);
+      transform: translateY(-1px);
     }
     .vip-filter-btn.active {
-      background: linear-gradient(135deg, #000, #333);
-      color: #ffd700;
-      border-color: #ffd700;
+      background: linear-gradient(135deg, #000, #333) !important;
+      color: #ffd700 !important;
+      border-color: #ffd700 !important;
+      box-shadow: 0 4px 12px rgba(255, 215, 0, 0.8);
     }
     @keyframes vip-button-glow {
       0%, 100% { 
-        box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+        box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
       }
       50% { 
-        box-shadow: 0 6px 16px rgba(255, 215, 0, 0.6);
+        box-shadow: 0 4px 12px rgba(255, 215, 0, 0.7);
       }
     }
   </style>
@@ -422,13 +419,10 @@
       <input type="text" id="searchFilter" placeholder="Search..." />
 
       <div class="sport-filters">
-        <h3>Sports</h3>
-        <div id="sportButtons" class="sport-buttons"></div>
-      </div>
-
-      <div class="sport-filters">
-        <h3>VIP Bets</h3>
-        <button id="vipFilterBtn" class="vip-filter-btn">✨ VIP ONLY ✨</button>
+        <h3>Sports & VIP</h3>
+        <div id="sportButtons" class="sport-buttons">
+          <button id="vipFilterBtn" class="sport-btn vip-filter-btn">VIP</button>
+        </div>
       </div>
 
       <label for="countryLeagueFilter">Countries & Leagues</label>
@@ -476,6 +470,7 @@
     let selectedCountries = new Set();
     let selectedLeagues = new Set();
     let selectedSports = new Set();
+    let vipFilterActive = false;
 
     // Country code to flag mapping (using flag-icon-css style URLs)
     const getCountryFlag = (countryCode) => {
@@ -485,6 +480,14 @@
 
     // Search functionality
     filters.search.addEventListener("input", applyFilters);
+
+    // VIP filter functionality
+    const vipFilterBtn = document.getElementById("vipFilterBtn");
+    vipFilterBtn.addEventListener("click", () => {
+      vipFilterBtn.classList.toggle("active");
+      vipFilterActive = vipFilterBtn.classList.contains("active");
+      applyFilters();
+    });
 
     const oddsSlider = document.getElementById("oddsSlider");
     const oddsValue = document.getElementById("oddsValue");
@@ -664,13 +667,13 @@
         const countdownText = getCountdownText(gameData.gameDateTime);
         const status = getGameStatus(gameData.gameDateTime);
         const sport = gameData.Sport || 'Unknown';
+        const isVip = gameData.VIP && gameData.VIP.toLowerCase() === 'yes';
         
         const card = document.createElement("div");
-        card.className = `bet-card ${status === 'starting-soon' ? 'starting-soon' : ''} ${status === 'live' ? 'expired' : ''}`;
+        card.className = `bet-card ${status === 'starting-soon' ? 'starting-soon' : ''} ${status === 'live' ? 'expired' : ''} ${isVip ? 'vip' : ''}`;
         card.setAttribute('data-card-id', cardId);
         
         card.innerHTML = `
-          <div class="sport-badge">${sport}</div>
           <div class="status-indicator ${status}"></div>
           <div class="meta">${gameData.Date} ${gameData.Time} &nbsp;&nbsp; ${gameData.Country} ${gameData.League}</div>
           <div class="teams">${gameData.TeamA} vs ${gameData.TeamB}</div>
@@ -700,12 +703,12 @@
       
       historyGames.forEach((gameData, index) => {
         const sport = gameData.Sport || 'Unknown';
+        const isVip = gameData.VIP && gameData.VIP.toLowerCase() === 'yes';
         
         const card = document.createElement("div");
-        card.className = "bet-card ended";
+        card.className = `bet-card ended ${isVip ? 'vip' : ''}`;
         
         card.innerHTML = `
-          <div class="sport-badge">${sport}</div>
           <div class="status-indicator" style="background: #666;"></div>
           <div class="meta">${gameData.Date} ${gameData.Time} &nbsp;&nbsp; ${gameData.Country} ${gameData.League}</div>
           <div class="teams">${gameData.TeamA} vs ${gameData.TeamB}</div>
@@ -880,6 +883,10 @@
         // Sport filter
         const passSport = selectedSports.size === 0 || selectedSports.has(row.Sport);
         
+        // VIP filter
+        const isVip = row.VIP && row.VIP.toLowerCase() === 'yes';
+        const passVip = !vipFilterActive || isVip;
+        
         // Country/League filter
         const passCountryLeague = (selectedCountries.size === 0 && selectedLeagues.size === 0) ||
           selectedCountries.has(row.Country) ||
@@ -892,7 +899,7 @@
         const odds = parseFloat(row.Odds);
         const passOdds = isNaN(minSelectedOdd) || odds >= minSelectedOdd;
         
-        return searchMatch && passSport && passCountryLeague && passTip && passOdds;
+        return searchMatch && passSport && passVip && passCountryLeague && passTip && passOdds;
       });
       
       renderCards(filtered);

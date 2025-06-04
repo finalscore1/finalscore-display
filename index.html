@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Finalscore Featured Bets</title>
+  <title>Betting Interface</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
@@ -137,6 +137,36 @@
     .content {
       flex: 1;
     }
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .sports-buttons {
+      display: flex;
+      gap: 10px;
+    }
+    .sport-btn {
+      background: #2a2a2a;
+      color: #fff;
+      border: 1px solid #444;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .sport-btn:hover {
+      background: #333;
+      border-color: #555;
+    }
+    .sport-btn.active {
+      background: #4a90e2;
+      border-color: #4a90e2;
+      color: white;
+    }
     .card-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -161,6 +191,42 @@
     .bet-card.starting-soon {
       border: 2px solid #ff6b35;
       animation: pulse 2s infinite;
+    }
+    .bet-card.vip {
+      background: linear-gradient(135deg, #ffd700, #ffb347);
+      color: #1a1a1a;
+    }
+    .bet-card.vip .meta {
+      color: #666;
+    }
+    .bet-card.vip .teams {
+      color: #1a1a1a;
+    }
+    .bet-card.vip .tip {
+      color: #1a1a1a;
+      filter: blur(4px);
+      user-select: none;
+      pointer-events: none;
+    }
+    .bet-card.vip .odds {
+      background: #1a1a1a;
+      color: #ffd700;
+    }
+    .bet-card.vip .countdown {
+      background: #1a1a1a;
+      color: #ffd700;
+    }
+    .vip-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #ffd700;
+      color: #1a1a1a;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
     }
     @keyframes pulse {
       0% { border-color: #ff6b35; }
@@ -309,13 +375,10 @@
 <body>
   <div class="main">
     <div class="sidebar">
-      <h2>🔍 Search & Filter</h2>
+      <h2>Filter</h2>
       
-      <label for="searchFilter">Search Teams/Countries/Leagues</label>
+      <label for="searchFilter">Search</label>
       <input type="text" id="searchFilter" placeholder="Search..." />
-
-      <label for="dateFilter">Date</label>
-      <select id="dateFilter"><option value="">All Dates</option></select>
 
       <label for="countryLeagueFilter">Countries & Leagues</label>
       <div class="country-league-container">
@@ -330,17 +393,22 @@
     </div>
 
     <div class="content">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h1>📊 Finalscore Featured Bets</h1>
+      <div class="top-bar">
+        <div class="sports-buttons">
+          <button class="sport-btn" data-sport="all">All Sports</button>
+          <button class="sport-btn" data-sport="Soccer">Soccer</button>
+          <button class="sport-btn" data-sport="Basketball">Basketball</button>
+          <button class="sport-btn" data-sport="Hockey">Hockey</button>
+        </div>
         <button id="historyBtn" class="history-btn">
-          📚 History (<span id="historyCount">0</span>)
+          History (<span id="historyCount">0</span>)
         </button>
       </div>
       <div class="card-grid" id="cardContainer"></div>
       <div id="historyContainer" class="history-container" style="display: none;">
         <div class="history-header">
-          <h2>📚 Game History - Ended Games</h2>
-          <button id="closeHistoryBtn" class="close-history-btn">✕ Close</button>
+          <h2>Game History - Ended Games</h2>
+          <button id="closeHistoryBtn" class="close-history-btn">Close</button>
         </div>
         <div class="card-grid" id="historyCards"></div>
       </div>
@@ -354,7 +422,6 @@
     const container = document.getElementById("cardContainer");
     const filters = {
       search: document.getElementById("searchFilter"),
-      date: document.getElementById("dateFilter"),
       countryLeague: document.getElementById("countryLeagueFilter"),
       tipType: document.getElementById("tipTypeFilter"),
       odds: document.getElementById("oddsSlider")
@@ -362,12 +429,30 @@
 
     let selectedCountries = new Set();
     let selectedLeagues = new Set();
+    let selectedSport = 'all';
 
-    // Country code to flag mapping (using flag-icon-css style URLs)
+    // Country code to flag mapping
     const getCountryFlag = (countryCode) => {
       if (!countryCode) return '';
       return `https://flagcdn.com/24x18/${countryCode.toLowerCase()}.png`;
     };
+
+    // Sports button functionality
+    const sportButtons = document.querySelectorAll('.sport-btn');
+    sportButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Remove active class from all buttons
+        sportButtons.forEach(b => b.classList.remove('active'));
+        // Add active class to clicked button
+        btn.classList.add('active');
+        // Set selected sport
+        selectedSport = btn.dataset.sport;
+        applyFilters();
+      });
+    });
+
+    // Set default active sport (All Sports)
+    document.querySelector('[data-sport="all"]').classList.add('active');
 
     // Search functionality
     filters.search.addEventListener("input", applyFilters);
@@ -513,7 +598,8 @@
       countdownEl.textContent = countdownText;
       
       // Update card styling based on status
-      cardEl.className = `bet-card ${status === 'starting-soon' ? 'starting-soon' : ''} ${status === 'live' ? 'expired' : ''}`;
+      const isVip = cardEl.classList.contains('vip');
+      cardEl.className = `bet-card ${status === 'starting-soon' ? 'starting-soon' : ''} ${status === 'live' ? 'expired' : ''} ${isVip ? 'vip' : ''}`;
       countdownEl.className = `countdown ${status === 'live' ? 'live' : ''} ${!gameDateTime ? 'expired' : ''}`;
       statusEl.className = `status-indicator ${status}`;
     }
@@ -549,13 +635,15 @@
         const cardId = `card-${gameData.index}`;
         const countdownText = getCountdownText(gameData.gameDateTime);
         const status = getGameStatus(gameData.gameDateTime);
+        const isVip = gameData.VIP === 'Yes';
         
         const card = document.createElement("div");
-        card.className = `bet-card ${status === 'starting-soon' ? 'starting-soon' : ''} ${status === 'live' ? 'expired' : ''}`;
+        card.className = `bet-card ${status === 'starting-soon' ? 'starting-soon' : ''} ${status === 'live' ? 'expired' : ''} ${isVip ? 'vip' : ''}`;
         card.setAttribute('data-card-id', cardId);
         
         card.innerHTML = `
           <div class="status-indicator ${status}"></div>
+          ${isVip ? '<div class="vip-badge">VIP</div>' : ''}
           <div class="meta">${gameData.Date} ${gameData.Time} &nbsp;&nbsp; ${gameData.Country} ${gameData.League}</div>
           <div class="teams">${gameData.TeamA} vs ${gameData.TeamB}</div>
           <div class="tip">Tip: <strong>${gameData.Tip}</strong></div>
@@ -583,11 +671,13 @@
       historyCards.innerHTML = "";
       
       historyGames.forEach((gameData, index) => {
+        const isVip = gameData.VIP === 'Yes';
         const card = document.createElement("div");
-        card.className = "bet-card ended";
+        card.className = `bet-card ended ${isVip ? 'vip' : ''}`;
         
         card.innerHTML = `
           <div class="status-indicator" style="background: #666;"></div>
+          ${isVip ? '<div class="vip-badge">VIP</div>' : ''}
           <div class="meta">${gameData.Date} ${gameData.Time} &nbsp;&nbsp; ${gameData.Country} ${gameData.League}</div>
           <div class="teams">${gameData.TeamA} vs ${gameData.TeamB}</div>
           <div class="tip">Tip: <strong>${gameData.Tip}</strong></div>
@@ -604,11 +694,10 @@
     }
 
     function populateFilters(data) {
-      const unique = {date: new Set(), country: new Set(), tipType: new Set()};
+      const unique = {country: new Set(), tipType: new Set()};
       const countryLeagues = new Map();
       
       data.forEach(row => {
-        if (row.DateKey) unique.date.add(row.DateKey);
         if (row.Country) unique.country.add(row.Country);
         if (row.TipType) unique.tipType.add(row.TipType);
         
@@ -624,19 +713,14 @@
         }
       });
       
-      // Populate date and tip type filters
-      for (const [key, set] of Object.entries(unique)) {
-        if (key === 'country') continue; // Skip country, we handle it separately
-        const el = filters[key];
-        if (el) {
-          [...set].sort().forEach(val => {
-            const opt = document.createElement("option");
-            opt.value = val;
-            opt.textContent = val;
-            el.appendChild(opt);
-          });
-        }
-      }
+      // Populate tip type filter
+      const tipTypeFilter = filters.tipType;
+      [...unique.tipType].sort().forEach(val => {
+        const opt = document.createElement("option");
+        opt.value = val;
+        opt.textContent = val;
+        tipTypeFilter.appendChild(opt);
+      });
       
       // Populate country-league filter
       populateCountryLeagueFilter(countryLeagues);
@@ -717,7 +801,6 @@
 
     function applyFilters() {
       const searchTerm = filters.search.value.toLowerCase().trim();
-      const d = filters.date.value;
       const t = filters.tipType.value;
       const minSelectedOdd = parseFloat(filters.odds.value);
 
@@ -729,46 +812,8 @@
           row.Country?.toLowerCase().includes(searchTerm) ||
           row.League?.toLowerCase().includes(searchTerm);
         
-        // Date filter
-        const passDate = !d || row.DateKey === d;
+        // Sport filter
+        const sportMatch = selectedSport === 'all' || row.Sport === selectedSport;
         
         // Country/League filter
-        const passCountryLeague = (selectedCountries.size === 0 && selectedLeagues.size === 0) ||
-          selectedCountries.has(row.Country) ||
-          selectedLeagues.has(row.League);
-        
-        // Tip type filter
-        const passTip = !t || row.TipType === t;
-        
-        // Odds filter
-        const odds = parseFloat(row.Odds);
-        const passOdds = isNaN(minSelectedOdd) || odds >= minSelectedOdd;
-        
-        return searchMatch && passDate && passCountryLeague && passTip && passOdds;
-      });
-      
-      renderCards(filtered);
-    }
-
-    Papa.parse(sheetURL, {
-      download: true,
-      header: true,
-      complete: function(results) {
-        allData = results.data.filter(row => row.TeamA && row.TeamB && row.Odds);
-        populateFilters(allData);
-        renderCards(allData);
-        Object.values(filters).forEach(el => {
-          if (el && el.addEventListener) {
-            el.addEventListener('change', applyFilters);
-          }
-        });
-      }
-    });
-
-    // Clean up intervals when page is unloaded
-    window.addEventListener('beforeunload', () => {
-      countdownIntervals.forEach(interval => clearInterval(interval));
-    });
-  </script>
-</body>
-</html>
+        const passCountryLeague = (selectedCountries.size === 0 && selectedLeagues

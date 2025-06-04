@@ -623,6 +623,16 @@
       line-height: 1.4;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
       border: 1px solid #374151;
+      max-width: calc(100vw - 40px);
+    }
+    
+    @media (max-width: 768px) {
+      .tooltip-text {
+        width: 250px;
+        margin-left: -125px;
+        left: 50%;
+        right: auto;
+      }
     }
     .tooltip-text::after {
       content: "";
@@ -897,7 +907,7 @@
     
     .vip-status {
       position: absolute;
-      top: 20px;
+      top: 30px;
       right: 180px;
       background: linear-gradient(135deg, #DAA520, #B8860B);
       color: #000;
@@ -923,6 +933,117 @@
     
     .vip-logout-btn:hover {
       background: #dc2626;
+    }
+    
+    .vip-manage-subscription {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(30, 30, 30, 0.9);
+      color: #888;
+      padding: 6px 12px;
+      border-radius: 15px;
+      font-size: 11px;
+      font-weight: 500;
+      display: none;
+      z-index: 998;
+      backdrop-filter: blur(10px);
+      border: 1px solid #333;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .vip-manage-subscription:hover {
+      background: rgba(50, 50, 50, 0.95);
+      color: #aaa;
+      border-color: #555;
+    }
+    
+    .vip-cancel-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      z-index: 10002;
+      backdrop-filter: blur(5px);
+    }
+    
+    .vip-cancel-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #1a1a1a;
+      border-radius: 12px;
+      padding: 24px;
+      width: 350px;
+      max-width: 90vw;
+      border: 2px solid #ef4444;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+    }
+    
+    .vip-cancel-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+    .vip-cancel-title {
+      color: #ef4444;
+      font-size: 20px;
+      font-weight: 600;
+      margin: 0 0 8px 0;
+    }
+    
+    .vip-cancel-subtitle {
+      color: #aaa;
+      font-size: 13px;
+      margin: 0;
+    }
+    
+    .vip-cancel-text {
+      color: #ccc;
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    
+    .vip-cancel-buttons {
+      display: flex;
+      gap: 12px;
+    }
+    
+    .vip-cancel-btn {
+      flex: 1;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .vip-cancel-confirm {
+      background: #ef4444;
+      color: white;
+    }
+    
+    .vip-cancel-confirm:hover {
+      background: #dc2626;
+    }
+    
+    .vip-cancel-back {
+      background: #333;
+      color: #fff;
+      border: 1px solid #555;
+    }
+    
+    .vip-cancel-back:hover {
+      background: #444;
     }
     
     .vip-forgot-password {
@@ -1139,6 +1260,30 @@
     <button class="vip-logout-btn" id="vipLogoutBtn">Logout</button>
   </div>
 
+  <!-- VIP Subscription Management -->
+  <div id="vipManageSubscription" class="vip-manage-subscription">
+    Manage Subscription
+  </div>
+
+  <!-- VIP Cancellation Modal -->
+  <div id="vipCancelModal" class="vip-cancel-modal">
+    <div class="vip-cancel-content">
+      <div class="vip-cancel-header">
+        <h3 class="vip-cancel-title">Cancel Subscription</h3>
+        <p class="vip-cancel-subtitle">We're sorry to see you go</p>
+      </div>
+      
+      <div class="vip-cancel-text">
+        Are you sure you want to cancel your VIP subscription? You'll lose access to exclusive predictions and premium features.
+      </div>
+      
+      <div class="vip-cancel-buttons">
+        <button class="vip-cancel-btn vip-cancel-back" id="vipCancelBack">Keep VIP</button>
+        <button class="vip-cancel-btn vip-cancel-confirm" id="vipCancelConfirm">Cancel Subscription</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
   <script>
     const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQjgi95CP-CmJ9wIUoNCRMHdeXPEpKlZiUIb_xXJuT30O1TWfB2ZPC2n8Vurlk2Ge2yiVy9gLhPcuUU/pub?output=csv';
@@ -1170,6 +1315,8 @@
     const vipForgotModal = document.getElementById('vipForgotModal');
     const vipForgotForm = document.getElementById('vipForgotForm');
     const vipJoinBtn = document.getElementById('vipJoinBtn');
+    const vipManageSubscription = document.getElementById('vipManageSubscription');
+    const vipCancelModal = document.getElementById('vipCancelModal');
     
     // Load VIP credentials from Google Sheets
     async function loadVipCredentials() {
@@ -1259,6 +1406,7 @@
         isVipAuthenticated = true;
         hideVipModal();
         vipStatus.style.display = 'block';
+        vipManageSubscription.style.display = 'block';
         
         // Auto-activate VIP filter if not already active
         if (!vipFilterActive) {
@@ -1278,6 +1426,7 @@
     function handleVipLogout() {
       isVipAuthenticated = false;
       vipStatus.style.display = 'none';
+      vipManageSubscription.style.display = 'none';
       
       // Deactivate VIP filter
       const vipBtn = document.getElementById('vipFilterBtn');
@@ -1287,6 +1436,29 @@
       }
       
       applyFilters();
+    }
+    
+    // Show cancellation modal
+    function showCancelModal() {
+      vipCancelModal.style.display = 'block';
+    }
+    
+    // Hide cancellation modal
+    function hideCancelModal() {
+      vipCancelModal.style.display = 'none';
+    }
+    
+    // Handle subscription cancellation
+    function handleCancelSubscription() {
+      // In production, you would call your cancellation API here
+      console.log('Subscription cancellation requested');
+      
+      // For now, just logout the user
+      hideCancelModal();
+      handleVipLogout();
+      
+      // Show confirmation message
+      alert('Your subscription has been cancelled. Thank you for using Finalscore VIP!');
     }
     
     // Event listeners for VIP system
@@ -1301,6 +1473,18 @@
     vipJoinBtn.addEventListener('click', () => {
       // Open subscription page - you can update this URL later
       window.open('https://finalscore.io/pricing', '_blank');
+    });
+    
+    // Subscription management event listeners
+    vipManageSubscription.addEventListener('click', showCancelModal);
+    document.getElementById('vipCancelBack').addEventListener('click', hideCancelModal);
+    document.getElementById('vipCancelConfirm').addEventListener('click', handleCancelSubscription);
+    
+    // Close cancel modal when clicking outside
+    vipCancelModal.addEventListener('click', (e) => {
+      if (e.target === vipCancelModal) {
+        hideCancelModal();
+      }
     });
     
     // Forgot password functionality

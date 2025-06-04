@@ -84,9 +84,6 @@
       transition: all 0.3s;
       font-size: 13px;
       font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 6px;
     }
     .sport-btn:hover {
       background-color: #333;
@@ -96,9 +93,6 @@
       background-color: #4a90e2;
       color: white;
       border-color: #4a90e2;
-    }
-    .sport-btn .sport-icon {
-      font-size: 16px;
     }
     .country-league-container {
       max-height: 300px;
@@ -286,9 +280,6 @@
       border-radius: 12px;
       font-size: 12px;
       font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 4px;
     }
     .history-btn {
       background: linear-gradient(135deg, #4a90e2, #357abd);
@@ -362,15 +353,13 @@
 <body>
   <div class="main">
     <div class="sidebar">
-      <h2>🔍</h2>
+      <h2>Filter</h2>
       
       <input type="text" id="searchFilter" placeholder="Search..." />
 
       <div class="sport-filters">
         <h3>Sports</h3>
-        <div class="sport-buttons" id="sportButtons">
-          <!-- Sport buttons will be dynamically added here -->
-        </div>
+        <div id="sportButtons" class="sport-buttons"></div>
       </div>
 
       <label for="countryLeagueFilter">Countries & Leagues</label>
@@ -419,25 +408,6 @@
     let selectedLeagues = new Set();
     let selectedSports = new Set();
 
-    // Sport icons mapping
-    const sportIcons = {
-      'Soccer': '⚽',
-      'Basketball': '🏀',
-      'Hockey': '🏒',
-      'Tennis': '🎾',
-      'Baseball': '⚾',
-      'Football': '🏈',
-      'Volleyball': '🏐',
-      'Cricket': '🏏',
-      'Rugby': '🏉',
-      'Boxing': '🥊',
-      'MMA': '🥋',
-      'Golf': '⛳',
-      'Racing': '🏁',
-      'Esports': '🎮',
-      'Default': '⚡'
-    };
-
     // Country code to flag mapping (using flag-icon-css style URLs)
     const getCountryFlag = (countryCode) => {
       if (!countryCode) return '';
@@ -480,17 +450,6 @@
         historyContainer.style.display = "none";
       }
     });
-
-    function getSportIcon(sport) {
-      if (!sport) return sportIcons.Default;
-      // Try exact match first
-      if (sportIcons[sport]) return sportIcons[sport];
-      // Try case-insensitive match
-      const sportKey = Object.keys(sportIcons).find(key => 
-        key.toLowerCase() === sport.toLowerCase()
-      );
-      return sportKey ? sportIcons[sportKey] : sportIcons.Default;
-    }
 
     function parseGameDateTime(dateStr, timeStr) {
       if (!dateStr || !timeStr) return null;
@@ -635,15 +594,14 @@
         const cardId = `card-${gameData.index}`;
         const countdownText = getCountdownText(gameData.gameDateTime);
         const status = getGameStatus(gameData.gameDateTime);
-        const sport = gameData.Sport || 'Default';
-        const sportIcon = getSportIcon(sport);
+        const sport = gameData.Sport || 'Unknown';
         
         const card = document.createElement("div");
         card.className = `bet-card ${status === 'starting-soon' ? 'starting-soon' : ''} ${status === 'live' ? 'expired' : ''}`;
         card.setAttribute('data-card-id', cardId);
         
         card.innerHTML = `
-          <div class="sport-badge">${sportIcon} ${sport}</div>
+          <div class="sport-badge">${sport}</div>
           <div class="status-indicator ${status}"></div>
           <div class="meta">${gameData.Date} ${gameData.Time} &nbsp;&nbsp; ${gameData.Country} ${gameData.League}</div>
           <div class="teams">${gameData.TeamA} vs ${gameData.TeamB}</div>
@@ -672,14 +630,13 @@
       historyCards.innerHTML = "";
       
       historyGames.forEach((gameData, index) => {
-        const sport = gameData.Sport || 'Default';
-        const sportIcon = getSportIcon(sport);
+        const sport = gameData.Sport || 'Unknown';
         
         const card = document.createElement("div");
         card.className = "bet-card ended";
         
         card.innerHTML = `
-          <div class="sport-badge">${sportIcon} ${sport}</div>
+          <div class="sport-badge">${sport}</div>
           <div class="status-indicator" style="background: #666;"></div>
           <div class="meta">${gameData.Date} ${gameData.Time} &nbsp;&nbsp; ${gameData.Country} ${gameData.League}</div>
           <div class="teams">${gameData.TeamA} vs ${gameData.TeamB}</div>
@@ -705,7 +662,7 @@
       sortedSports.forEach(sport => {
         const button = document.createElement("button");
         button.className = "sport-btn";
-        button.innerHTML = `<span class="sport-icon">${getSportIcon(sport)}</span> ${sport}`;
+        button.textContent = sport;
         
         button.addEventListener("click", () => {
           button.classList.toggle("active");
@@ -751,7 +708,7 @@
       for (const [key, set] of Object.entries(unique)) {
         if (key === 'country' || key === 'sport') continue; // Skip country and sport
         const el = filters[key];
-        if (el) {
+        if (el && key === 'tipType') {
           [...set].sort().forEach(val => {
             const opt = document.createElement("option");
             opt.value = val;
@@ -840,7 +797,6 @@
 
     function applyFilters() {
       const searchTerm = filters.search.value.toLowerCase().trim();
-      const d = filters.date.value;
       const t = filters.tipType.value;
       const minSelectedOdd = parseFloat(filters.odds.value);
 
@@ -852,8 +808,8 @@
           row.Country?.toLowerCase().includes(searchTerm) ||
           row.League?.toLowerCase().includes(searchTerm);
         
-        // Date filter
-        const passDate = !d || row.DateKey === d;
+        // Sport filter
+        const passSport = selectedSports.size === 0 || selectedSports.has(row.Sport);
         
         // Country/League filter
         const passCountryLeague = (selectedCountries.size === 0 && selectedLeagues.size === 0) ||
@@ -867,7 +823,7 @@
         const odds = parseFloat(row.Odds);
         const passOdds = isNaN(minSelectedOdd) || odds >= minSelectedOdd;
         
-        return searchMatch && passDate && passCountryLeague && passTip && passOdds;
+        return searchMatch && passSport && passCountryLeague && passTip && passOdds;
       });
       
       renderCards(filtered);

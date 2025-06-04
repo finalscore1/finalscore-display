@@ -47,6 +47,89 @@
       border: 1px solid #333;
       margin-bottom: 10px;
     }
+    .sidebar input[type="text"] {
+      width: calc(100% - 16px);
+      padding: 8px;
+      border-radius: 8px;
+      background-color: #262626;
+      color: #fff;
+      border: 1px solid #333;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+    .sidebar input[type="text"]:focus {
+      outline: none;
+      border-color: #4a90e2;
+    }
+    .country-league-container {
+      max-height: 300px;
+      overflow-y: auto;
+      border: 1px solid #333;
+      border-radius: 8px;
+      background-color: #262626;
+      margin-bottom: 10px;
+    }
+    .country-item {
+      border-bottom: 1px solid #333;
+    }
+    .country-item:last-child {
+      border-bottom: none;
+    }
+    .country-header {
+      display: flex;
+      align-items: center;
+      padding: 10px 12px;
+      cursor: pointer;
+      background-color: #2a2a2a;
+      transition: background-color 0.2s;
+    }
+    .country-header:hover {
+      background-color: #333;
+    }
+    .country-header.selected {
+      background-color: #4a90e2;
+    }
+    .country-flag {
+      width: 20px;
+      height: 15px;
+      margin-right: 8px;
+      border-radius: 2px;
+      object-fit: cover;
+    }
+    .country-name {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .expand-icon {
+      font-size: 12px;
+      color: #aaa;
+      transition: transform 0.2s;
+    }
+    .country-item.expanded .expand-icon {
+      transform: rotate(90deg);
+    }
+    .leagues-list {
+      display: none;
+      background-color: #1a1a1a;
+    }
+    .country-item.expanded .leagues-list {
+      display: block;
+    }
+    .league-item {
+      padding: 8px 40px;
+      font-size: 13px;
+      color: #ccc;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .league-item:hover {
+      background-color: #333;
+    }
+    .league-item.selected {
+      background-color: #4a90e2;
+      color: white;
+    }
     #oddsSlider {
       width: 95%;
       margin-bottom: 10px;
@@ -226,15 +309,18 @@
 <body>
   <div class="main">
     <div class="sidebar">
-      <h2>Filter Bets</h2>
+      <h2>🔍 Search & Filter</h2>
+      
+      <label for="searchFilter">Search Teams/Countries/Leagues</label>
+      <input type="text" id="searchFilter" placeholder="Search..." />
+
       <label for="dateFilter">Date</label>
       <select id="dateFilter"><option value="">All Dates</option></select>
 
-      <label for="countryFilter">Country</label>
-      <select id="countryFilter"><option value="">All Countries</option></select>
-
-      <label for="leagueFilter">League</label>
-      <select id="leagueFilter"><option value="">All Leagues</option></select>
+      <label for="countryLeagueFilter">Countries & Leagues</label>
+      <div class="country-league-container">
+        <div id="countryLeagueFilter" class="country-league-filter"></div>
+      </div>
 
       <label for="tipTypeFilter">Tip Type</label>
       <select id="tipTypeFilter"><option value="">All Types</option></select>
@@ -267,12 +353,24 @@
 
     const container = document.getElementById("cardContainer");
     const filters = {
+      search: document.getElementById("searchFilter"),
       date: document.getElementById("dateFilter"),
-      country: document.getElementById("countryFilter"),
-      league: document.getElementById("leagueFilter"),
+      countryLeague: document.getElementById("countryLeagueFilter"),
       tipType: document.getElementById("tipTypeFilter"),
       odds: document.getElementById("oddsSlider")
     };
+
+    let selectedCountries = new Set();
+    let selectedLeagues = new Set();
+
+    // Country code to flag mapping (using flag-icon-css style URLs)
+    const getCountryFlag = (countryCode) => {
+      if (!countryCode) return '';
+      return `https://flagcdn.com/24x18/${countryCode.toLowerCase()}.png`;
+    };
+
+    // Search functionality
+    filters.search.addEventListener("input", applyFilters);
 
     const oddsSlider = document.getElementById("oddsSlider");
     const oddsValue = document.getElementById("oddsValue");
@@ -372,13 +470,13 @@
       const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
       
       if (days > 0) {
-        return ${days}d ${hours}h ${minutes}m;
+        return `${days}d ${hours}h ${minutes}m`;
       } else if (hours > 0) {
-        return ${hours}h ${minutes}m ${seconds}s;
+        return `${hours}h ${minutes}m ${seconds}s`;
       } else if (minutes > 0) {
-        return ${minutes}m ${seconds}s;
+        return `${minutes}m ${seconds}s`;
       } else {
-        return ${seconds}s;
+        return `${seconds}s`;
       }
     }
 
@@ -403,9 +501,9 @@
     }
 
     function updateCountdown(cardId, gameDateTime) {
-      const countdownEl = document.querySelector([data-card-id="${cardId}"] .countdown);
-      const cardEl = document.querySelector([data-card-id="${cardId}"]);
-      const statusEl = document.querySelector([data-card-id="${cardId}"] .status-indicator);
+      const countdownEl = document.querySelector(`[data-card-id="${cardId}"] .countdown`);
+      const cardEl = document.querySelector(`[data-card-id="${cardId}"]`);
+      const statusEl = document.querySelector(`[data-card-id="${cardId}"] .status-indicator`);
       
       if (!countdownEl || !cardEl || !statusEl) return;
       
@@ -415,9 +513,9 @@
       countdownEl.textContent = countdownText;
       
       // Update card styling based on status
-      cardEl.className = bet-card ${status === 'starting-soon' ? 'starting-soon' : ''} ${status === 'live' ? 'expired' : ''};
-      countdownEl.className = countdown ${status === 'live' ? 'live' : ''} ${!gameDateTime ? 'expired' : ''};
-      statusEl.className = status-indicator ${status};
+      cardEl.className = `bet-card ${status === 'starting-soon' ? 'starting-soon' : ''} ${status === 'live' ? 'expired' : ''}`;
+      countdownEl.className = `countdown ${status === 'live' ? 'live' : ''} ${!gameDateTime ? 'expired' : ''}`;
+      statusEl.className = `status-indicator ${status}`;
     }
 
     function renderCards(data) {
@@ -448,12 +546,12 @@
       
       // Render only active games
       activeGames.forEach((gameData) => {
-        const cardId = card-${gameData.index};
+        const cardId = `card-${gameData.index}`;
         const countdownText = getCountdownText(gameData.gameDateTime);
         const status = getGameStatus(gameData.gameDateTime);
         
         const card = document.createElement("div");
-        card.className = bet-card ${status === 'starting-soon' ? 'starting-soon' : ''} ${status === 'live' ? 'expired' : ''};
+        card.className = `bet-card ${status === 'starting-soon' ? 'starting-soon' : ''} ${status === 'live' ? 'expired' : ''}`;
         card.setAttribute('data-card-id', cardId);
         
         card.innerHTML = `
@@ -506,40 +604,149 @@
     }
 
     function populateFilters(data) {
-      const unique = {date: new Set(), country: new Set(), league: new Set(), tipType: new Set()};
+      const unique = {date: new Set(), country: new Set(), tipType: new Set()};
+      const countryLeagues = new Map();
+      
       data.forEach(row => {
         if (row.DateKey) unique.date.add(row.DateKey);
         if (row.Country) unique.country.add(row.Country);
-        if (row.League) unique.league.add(row.League);
         if (row.TipType) unique.tipType.add(row.TipType);
+        
+        // Group leagues by country
+        if (row.Country && row.League) {
+          if (!countryLeagues.has(row.Country)) {
+            countryLeagues.set(row.Country, {
+              leagues: new Set(),
+              countryCode: row.CountryCode || null
+            });
+          }
+          countryLeagues.get(row.Country).leagues.add(row.League);
+        }
       });
+      
+      // Populate date and tip type filters
       for (const [key, set] of Object.entries(unique)) {
+        if (key === 'country') continue; // Skip country, we handle it separately
         const el = filters[key];
-        [...set].sort().forEach(val => {
-          const opt = document.createElement("option");
-          opt.value = val;
-          opt.textContent = val;
-          el.appendChild(opt);
-        });
+        if (el) {
+          [...set].sort().forEach(val => {
+            const opt = document.createElement("option");
+            opt.value = val;
+            opt.textContent = val;
+            el.appendChild(opt);
+          });
+        }
       }
+      
+      // Populate country-league filter
+      populateCountryLeagueFilter(countryLeagues);
+    }
+
+    function populateCountryLeagueFilter(countryLeagues) {
+      const container = filters.countryLeague;
+      container.innerHTML = '';
+      
+      // Sort countries alphabetically
+      const sortedCountries = Array.from(countryLeagues.keys()).sort();
+      
+      sortedCountries.forEach(country => {
+        const countryData = countryLeagues.get(country);
+        const leagues = Array.from(countryData.leagues).sort();
+        
+        const countryItem = document.createElement('div');
+        countryItem.className = 'country-item';
+        
+        const countryHeader = document.createElement('div');
+        countryHeader.className = 'country-header';
+        countryHeader.innerHTML = `
+          ${countryData.countryCode ? `<img src="${getCountryFlag(countryData.countryCode)}" alt="${country}" class="country-flag" onerror="this.style.display='none'">` : ''}
+          <span class="country-name">${country}</span>
+          <span class="expand-icon">▶</span>
+        `;
+        
+        const leaguesList = document.createElement('div');
+        leaguesList.className = 'leagues-list';
+        
+        leagues.forEach(league => {
+          const leagueItem = document.createElement('div');
+          leagueItem.className = 'league-item';
+          leagueItem.textContent = league;
+          leagueItem.addEventListener('click', (e) => {
+            e.stopPropagation();
+            leagueItem.classList.toggle('selected');
+            
+            if (leagueItem.classList.contains('selected')) {
+              selectedLeagues.add(league);
+            } else {
+              selectedLeagues.delete(league);
+            }
+            applyFilters();
+          });
+          
+          leaguesList.appendChild(leagueItem);
+        });
+        
+        countryHeader.addEventListener('click', () => {
+          countryItem.classList.toggle('expanded');
+          const isExpanded = countryItem.classList.contains('expanded');
+          
+          // Toggle country selection
+          countryHeader.classList.toggle('selected');
+          
+          if (countryHeader.classList.contains('selected')) {
+            selectedCountries.add(country);
+          } else {
+            selectedCountries.delete(country);
+            // Deselect all leagues from this country
+            leagues.forEach(league => {
+              selectedLeagues.delete(league);
+            });
+            // Update visual state
+            leaguesList.querySelectorAll('.league-item').forEach(item => {
+              item.classList.remove('selected');
+            });
+          }
+          applyFilters();
+        });
+        
+        countryItem.appendChild(countryHeader);
+        countryItem.appendChild(leaguesList);
+        container.appendChild(countryItem);
+      });
     }
 
     function applyFilters() {
+      const searchTerm = filters.search.value.toLowerCase().trim();
       const d = filters.date.value;
-      const c = filters.country.value;
-      const l = filters.league.value;
       const t = filters.tipType.value;
       const minSelectedOdd = parseFloat(filters.odds.value);
 
       const filtered = allData.filter(row => {
+        // Search filter
+        const searchMatch = !searchTerm || 
+          row.TeamA?.toLowerCase().includes(searchTerm) ||
+          row.TeamB?.toLowerCase().includes(searchTerm) ||
+          row.Country?.toLowerCase().includes(searchTerm) ||
+          row.League?.toLowerCase().includes(searchTerm);
+        
+        // Date filter
         const passDate = !d || row.DateKey === d;
-        const passCountry = !c || row.Country === c;
-        const passLeague = !l || row.League === l;
+        
+        // Country/League filter
+        const passCountryLeague = (selectedCountries.size === 0 && selectedLeagues.size === 0) ||
+          selectedCountries.has(row.Country) ||
+          selectedLeagues.has(row.League);
+        
+        // Tip type filter
         const passTip = !t || row.TipType === t;
+        
+        // Odds filter
         const odds = parseFloat(row.Odds);
         const passOdds = isNaN(minSelectedOdd) || odds >= minSelectedOdd;
-        return passDate && passCountry && passLeague && passTip && passOdds;
+        
+        return searchMatch && passDate && passCountryLeague && passTip && passOdds;
       });
+      
       renderCards(filtered);
     }
 
@@ -550,7 +757,11 @@
         allData = results.data.filter(row => row.TeamA && row.TeamB && row.Odds);
         populateFilters(allData);
         renderCards(allData);
-        Object.values(filters).forEach(el => el.addEventListener('change', applyFilters));
+        Object.values(filters).forEach(el => {
+          if (el && el.addEventListener) {
+            el.addEventListener('change', applyFilters);
+          }
+        });
       }
     });
 

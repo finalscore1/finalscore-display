@@ -1708,6 +1708,497 @@
         hideCancelModal();
       }
     });
+
+    // Country code to flag mapping (using flag-icon-css style URLs)
+    const getCountryFlag = (countryCode) => {
+      if (!countryCode) return '';
+      return `https://flagcdn.com/24x18/${countryCode.toLowerCase()}.png`;
+    };
+
+    function parseGameDateTime(dateStr, timeStr) {
+      if (!dateStr || !timeStr) return null;
+      
+      let date;
+      
+      // Handle your specific format: "Tuesday / June 3, 2025"
+      if (dateStr.includes('/') && dateStr.includes(',')) {
+        // Extract the date part after the "/"
+        const datePart = dateStr.split('/')[1].trim(); // "June 3, 2025"
+        date = new Date(datePart);
+      }
+      // Handle standard formats as fallback
+      else if (dateStr.includes('/')) {
+        // Format: MM/DD/YYYY or DD/MM/YYYY
+        const parts = dateStr.split('/');
+        if (parts.length === 3) {
+          // Assuming MM/DD/YYYY format
+          date = new Date(parts[2], parts[0] - 1, parts[1]);
+        }
+      } else if (dateStr.includes('-')) {
+        // Format: YYYY-MM-DD
+        date = new Date(dateStr);
+      } else {
+        // Try to parse as is
+        date = new Date(dateStr);
+      }
+      
+      if (!date || isNaN(date.getTime())) {
+        console.log('Failed to parse date:', dateStr);
+        return null;
+      }
+      
+      // Parse time (assuming HH:MM format)
+      const timeParts = timeStr.split(':');
+      if (timeParts.length >= 2) {
+        const hours = parseInt(timeParts[0]);
+        const minutes = parseInt(timeParts[1]);
+        date.setHours(hours, minutes, 0, 0);
+      }
+      
+      return date;
+    }
+
+    function getCountdownText(gameDateTime) {
+      if (!gameDateTime) return "Time TBD";
+      
+      const now = new Date();
+      const timeDiff = gameDateTime.getTime() - now.getTime();
+      
+      // Game ended more than 125 minutes ago
+      if (timeDiff < -125 * 60 * 1000) {
+        return "Ended";
+      }
+      
+      if (timeDiff < 0) {
+        return "LIVE";
+      }
+      
+      const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+      
+      if (days > 0) {
+        return `${days}d ${hours}h ${minutes}m`;
+      } else if (hours > 0) {
+        return `${hours}h ${minutes}m ${seconds}s`;
+      } else if (minutes > 0) {
+        return `${minutes}m ${seconds}s`;
+      } else {
+        return `${seconds}s`;
+      }
+    }
+
+    function getGameStatus(gameDateTime) {
+      if (!gameDateTime) return "unknown";
+      
+      const now = new Date();
+      const timeDiff = gameDateTime.getTime() - now.getTime();
+      
+      // Game ended more than 125 minutes ago
+      if (timeDiff < -125 * 60 * 1000) {
+        return "ended";
+      }
+      
+      if (timeDiff < 0) {
+        return "live";
+      } else if (timeDiff < 30 * 60 * 1000) { // 30 minutes
+        return "starting-soon";
+      } else {
+        return "upcoming";
+      }
+    }
+
+    function updateCountdown(cardId, gameDateTime) {
+      const countdownEl = document.querySelector(`[data-card-id="${cardId}"] .countdown`);
+      const cardEl = document.querySelector(`[data-card-id="${cardId}"]`);
+      const statusEl = document.querySelector(`[data-card-id="${cardId}"] .status-indicator`);
+      
+      if (!countdownEl || !cardEl || !statusEl) return;
+      
+      const countdownText = getCountdownText(gameDateTime);
+      const status = getGameStatus(gameDateTime);
+      
+      // Check if card was VIP before updating
+      const wasVip = cardEl.classList.contains('vip');
+      
+      countdownEl.textContent = countdownText;
+      
+      // Update card styling based on status while preserving VIP status
+      const baseClasses = ['bet-card'];
+      if (wasVip) baseClasses.push('vip');
+      if (status === 'starting-soon') baseClasses.push('starting-soon');
+      if (status === 'live') baseClasses.push('expired');
+      
+      cardEl.className = baseClasses.join(' ');
+      countdownEl.className = `countdown ${status === 'live' ? 'live' : ''} ${!gameDateTime ? 'expired' : ''}`;
+      statusEl.className = `status-indicator ${status}`;
+    }
+
+    function renderCards(data) {
+      // Clear existing intervals
+      countdownIntervals.forEach(interval => clearInterval(interval));
+      countdownIntervals.clear();
+      
+      container.innerHTML = "";
+      
+      // Separate active games from ended games
+      const activeGames = [];
+      const endedGames = [];
+      
+      data.forEach((row, index) => {
+        const gameDateTime = parseGameDateTime(row.Date, row.Time);
+        const status = getGameStatus(gameDateTime);
+        
+        if (status === 'ended') {
+          endedGames.push({...row, index, gameDateTime});
+        } else {
+          activeGames.push({...row, index, gameDateTime});
+        }
+      });
+      
+      // Update history games and counter
+      historyGames = endedGames;
+      historyCount.textContent = historyGames.length;
+      
+      // Render only active games
+      activeGames.forEach((gameData) => {
+        const cardId = `card-${gameData.index}`;
+        const countdownText = getCountdownText(gameData.gameDateTime);
+        const status = getGameStatus(gameData.gameDateTime);
+        const sport = gameData.Sport || 'Unknown';
+        const isVip = gameData.VIP && gameData.VIP.toLowerCase() === 'yes';
+        
+        const card = document.createElement("div");
+        card.className = `bet-card ${status === 'starting-soon' ? 'starting-soon' : ''} ${status === 'live' ? 'expired' : ''} ${isVip ? 'vip' : ''}`;
+        card.setAttribute('data-card-id', cardId);
+        
+        // Add click event to VIP cards for login
+        if (isVip && !isVipAuthenticated) {
+          card.addEventListener('click', (e) => {
+            // Don't trigger on odds or countdown clicks
+            if (!e.target.closest('.odds') && !e.target.closest('.countdown')) {
+              showVipModal();
+            }
+          });
+        }
+        
+        card.innerHTML = `
+          <div class="status-indicator ${status}"></div>
+          <div class="meta">${gameData.Date} ${gameData.Time} &nbsp;&nbsp; ${gameData.League}</div>
+          <div class="teams">${gameData.TeamA} vs ${gameData.TeamB}</div>
+          <div class="tip ${isVip && isVipAuthenticated ? 'vip-unlocked' : ''}">Tip: <strong>${gameData.Tip}</strong></div>
+          <div class="odds">Odds: ${gameData.Odds}</div>
+          <div class="countdown ${status === 'live' ? 'live' : ''} ${!gameData.gameDateTime ? 'expired' : ''}" style="${isVip ? 'background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%); color: #DAA520; position: relative; z-index: 5; border: 2px solid #DAA520; box-shadow: 0 0 10px rgba(218, 165, 32, 0.4), inset 0 1px 0 rgba(218, 165, 32, 0.2); font-weight: 700;' : ''}">${countdownText}</div>
+        `;
+        
+        container.appendChild(card);
+        
+        // Set up countdown interval for this card
+        if (gameData.gameDateTime) {
+          const interval = setInterval(() => {
+            updateCountdown(cardId, gameData.gameDateTime);
+            // Check if game should move to history
+            if (getGameStatus(gameData.gameDateTime) === 'ended') {
+              applyFilters(); // Re-render to move game to history
+            }
+          }, 1000);
+          countdownIntervals.set(cardId, interval);
+        }
+      });
+    }
+
+    function renderHistoryCards() {
+      historyCards.innerHTML = "";
+      
+      historyGames.forEach((gameData, index) => {
+        const sport = gameData.Sport || 'Unknown';
+        const isVip = gameData.VIP && gameData.VIP.toLowerCase() === 'yes';
+        const won = gameData.Won && gameData.Won.toLowerCase() === 'yes';
+        const lost = gameData.Won && gameData.Won.toLowerCase() === 'no';
+        
+        let resultLabel = 'Ended';
+        let resultClass = 'ended';
+        
+        if (won) {
+          resultLabel = 'Won';
+          resultClass = 'won';
+        } else if (lost) {
+          resultLabel = 'Lost';
+          resultClass = 'lost';
+        }
+        
+        const card = document.createElement("div");
+        card.className = `bet-card ended ${isVip ? 'vip' : ''}`;
+        
+        card.innerHTML = `
+          <div class="status-indicator" style="background: #666;"></div>
+          <div class="meta">${gameData.Date} ${gameData.Time} &nbsp;&nbsp; ${gameData.League}</div>
+          <div class="teams">${gameData.TeamA} vs ${gameData.TeamB}</div>
+          <div class="tip ${isVip && isVipAuthenticated ? 'vip-unlocked' : ''}">Tip: <strong>${gameData.Tip}</strong></div>
+          <div class="odds">Odds: ${gameData.Odds}</div>
+          <div class="countdown ended" style="background: ${won ? '#22c55e' : (lost ? '#ef4444' : '#666')}; color: white; ${isVip ? 'position: relative; z-index: 5; border: 2px solid #DAA520; box-shadow: 0 0 10px rgba(218, 165, 32, 0.4); font-weight: 700;' : ''}">
+            ${resultLabel}
+          </div>
+        `;
+        
+        historyCards.appendChild(card);
+      });
+      
+      if (historyGames.length === 0) {
+        historyCards.innerHTML = '<div style="text-align: center; color: #aaa; padding: 40px;">No ended games yet</div>';
+      }
+    }
+
+    function populateSportButtons(sports) {
+      const sportButtonsContainer = document.getElementById("sportButtons");
+      sportButtonsContainer.innerHTML = '';
+      
+      // Add VIP button first
+      const vipButton = document.createElement("button");
+      vipButton.id = "vipFilterBtn";
+      vipButton.className = "sport-btn vip-filter-btn";
+      vipButton.textContent = "VIP";
+      vipButton.addEventListener("click", () => {
+        // Check if user wants to activate VIP filter
+        if (!vipButton.classList.contains('active')) {
+          // Check if user is authenticated
+          if (!isVipAuthenticated) {
+            showVipModal();
+            return;
+          }
+        }
+        
+        // Toggle VIP filter
+        vipButton.classList.toggle("active");
+        vipFilterActive = vipButton.classList.contains("active");
+        applyFilters();
+      });
+      sportButtonsContainer.appendChild(vipButton);
+      
+      // Add sport buttons
+      const sortedSports = Array.from(sports).sort();
+      
+      sortedSports.forEach(sport => {
+        const button = document.createElement("button");
+        button.className = "sport-btn";
+        button.textContent = sport;
+        
+        button.addEventListener("click", () => {
+          button.classList.toggle("active");
+          
+          if (button.classList.contains("active")) {
+            selectedSports.add(sport);
+          } else {
+            selectedSports.delete(sport);
+          }
+          
+          applyFilters();
+        });
+        
+        sportButtonsContainer.appendChild(button);
+      });
+    }
+
+    function populateFilters(data) {
+      const unique = {country: new Set(), tipType: new Set(), sport: new Set()};
+      const countryLeagues = new Map();
+      
+      data.forEach(row => {
+        if (row.Country) unique.country.add(row.Country);
+        if (row.TipType) unique.tipType.add(row.TipType);
+        if (row.Sport) unique.sport.add(row.Sport);
+        
+        // Group leagues by country
+        if (row.Country && row.League) {
+          if (!countryLeagues.has(row.Country)) {
+            countryLeagues.set(row.Country, {
+              leagues: new Set(),
+              countryCode: row.CountryCode || null
+            });
+          }
+          countryLeagues.get(row.Country).leagues.add(row.League);
+        }
+      });
+      
+      // Populate sport buttons
+      populateSportButtons(unique.sport);
+      
+      // Populate tip type filter
+      for (const [key, set] of Object.entries(unique)) {
+        if (key === 'country' || key === 'sport') continue; // Skip country and sport
+        const el = filters[key];
+        if (el && key === 'tipType') {
+          [...set].sort().forEach(val => {
+            const opt = document.createElement("option");
+            opt.value = val;
+            opt.textContent = val;
+            el.appendChild(opt);
+          });
+        }
+      }
+      
+      // Populate country-league filter
+      populateCountryLeagueFilter(countryLeagues);
+    }
+
+    function populateCountryLeagueFilter(countryLeagues) {
+      const container = filters.countryLeague;
+      container.innerHTML = '';
+      
+      // Sort countries alphabetically
+      const sortedCountries = Array.from(countryLeagues.keys()).sort();
+      
+      sortedCountries.forEach(country => {
+        const countryData = countryLeagues.get(country);
+        const leagues = Array.from(countryData.leagues).sort();
+        
+        const countryItem = document.createElement('div');
+        countryItem.className = 'country-item';
+        
+        const countryHeader = document.createElement('div');
+        countryHeader.className = 'country-header';
+        countryHeader.innerHTML = `
+          ${countryData.countryCode ? `<img src="${getCountryFlag(countryData.countryCode)}" alt="${country}" class="country-flag" onerror="this.style.display='none'">` : ''}
+          <span class="country-name">${country}</span>
+          <span class="expand-icon">▶</span>
+        `;
+        
+        const leaguesList = document.createElement('div');
+        leaguesList.className = 'leagues-list';
+        
+        leagues.forEach(league => {
+          const leagueItem = document.createElement('div');
+          leagueItem.className = 'league-item';
+          leagueItem.textContent = league;
+          leagueItem.addEventListener('click', (e) => {
+            e.stopPropagation();
+            leagueItem.classList.toggle('selected');
+            
+            if (leagueItem.classList.contains('selected')) {
+              selectedLeagues.add(league);
+            } else {
+              selectedLeagues.delete(league);
+            }
+            applyFilters();
+          });
+          
+          leaguesList.appendChild(leagueItem);
+        });
+        
+        countryHeader.addEventListener('click', () => {
+          countryItem.classList.toggle('expanded');
+          const isExpanded = countryItem.classList.contains('expanded');
+          
+          // Toggle country selection
+          countryHeader.classList.toggle('selected');
+          
+          if (countryHeader.classList.contains('selected')) {
+            selectedCountries.add(country);
+          } else {
+            selectedCountries.delete(country);
+            // Deselect all leagues from this country
+            leagues.forEach(league => {
+              selectedLeagues.delete(league);
+            });
+            // Update visual state
+            leaguesList.querySelectorAll('.league-item').forEach(item => {
+              item.classList.remove('selected');
+            });
+          }
+          applyFilters();
+        });
+        
+        countryItem.appendChild(countryHeader);
+        countryItem.appendChild(leaguesList);
+        container.appendChild(countryItem);
+      });
+    }
+
+    function applyFilters() {
+      const searchTerm = filters.search.value.toLowerCase().trim();
+      const t = filters.tipType.value;
+      const minSelectedOdd = parseFloat(filters.odds.value);
+
+      const filtered = allData.filter(row => {
+        // Search filter
+        const searchMatch = !searchTerm || 
+          row.TeamA?.toLowerCase().includes(searchTerm) ||
+          row.TeamB?.toLowerCase().includes(searchTerm) ||
+          row.Country?.toLowerCase().includes(searchTerm) ||
+          row.League?.toLowerCase().includes(searchTerm);
+        
+        // Sport filter
+        const passSport = selectedSports.size === 0 || selectedSports.has(row.Sport);
+        
+        // VIP filter
+        const isVip = row.VIP && row.VIP.toLowerCase() === 'yes';
+        const passVip = !vipFilterActive || isVip;
+        
+        // Country/League filter
+        const passCountryLeague = (selectedCountries.size === 0 && selectedLeagues.size === 0) ||
+          selectedCountries.has(row.Country) ||
+          selectedLeagues.has(row.League);
+        
+        // Tip type filter
+        const passTip = !t || row.TipType === t;
+        
+        // Odds filter
+        const odds = parseFloat(row.Odds);
+        const passOdds = isNaN(minSelectedOdd) || odds >= minSelectedOdd;
+        
+        return searchMatch && passSport && passVip && passCountryLeague && passTip && passOdds;
+      });
+      
+      renderCards(filtered);
+    }
+
+    // Subscription management event listeners
+    document.getElementById('vipCancelBack').addEventListener('click', hideCancelModal);
+    document.getElementById('vipCancelConfirm').addEventListener('click', handleCancelSubscription);
+    
+    // Settings modal event listeners
+    settingsBtn.addEventListener('click', showSettingsModal);
+    document.getElementById('settingsCloseBtn').addEventListener('click', hideSettingsModal);
+    document.getElementById('accountInfoOption').addEventListener('click', () => {
+      if (currentUser) {
+        alert(`Account: ${currentUser.Username}\nStatus: ${currentUser.SubscriptionStatus || 'Active'}\nEmail: ${currentUser.Email || 'Not provided'}`);
+      }
+    });
+    document.getElementById('cancelSubscriptionOption').addEventListener('click', () => {
+      hideSettingsModal();
+      showCancelModal();
+    });
+    
+    // Close modals when clicking outside
+    settingsModal.addEventListener('click', (e) => {
+      if (e.target === settingsModal) {
+        hideSettingsModal();
+      }
+    });
+
+    Papa.parse(sheetURL, {
+      download: true,
+      header: true,
+      complete: function(results) {
+        allData = results.data.filter(row => row.TeamA && row.TeamB && row.Odds);
+        populateFilters(allData);
+        renderCards(allData);
+        Object.values(filters).forEach(el => {
+          if (el && el.addEventListener) {
+            el.addEventListener('change', applyFilters);
+          }
+        });
+      }
+    });
+
+    // Load VIP credentials on page load
+    loadVipCredentials();
+
+    // Clean up intervals when page is unloaded
+    window.addEventListener('beforeunload', () => {
+      countdownIntervals.forEach(interval => clearInterval(interval));
+    });
     
     // Forgot password functionality
     function showForgotModal() {

@@ -420,9 +420,7 @@
 
       <div class="sport-filters">
         <h3>Sports & VIP</h3>
-        <div id="sportButtons" class="sport-buttons">
-          <button id="vipFilterBtn" class="sport-btn vip-filter-btn">VIP</button>
-        </div>
+        <div id="sportButtons" class="sport-buttons"></div>
       </div>
 
       <label for="countryLeagueFilter">Countries & Leagues</label>
@@ -480,14 +478,6 @@
 
     // Search functionality
     filters.search.addEventListener("input", applyFilters);
-
-    // VIP filter functionality
-    const vipFilterBtn = document.getElementById("vipFilterBtn");
-    vipFilterBtn.addEventListener("click", () => {
-      vipFilterBtn.classList.toggle("active");
-      vipFilterActive = vipFilterBtn.classList.contains("active");
-      applyFilters();
-    });
 
     const oddsSlider = document.getElementById("oddsSlider");
     const oddsValue = document.getElementById("oddsValue");
@@ -627,10 +617,18 @@
       const countdownText = getCountdownText(gameDateTime);
       const status = getGameStatus(gameDateTime);
       
+      // Check if card was VIP before updating
+      const wasVip = cardEl.classList.contains('vip');
+      
       countdownEl.textContent = countdownText;
       
-      // Update card styling based on status
-      cardEl.className = `bet-card ${status === 'starting-soon' ? 'starting-soon' : ''} ${status === 'live' ? 'expired' : ''}`;
+      // Update card styling based on status while preserving VIP status
+      const baseClasses = ['bet-card'];
+      if (wasVip) baseClasses.push('vip');
+      if (status === 'starting-soon') baseClasses.push('starting-soon');
+      if (status === 'live') baseClasses.push('expired');
+      
+      cardEl.className = baseClasses.join(' ');
       countdownEl.className = `countdown ${status === 'live' ? 'live' : ''} ${!gameDateTime ? 'expired' : ''}`;
       statusEl.className = `status-indicator ${status}`;
     }
@@ -729,6 +727,19 @@
       const sportButtonsContainer = document.getElementById("sportButtons");
       sportButtonsContainer.innerHTML = '';
       
+      // Add VIP button first
+      const vipButton = document.createElement("button");
+      vipButton.id = "vipFilterBtn";
+      vipButton.className = "sport-btn vip-filter-btn";
+      vipButton.textContent = "VIP";
+      vipButton.addEventListener("click", () => {
+        vipButton.classList.toggle("active");
+        vipFilterActive = vipButton.classList.contains("active");
+        applyFilters();
+      });
+      sportButtonsContainer.appendChild(vipButton);
+      
+      // Add sport buttons
       const sortedSports = Array.from(sports).sort();
       
       sortedSports.forEach(sport => {

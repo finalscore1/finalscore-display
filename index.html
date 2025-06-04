@@ -1471,6 +1471,7 @@
     // Load VIP credentials from Google Sheets
     async function loadVipCredentials() {
       try {
+        console.log('Loading VIP credentials...');
         const response = await fetch(vipCredentialsURL);
         const csvText = await response.text();
         const parsed = Papa.parse(csvText, { header: true });
@@ -1480,6 +1481,8 @@
         console.error('Error loading VIP credentials:', error);
       }
     }
+    
+    console.log('loadVipCredentials function defined...');
     
     // Find user by email for password reset
     function findUserByEmail(email) {
@@ -1855,11 +1858,20 @@
     }
 
     function renderCards(data) {
+      console.log('renderCards called with', data.length, 'items');
+      
       // Clear existing intervals
       countdownIntervals.forEach(interval => clearInterval(interval));
       countdownIntervals.clear();
       
       container.innerHTML = "";
+      console.log('Container cleared');
+      
+      if (!data || data.length === 0) {
+        console.log('No data to render');
+        container.innerHTML = '<div style="text-align: center; color: #aaa; padding: 40px;">No bets available</div>';
+        return;
+      }
       
       // Separate active games from ended games
       const activeGames = [];
@@ -1876,12 +1888,18 @@
         }
       });
       
+      console.log('Active games:', activeGames.length, 'Ended games:', endedGames.length);
+      
       // Update history games and counter
       historyGames = endedGames;
-      historyCount.textContent = historyGames.length;
+      if (historyCount) {
+        historyCount.textContent = historyGames.length;
+      }
       
       // Render only active games
-      activeGames.forEach((gameData) => {
+      activeGames.forEach((gameData, idx) => {
+        console.log('Rendering card', idx, 'for game:', gameData.TeamA, 'vs', gameData.TeamB);
+        
         const cardId = `card-${gameData.index}`;
         const countdownText = getCountdownText(gameData.gameDateTime);
         const status = getGameStatus(gameData.gameDateTime);
@@ -1912,6 +1930,7 @@
         `;
         
         container.appendChild(card);
+        console.log('Card', idx, 'appended to container');
         
         // Set up countdown interval for this card
         if (gameData.gameDateTime) {
@@ -1925,6 +1944,8 @@
           countdownIntervals.set(cardId, interval);
         }
       });
+      
+      console.log('renderCards completed. Container children:', container.children.length);
     }
 
     function renderHistoryCards() {
@@ -2196,20 +2217,36 @@
       }
     });
 
+    console.log('About to parse main data sheet...');
     Papa.parse(sheetURL, {
       download: true,
       header: true,
       complete: function(results) {
+        console.log('Papa.parse complete callback triggered');
+        console.log('Raw results:', results);
         allData = results.data.filter(row => row.TeamA && row.TeamB && row.Odds);
+        console.log('Filtered data:', allData.length, 'rows');
+        console.log('Sample data:', allData[0]);
+        
         populateFilters(allData);
+        console.log('Filters populated');
+        
         renderCards(allData);
+        console.log('Cards rendered');
+        
         Object.values(filters).forEach(el => {
           if (el && el.addEventListener) {
             el.addEventListener('change', applyFilters);
           }
         });
+        console.log('Filter event listeners added');
+      },
+      error: function(error) {
+        console.error('Papa.parse error:', error);
       }
     });
+
+    console.log('Papa.parse initiated...');
 
     // Load VIP credentials on page load
     loadVipCredentials();

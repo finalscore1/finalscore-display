@@ -367,6 +367,7 @@
         inset 0 -1px 0 rgba(0, 0, 0, 0.1),
         0 4px 15px rgba(218, 165, 32, 0.3),
         0 2px 8px rgba(218, 165, 32, 0.2);
+      cursor: pointer;
     }
     
     .bet-card.vip:hover {
@@ -556,6 +557,7 @@
       margin-bottom: 30px;
       padding: 20px 0;
       border-bottom: 2px solid #333;
+      position: relative;
     }
     .main-title {
       color: #ffffff;
@@ -785,7 +787,7 @@
     }
     
     .vip-status {
-      position: fixed;
+      position: absolute;
       top: 20px;
       right: 120px;
       background: linear-gradient(135deg, #DAA520, #B8860B);
@@ -797,10 +799,6 @@
       display: none;
       z-index: 999;
       box-shadow: 0 4px 12px rgba(218, 165, 32, 0.3);
-    }
-    
-    .history-container .vip-status {
-      z-index: 999;
     }
     
     .vip-logout-btn {
@@ -982,6 +980,8 @@
         
         <div class="vip-forgot-password">
           <button type="button" class="vip-forgot-btn" id="vipForgotBtn">Forgot Password?</button>
+          <span style="color: #555; margin: 0 8px;">|</span>
+          <button type="button" class="vip-forgot-btn" id="vipJoinBtn">Join Now</button>
         </div>
         
         <div class="vip-error" id="loginError">Invalid credentials. Please check your username and password.</div>
@@ -1060,6 +1060,7 @@
     const vipForgotBtn = document.getElementById('vipForgotBtn');
     const vipForgotModal = document.getElementById('vipForgotModal');
     const vipForgotForm = document.getElementById('vipForgotForm');
+    const vipJoinBtn = document.getElementById('vipJoinBtn');
     
     // Load VIP credentials from Google Sheets
     async function loadVipCredentials() {
@@ -1188,6 +1189,11 @@
       showForgotModal();
     });
     
+    vipJoinBtn.addEventListener('click', () => {
+      // Open subscription page - you can update this URL later
+      window.open('https://finalscore.io/pricing', '_blank');
+    });
+    
     // Forgot password functionality
     function showForgotModal() {
       vipForgotModal.style.display = 'block';
@@ -1224,8 +1230,21 @@
       
       if (user) {
         successEl.style.display = 'block';
-        // In a real implementation, you would send an email here
-        console.log('Password reset for user:', user.Username, 'Password:', user.Password);
+        
+        // Send email using EmailJS or similar service
+        const emailData = {
+          to_email: email,
+          username: user.Username,
+          password: user.Password,
+          from_name: 'Finalscore',
+          from_email: 'info@finalscore.io'
+        };
+        
+        // For now, we'll simulate sending an email
+        // In production, integrate with EmailJS, SendGrid, or similar service
+        console.log('Password reset email would be sent to:', email);
+        console.log('Email content:', emailData);
+        
       } else {
         errorEl.style.display = 'block';
       }
@@ -1449,6 +1468,16 @@
         const card = document.createElement("div");
         card.className = `bet-card ${status === 'starting-soon' ? 'starting-soon' : ''} ${status === 'live' ? 'expired' : ''} ${isVip ? 'vip' : ''}`;
         card.setAttribute('data-card-id', cardId);
+        
+        // Add click event to VIP cards for login
+        if (isVip && !isVipAuthenticated) {
+          card.addEventListener('click', (e) => {
+            // Don't trigger on odds or countdown clicks
+            if (!e.target.closest('.odds') && !e.target.closest('.countdown')) {
+              showVipModal();
+            }
+          });
+        }
         
         card.innerHTML = `
           <div class="status-indicator ${status}"></div>

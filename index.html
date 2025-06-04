@@ -1455,6 +1455,8 @@
     const vipCancelModal = document.getElementById('vipCancelModal');
     const settingsBtn = document.getElementById('settingsBtn');
     const settingsModal = document.getElementById('settingsModal');
+
+    console.log('VIP elements defined...');
     
     let currentUser = null; // Store current authenticated user
     
@@ -2312,6 +2314,8 @@
       applyFilters();
     });
 
+    console.log('Event listeners added...');
+
     let allData = [];
     let countdownIntervals = new Map();
     let historyGames = [];
@@ -2338,6 +2342,8 @@
         historyContainer.style.display = "none";
       }
     });
+
+    console.log('History functionality set up...');
 
     function parseGameDateTime(dateStr, timeStr) {
       if (!dateStr || !timeStr) return null;

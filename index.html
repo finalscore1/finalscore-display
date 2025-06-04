@@ -576,6 +576,69 @@
     .history-btn:hover {
       background: #4b5563;
     }
+    .info-tooltip {
+      position: relative;
+      display: inline-block;
+      margin-left: 8px;
+    }
+    .info-icon {
+      width: 18px;
+      height: 18px;
+      background: #4b5563;
+      color: #ffffff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: help;
+      transition: background-color 0.2s ease;
+    }
+    .info-icon:hover {
+      background: #6b7280;
+    }
+    .tooltip-text {
+      visibility: hidden;
+      width: 280px;
+      background: #1f2937;
+      color: #ffffff;
+      text-align: left;
+      border-radius: 8px;
+      padding: 12px;
+      position: absolute;
+      z-index: 1000;
+      bottom: 125%;
+      left: 50%;
+      margin-left: -140px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      font-size: 13px;
+      line-height: 1.4;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      border: 1px solid #374151;
+    }
+    .tooltip-text::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: #1f2937 transparent transparent transparent;
+    }
+    .info-tooltip:hover .tooltip-text {
+      visibility: visible;
+      opacity: 1;
+    }
+    .tooltip-link {
+      color: #60a5fa;
+      text-decoration: none;
+    }
+    .tooltip-link:hover {
+      text-decoration: underline;
+    }
     .history-count {
       background: #3b82f6;
       padding: 2px 6px;
@@ -638,7 +701,18 @@
 
     <div class="content">
       <div class="main-header">
-        <h1 class="main-title">Featured Bets</h1>
+        <div style="display: flex; align-items: center;">
+          <h1 class="main-title">Featured Bets</h1>
+          <div class="info-tooltip">
+            <div class="info-icon">?</div>
+            <div class="tooltip-text">
+              VIP bets provide exclusive high-accuracy predictions with detailed analysis. 
+              <br><br>
+              To view VIP bet tips and access premium features, 
+              <a href="https://finalscore.io/pricing" target="_blank" class="tooltip-link">upgrade your plan here</a>.
+            </div>
+          </div>
+        </div>
         <button id="historyBtn" class="history-btn">
           <span>History</span>
           <span class="history-count" id="historyCount">0</span>

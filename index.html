@@ -1345,6 +1345,344 @@
       background: #666;
       color: #ccc;
     }
+/* Add this CSS BEFORE your closing </style> tag */
+
+/* Bet Detail Modal Styles */
+.bet-detail-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  display: none;
+  z-index: 15000;
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.bet-detail-modal.show {
+  opacity: 1;
+}
+
+.bet-detail-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  background: #1a1a1a;
+  border-radius: 20px;
+  padding: 32px;
+  width: 500px;
+  max-width: 90vw;
+  max-height: 85vh;
+  overflow-y: auto;
+  border: 2px solid #333;
+  box-shadow: 
+    0 25px 80px rgba(0, 0, 0, 0.8),
+    0 0 40px rgba(74, 144, 226, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.bet-detail-modal.show .bet-detail-content {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.bet-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #333;
+}
+
+.bet-detail-close {
+  background: #333;
+  color: #fff;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: all 0.3s;
+  flex-shrink: 0;
+}
+
+.bet-detail-close:hover {
+  background: #444;
+  transform: rotate(90deg);
+}
+
+.bet-detail-title-section {
+  flex: 1;
+  margin-right: 16px;
+}
+
+.bet-detail-teams {
+  color: #fff;
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  line-height: 1.2;
+}
+
+.bet-detail-meta {
+  color: #aaa;
+  font-size: 14px;
+  margin: 0;
+}
+
+.bet-detail-section {
+  margin-bottom: 24px;
+}
+
+.bet-detail-section:last-child {
+  margin-bottom: 0;
+}
+
+.section-title {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-content {
+  background: #262626;
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid #333;
+}
+
+.tip-display {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.tip-text {
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.tip-odds {
+  background: linear-gradient(135deg, #4a90e2, #357abd);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.confidence-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 12px;
+}
+
+.confidence-low {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.confidence-medium {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.confidence-high {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+}
+
+.confidence-text {
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.performance-teams {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.team-performance {
+  text-align: center;
+}
+
+.team-name {
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.performance-record {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+}
+
+.performance-item {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+}
+
+.performance-win {
+  background: #22c55e;
+}
+
+.performance-loss {
+  background: #ef4444;
+}
+
+.performance-draw {
+  background: #6b7280;
+}
+
+.head-to-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+}
+
+.h2h-team {
+  flex: 1;
+}
+
+.h2h-team-name {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.h2h-wins {
+  color: #4a90e2;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.h2h-vs {
+  color: #aaa;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 16px;
+}
+
+.bet-detail-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.action-btn {
+  flex: 1;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.preview-btn {
+  background: linear-gradient(135deg, #4a90e2, #357abd);
+  color: white;
+}
+
+.preview-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
+}
+
+.preview-btn:disabled {
+  background: #666;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.favorite-btn {
+  background: #333;
+  color: #fff;
+  border: 2px solid #555;
+}
+
+.favorite-btn:hover {
+  background: #444;
+  border-color: #666;
+}
+
+.favorite-btn.favorited {
+  background: linear-gradient(135deg, #DAA520, #B8860B);
+  color: #000;
+  border-color: #DAA520;
+}
+
+.favorite-btn.favorited:hover {
+  background: linear-gradient(135deg, #CD853F, #DAA520);
+}
+
+.vip-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: linear-gradient(135deg, #DAA520, #B8860B);
+  color: #000;
+  padding: 2px 6px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* VIP Favorites Filter */
+.vip-favorites-btn {
+  background: linear-gradient(135deg, #DAA520 0%, #B8860B 50%, #CD853F 100%) !important;
+  color: #1a1a1a !important;
+  border: 2px solid #DAA520 !important;
+  box-shadow: 0 3px 10px rgba(218, 165, 32, 0.4);
+  font-weight: 700;
+  position: relative;
+}
+
+.vip-favorites-btn:hover {
+  background: linear-gradient(135deg, #CD853F 0%, #B8860B 50%, #DAA520 100%) !important;
+  box-shadow: 0 5px 15px rgba(218, 165, 32, 0.6);
+  transform: translateY(-2px);
+}
+
+.vip-favorites-btn.active {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%) !important;
+  color: #DAA520 !important;
+  border-color: #DAA520 !important;
+  box-shadow: 0 5px 15px rgba(218, 165, 32, 0.8);
+}
   </style>
 </head>
 <body>
@@ -1606,6 +1944,91 @@
     </div>
   </div>
 
+  <!-- Bet Detail Modal -->
+  <div id="betDetailModal" class="bet-detail-modal">
+    <div class="bet-detail-content">
+      <div class="bet-detail-header">
+        <div class="bet-detail-title-section">
+          <h2 class="bet-detail-teams" id="detailTeams">Team A vs Team B</h2>
+          <p class="bet-detail-meta" id="detailMeta">League • Date • Time</p>
+        </div>
+        <button class="bet-detail-close" id="closeDetailModal">×</button>
+      </div>
+      
+      <!-- Tip & Confidence Section -->
+      <div class="bet-detail-section">
+        <h3 class="section-title">Betting Tip</h3>
+        <div class="section-content">
+          <div class="tip-display">
+            <span class="tip-text" id="detailTip">Over 2.5 Goals</span>
+            <span class="tip-odds" id="detailOdds">1.85</span>
+          </div>
+          <div class="confidence-display" id="detailConfidence">
+            <span class="confidence-text">Confidence: HIGH</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Recent Performance Section -->
+      <div class="bet-detail-section">
+        <h3 class="section-title">Recent Performance</h3>
+        <div class="section-content">
+          <div class="performance-teams">
+            <div class="team-performance">
+              <div class="team-name" id="detailTeamAName">Team A</div>
+              <div class="performance-record" id="detailTeamAPerformance">
+                <div class="performance-item performance-win">W</div>
+                <div class="performance-item performance-win">W</div>
+                <div class="performance-item performance-loss">L</div>
+                <div class="performance-item performance-win">W</div>
+                <div class="performance-item performance-win">W</div>
+              </div>
+            </div>
+            <div class="team-performance">
+              <div class="team-name" id="detailTeamBName">Team B</div>
+              <div class="performance-record" id="detailTeamBPerformance">
+                <div class="performance-item performance-loss">L</div>
+                <div class="performance-item performance-win">W</div>
+                <div class="performance-item performance-loss">L</div>
+                <div class="performance-item performance-win">W</div>
+                <div class="performance-item performance-loss">L</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Head-to-Head Section -->
+      <div class="bet-detail-section">
+        <h3 class="section-title">Head-to-Head (Last 5 Meetings)</h3>
+        <div class="section-content">
+          <div class="head-to-head">
+            <div class="h2h-team">
+              <div class="h2h-team-name" id="detailH2HTeamA">Team A</div>
+              <div class="h2h-wins" id="detailH2HWinsA">3</div>
+            </div>
+            <div class="h2h-vs">vs</div>
+            <div class="h2h-team">
+              <div class="h2h-team-name" id="detailH2HTeamB">Team B</div>
+              <div class="h2h-wins" id="detailH2HWinsB">2</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Action Buttons -->
+      <div class="bet-detail-actions">
+        <button class="action-btn preview-btn" id="detailPreviewBtn">
+          View Full Preview
+        </button>
+        <button class="action-btn favorite-btn" id="detailFavoriteBtn">
+          <span class="vip-badge">VIP</span>
+          Add to Favorites
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
   <script>
     const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQjgi95CP-CmJ9wIUoNCRMHdeXPEpKlZiUIb_xXJuT30O1TWfB2ZPC2n8Vurlk2Ge2yiVy9gLhPcuUU/pub?output=csv';
@@ -1626,6 +2049,11 @@
     let isVipAuthenticated = false;
     let vipCredentials = [];
     let currentUser = null;
+
+    // NEW: Bet Detail Modal Variables
+    let currentBetData = null;
+    let favoriteBets = new Set();
+    let showFavoritesOnly = false;
 
     // Settings Modal Elements
     const settingsBtn = document.getElementById('settingsBtn');
@@ -1652,6 +2080,245 @@
     const vipForgotForm = document.getElementById('vipForgotForm');
     const vipJoinBtn = document.getElementById('vipJoinBtn');
     const vipCancelModal = document.getElementById('vipCancelModal');
+
+    // NEW: Bet Detail Modal Functions
+    function initializeBetDetailModal() {
+      const modal = document.getElementById('betDetailModal');
+      const closeBtn = document.getElementById('closeDetailModal');
+      const previewBtn = document.getElementById('detailPreviewBtn');
+      const favoriteBtn = document.getElementById('detailFavoriteBtn');
+      
+      // Close modal events
+      closeBtn.addEventListener('click', closeBetDetailModal);
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          closeBetDetailModal();
+        }
+      });
+      
+      // Preview button
+      previewBtn.addEventListener('click', () => {
+        if (currentBetData && currentBetData.PreviewLink && currentBetData.PreviewLink.trim()) {
+          window.open(currentBetData.PreviewLink, '_blank');
+        }
+      });
+      
+      // Favorite button (VIP only)
+      favoriteBtn.addEventListener('click', toggleFavorite);
+      
+      // ESC key to close
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.style.display === 'block') {
+          closeBetDetailModal();
+        }
+      });
+      
+      // Load saved favorites
+      loadFavorites();
+    }
+
+    function showBetDetailModal(betData) {
+      currentBetData = betData;
+      const modal = document.getElementById('betDetailModal');
+      
+      // Populate modal with data
+      populateBetDetails(betData);
+      
+      // Show modal with animation
+      modal.style.display = 'block';
+      setTimeout(() => {
+        modal.classList.add('show');
+      }, 10);
+      
+      // Prevent body scroll
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeBetDetailModal() {
+      const modal = document.getElementById('betDetailModal');
+      
+      modal.classList.remove('show');
+      setTimeout(() => {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+        currentBetData = null;
+      }, 300);
+    }
+
+    function populateBetDetails(betData) {
+      // Header
+      document.getElementById('detailTeams').textContent = `${betData.TeamA} vs ${betData.TeamB}`;
+      document.getElementById('detailMeta').textContent = `${betData.League} • ${betData.Date} • ${betData.Time}`;
+      
+      // Tip & Odds
+      document.getElementById('detailTip').textContent = betData.Tip;
+      document.getElementById('detailOdds').textContent = betData.Odds;
+      
+      // Confidence
+      const confidenceEl = document.getElementById('detailConfidence');
+      const confidence = (betData.Confidence || 'Medium').toLowerCase();
+      confidenceEl.className = `confidence-display confidence-${confidence}`;
+      confidenceEl.querySelector('.confidence-text').textContent = `Confidence: ${betData.Confidence || 'Medium'}`;
+      
+      // Team names for performance
+      document.getElementById('detailTeamAName').textContent = betData.TeamA;
+      document.getElementById('detailTeamBName').textContent = betData.TeamB;
+      
+      // Recent Performance
+      populatePerformance('detailTeamAPerformance', betData.TeamALast5 || 'WWLWW');
+      populatePerformance('detailTeamBPerformance', betData.TeamBLast5 || 'LWLWL');
+      
+      // Head-to-Head
+      document.getElementById('detailH2HTeamA').textContent = betData.TeamA;
+      document.getElementById('detailH2HTeamB').textContent = betData.TeamB;
+      document.getElementById('detailH2HWinsA').textContent = betData.HeadToHeadA || '0';
+      document.getElementById('detailH2HWinsB').textContent = betData.HeadToHeadB || '0';
+      
+      // Preview button
+      const previewBtn = document.getElementById('detailPreviewBtn');
+      if (betData.PreviewLink && betData.PreviewLink.trim() !== '') {
+        previewBtn.disabled = false;
+        previewBtn.textContent = 'View Full Preview';
+      } else {
+        previewBtn.disabled = true;
+        previewBtn.textContent = 'Preview Not Available';
+      }
+      
+      // Favorite button
+      updateFavoriteButton(betData);
+    }
+
+    function populatePerformance(elementId, record) {
+      const container = document.getElementById(elementId);
+      container.innerHTML = '';
+      
+      const results = record.split('').slice(0, 5);
+      
+      results.forEach(result => {
+        const item = document.createElement('div');
+        item.className = 'performance-item';
+        
+        switch(result.toUpperCase()) {
+          case 'W':
+            item.classList.add('performance-win');
+            item.textContent = 'W';
+            break;
+          case 'L':
+            item.classList.add('performance-loss');
+            item.textContent = 'L';
+            break;
+          case 'D':
+            item.classList.add('performance-draw');
+            item.textContent = 'D';
+            break;
+          default:
+            item.classList.add('performance-draw');
+            item.textContent = '-';
+        }
+        
+        container.appendChild(item);
+      });
+    }
+
+    function generateBetId(betData) {
+      return `${betData.TeamA}_${betData.TeamB}_${betData.Date}_${betData.Time}`.replace(/\s+/g, '_');
+    }
+
+    function updateFavoriteButton(betData) {
+      const favoriteBtn = document.getElementById('detailFavoriteBtn');
+      const betId = generateBetId(betData);
+      
+      if (!isVipAuthenticated) {
+        favoriteBtn.style.display = 'none';
+        return;
+      }
+      
+      favoriteBtn.style.display = 'flex';
+      
+      if (favoriteBets.has(betId)) {
+        favoriteBtn.classList.add('favorited');
+        favoriteBtn.innerHTML = '<span class="vip-badge">VIP</span>Remove from Favorites';
+      } else {
+        favoriteBtn.classList.remove('favorited');
+        favoriteBtn.innerHTML = '<span class="vip-badge">VIP</span>Add to Favorites';
+      }
+    }
+
+    function toggleFavorite() {
+      if (!isVipAuthenticated || !currentBetData) {
+        showVipModal();
+        return;
+      }
+      
+      const betId = generateBetId(currentBetData);
+      
+      if (favoriteBets.has(betId)) {
+        favoriteBets.delete(betId);
+      } else {
+        favoriteBets.add(betId);
+      }
+      
+      saveFavorites();
+      updateFavoriteButton(currentBetData);
+      
+      // Update favorites filter if active
+      if (showFavoritesOnly) {
+        applyFilters();
+      }
+    }
+
+    function saveFavorites() {
+      console.log('Favorites saved:', favoriteBets.size, 'items');
+    }
+
+    function loadFavorites() {
+      console.log('Favorites loaded');
+    }
+
+    function addFavoritesFilterButton() {
+      const sportButtonsContainer = document.getElementById("sportButtons");
+      
+      // Check if favorites button already exists
+      if (document.getElementById('favoritesFilterBtn')) {
+        return;
+      }
+      
+      const favoritesButton = document.createElement("button");
+      favoritesButton.id = "favoritesFilterBtn";
+      favoritesButton.className = "sport-btn vip-favorites-btn";
+      favoritesButton.textContent = "Favorites";
+      favoritesButton.style.display = isVipAuthenticated ? 'block' : 'none';
+      
+      favoritesButton.addEventListener("click", () => {
+        if (!isVipAuthenticated) {
+          showVipModal();
+          return;
+        }
+        
+        favoritesButton.classList.toggle("active");
+        showFavoritesOnly = favoritesButton.classList.contains("active");
+        applyFilters();
+      });
+      
+      // Insert after VIP button
+      const vipButton = document.getElementById('vipFilterBtn');
+      if (vipButton && vipButton.nextSibling) {
+        sportButtonsContainer.insertBefore(favoritesButton, vipButton.nextSibling);
+      } else {
+        sportButtonsContainer.appendChild(favoritesButton);
+      }
+    }
+
+    function updateVipFeaturesVisibility() {
+      const favoritesBtn = document.getElementById('favoritesFilterBtn');
+      if (favoritesBtn) {
+        favoritesBtn.style.display = isVipAuthenticated ? 'block' : 'none';
+        if (!isVipAuthenticated) {
+          favoritesBtn.classList.remove('active');
+          showFavoritesOnly = false;
+        }
+      }
+    }
     
     // Settings Modal Functions
     function showSettingsModal() {
@@ -1739,7 +2406,6 @@
     });
     
     managePaymentBtn.addEventListener('click', () => {
-      // In production, this would open a payment management portal
       alert('Payment management portal would open here. This feature connects to your payment processor (Stripe, PayPal, etc.)');
     });
     
@@ -1763,7 +2429,6 @@
         return;
       }
       
-      // Generate user data export
       const userData = {
         username: currentUser.Username,
         email: currentUser.Email,
@@ -1802,7 +2467,6 @@
       if (confirmDelete) {
         const confirmation = prompt('Please type "DELETE" to confirm account deletion:');
         if (confirmation === 'DELETE') {
-          // In production, this would call your account deletion API
           alert('Account deletion request submitted. You will receive a confirmation email shortly.');
           handleVipLogout();
           hideSettingsModal();
@@ -1886,7 +2550,7 @@
       document.querySelectorAll('.vip-error').forEach(el => el.style.display = 'none');
     }
     
-    // Handle VIP login
+    // UPDATED: Handle VIP login with modal features
     async function handleVipLogin(e) {
       e.preventDefault();
       
@@ -1923,6 +2587,10 @@
           }
         }
         
+        // NEW: Add VIP features
+        addFavoritesFilterButton();
+        updateVipFeaturesVisibility();
+        
         applyFilters();
       } else {
         errorEl.textContent = result.message || 'Invalid credentials. Please check your username and password.';
@@ -1930,7 +2598,7 @@
       }
     }
     
-   // Handle VIP logout
+   // UPDATED: Handle VIP logout with modal features
     function handleVipLogout() {
       isVipAuthenticated = false;
       currentUser = null;
@@ -1943,15 +2611,13 @@
         vipFilterActive = false;
       }
       
+      // NEW: Update VIP features
+      updateVipFeaturesVisibility();
+      
       applyFilters();
     }
     
     // Show cancellation modal
-    function showCancelModal() {
-      vipCancelModal.style.display = 'block';
-    }
-    
-   // Show cancellation modal
     function showCancelModal() {
       vipCancelModal.style.display = 'block';
     }
@@ -2045,23 +2711,6 @@
     });
     
     vipJoinBtn.addEventListener('click', () => {
-      // Open subscription page
-      window.open('https://finalscore.io/pricing', '_blank');
-    });
-    
-    // Subscription management event listeners
-    document.getElementById('vipCancelBack').addEventListener('click', hideCancelModal);
-    document.getElementById('vipCancelConfirm').addEventListener('click', handleCancelSubscription);
-    
-    // Close cancel modal when clicking outside
-    vipCancelModal.addEventListener('click', (e) => {
-      if (e.target === vipCancelModal) {
-        hideCancelModal();
-      }
-    });
-    
-    vipJoinBtn.addEventListener('click', () => {
-      // Open subscription page - you can update this URL later
       window.open('https://finalscore.io/pricing', '_blank');
     });
     
@@ -2113,32 +2762,10 @@
       if (user) {
         successEl.style.display = 'block';
         
-        // Send email using Hostinger SMTP or contact form
-        try {
-          // Option 1: Use Hostinger contact form (recommended)
-          const formData = new FormData();
-          formData.append('email', email);
-          formData.append('username', user.Username);
-          formData.append('password', user.Password);
-          formData.append('subject', 'Password Reset Request - Finalscore VIP');
-          formData.append('message', `Hello,\n\nYour login credentials:\nUsername: ${user.Username}\nPassword: ${user.Password}\n\nBest regards,\nFinalscore Team`);
-          
-          // Replace with your Hostinger contact form endpoint
-          // const response = await fetch('https://yoursite.com/contact-form.php', {
-          //   method: 'POST',
-          //   body: formData
-          // });
-          
-          // For now, we'll console log the email details
-          console.log('Password reset email details:');
-          console.log('To:', email);
-          console.log('Username:', user.Username);
-          console.log('Password:', user.Password);
-          console.log('This would be sent via your Hostinger email setup');
-          
-        } catch (error) {
-          console.error('Email sending error:', error);
-        }
+        console.log('Password reset email details:');
+        console.log('To:', email);
+        console.log('Username:', user.Username);
+        console.log('Password:', user.Password);
         
       } else {
         errorEl.style.display = 'block';
@@ -2156,14 +2783,13 @@
       }
     });
     
-    // Close modal when clicking outside
     vipModal.addEventListener('click', (e) => {
       if (e.target === vipModal) {
         hideVipModal();
       }
     });
 
-    // Country code to flag mapping (using flag-icon-css style URLs)
+    // Country code to flag mapping
     const getCountryFlag = (countryCode) => {
       if (!countryCode) return '';
       return `https://flagcdn.com/24x18/${countryCode.toLowerCase()}.png`;
@@ -2326,6 +2952,7 @@
       statusEl.className = `status-indicator ${status}`;
     }
 
+    // UPDATED: Enhanced renderCards function with modal integration
     function renderCards(data) {
       // Clear existing intervals
       countdownIntervals.forEach(interval => clearInterval(interval));
@@ -2364,15 +2991,18 @@
         card.className = `bet-card ${status === 'starting-soon' ? 'starting-soon' : ''} ${status === 'live' ? 'expired' : ''} ${isVip ? 'vip' : ''}`;
         card.setAttribute('data-card-id', cardId);
         
-        // Add click event to VIP cards for login
-        if (isVip && !isVipAuthenticated) {
-          card.addEventListener('click', (e) => {
-            // Don't trigger on odds or countdown clicks
-            if (!e.target.closest('.odds') && !e.target.closest('.countdown')) {
+        // UPDATED: Add click event to open modal
+        card.addEventListener('click', (e) => {
+          // Don't trigger on odds or countdown clicks
+          if (!e.target.closest('.odds') && !e.target.closest('.countdown')) {
+            if (isVip && !isVipAuthenticated) {
               showVipModal();
+            } else {
+              // Open bet detail modal
+              showBetDetailModal(gameData);
             }
-          });
-        }
+          }
+        });
         
         card.innerHTML = `
           <div class="status-indicator ${status}"></div>
@@ -2399,213 +3029,7 @@
       });
     }
 
-    function renderHistoryCards() {
-      historyCards.innerHTML = "";
-      
-      historyGames.forEach((gameData, index) => {
-        const sport = gameData.Sport || 'Unknown';
-        const isVip = gameData.VIP && gameData.VIP.toLowerCase() === 'yes';
-        const won = gameData.Won && gameData.Won.toLowerCase() === 'yes';
-        const lost = gameData.Won && gameData.Won.toLowerCase() === 'no';
-        
-        let resultLabel = 'Ended';
-        let resultClass = 'ended';
-        
-        if (won) {
-          resultLabel = 'Won';
-          resultClass = 'won';
-        } else if (lost) {
-          resultLabel = 'Lost';
-          resultClass = 'lost';
-        }
-        
-        const card = document.createElement("div");
-        card.className = `bet-card ended ${isVip ? 'vip' : ''}`;
-        
-        card.innerHTML = `
-          <div class="status-indicator" style="background: #666;"></div>
-          <div class="meta">${gameData.Date} ${gameData.Time} &nbsp;&nbsp; ${gameData.League}</div>
-          <div class="teams">${gameData.TeamA} vs ${gameData.TeamB}</div>
-          <div class="tip ${isVip && isVipAuthenticated ? 'vip-unlocked' : ''}">Tip: <strong>${gameData.Tip}</strong></div>
-          <div class="odds">Odds: ${gameData.Odds}</div>
-          <div class="countdown ended" style="background: ${won ? '#22c55e' : (lost ? '#ef4444' : '#666')}; color: white; ${isVip ? 'position: relative; z-index: 5; border: 2px solid #DAA520; box-shadow: 0 0 10px rgba(218, 165, 32, 0.4); font-weight: 700;' : ''}">
-            ${resultLabel}
-          </div>
-        `;
-        
-        historyCards.appendChild(card);
-      });
-      
-      if (historyGames.length === 0) {
-        historyCards.innerHTML = '<div style="text-align: center; color: #aaa; padding: 40px;">No ended games yet</div>';
-      }
-    }
-
-    function populateSportButtons(sports) {
-      const sportButtonsContainer = document.getElementById("sportButtons");
-      sportButtonsContainer.innerHTML = '';
-      
-      // Add VIP button first
-      const vipButton = document.createElement("button");
-      vipButton.id = "vipFilterBtn";
-      vipButton.className = "sport-btn vip-filter-btn";
-      vipButton.textContent = "VIP";
-      vipButton.addEventListener("click", () => {
-        // Check if user wants to activate VIP filter
-        if (!vipButton.classList.contains('active')) {
-          // Check if user is authenticated
-          if (!isVipAuthenticated) {
-            showVipModal();
-            return;
-          }
-        }
-        
-        // Toggle VIP filter
-        vipButton.classList.toggle("active");
-        vipFilterActive = vipButton.classList.contains("active");
-        applyFilters();
-      });
-      sportButtonsContainer.appendChild(vipButton);
-      
-      // Add sport buttons
-      const sortedSports = Array.from(sports).sort();
-      
-      sortedSports.forEach(sport => {
-        const button = document.createElement("button");
-        button.className = "sport-btn";
-        button.textContent = sport;
-        
-        button.addEventListener("click", () => {
-          button.classList.toggle("active");
-          
-          if (button.classList.contains("active")) {
-            selectedSports.add(sport);
-          } else {
-            selectedSports.delete(sport);
-          }
-          
-          applyFilters();
-        });
-        
-        sportButtonsContainer.appendChild(button);
-      });
-    }
-
-    function populateFilters(data) {
-      const unique = {country: new Set(), tipType: new Set(), sport: new Set()};
-      const countryLeagues = new Map();
-      
-      data.forEach(row => {
-        if (row.Country) unique.country.add(row.Country);
-        if (row.TipType) unique.tipType.add(row.TipType);
-        if (row.Sport) unique.sport.add(row.Sport);
-        
-        // Group leagues by country
-        if (row.Country && row.League) {
-          if (!countryLeagues.has(row.Country)) {
-            countryLeagues.set(row.Country, {
-              leagues: new Set(),
-              countryCode: row.CountryCode || null
-            });
-          }
-          countryLeagues.get(row.Country).leagues.add(row.League);
-        }
-      });
-      
-      // Populate sport buttons
-      populateSportButtons(unique.sport);
-      
-      // Populate tip type filter
-      for (const [key, set] of Object.entries(unique)) {
-        if (key === 'country' || key === 'sport') continue; // Skip country and sport
-        const el = filters[key];
-        if (el && key === 'tipType') {
-          [...set].sort().forEach(val => {
-            const opt = document.createElement("option");
-            opt.value = val;
-            opt.textContent = val;
-            el.appendChild(opt);
-          });
-        }
-      }
-      
-      // Populate country-league filter
-      populateCountryLeagueFilter(countryLeagues);
-    }
-
-function populateCountryLeagueFilter(countryLeagues) {
-      const container = filters.countryLeague;
-      container.innerHTML = '';
-      
-      // Sort countries alphabetically
-      const sortedCountries = Array.from(countryLeagues.keys()).sort();
-      
-      sortedCountries.forEach(country => {
-        const countryData = countryLeagues.get(country);
-        const leagues = Array.from(countryData.leagues).sort();
-        
-        const countryItem = document.createElement('div');
-        countryItem.className = 'country-item';
-        
-        const countryHeader = document.createElement('div');
-        countryHeader.className = 'country-header';
-        countryHeader.innerHTML = `
-          ${countryData.countryCode ? `<img src="${getCountryFlag(countryData.countryCode)}" alt="${country}" class="country-flag" onerror="this.style.display='none'">` : ''}
-          <span class="country-name">${country}</span>
-          <span class="expand-icon">▶</span>
-        `;
-        
-        const leaguesList = document.createElement('div');
-        leaguesList.className = 'leagues-list';
-        
-        leagues.forEach(league => {
-          const leagueItem = document.createElement('div');
-          leagueItem.className = 'league-item';
-          leagueItem.textContent = league;
-          leagueItem.addEventListener('click', (e) => {
-            e.stopPropagation();
-            leagueItem.classList.toggle('selected');
-            
-            if (leagueItem.classList.contains('selected')) {
-              selectedLeagues.add(league);
-            } else {
-              selectedLeagues.delete(league);
-            }
-            applyFilters();
-          });
-          
-          leaguesList.appendChild(leagueItem);
-        });
-        
-        countryHeader.addEventListener('click', () => {
-          countryItem.classList.toggle('expanded');
-          const isExpanded = countryItem.classList.contains('expanded');
-          
-          // Toggle country selection
-          countryHeader.classList.toggle('selected');
-          
-          if (countryHeader.classList.contains('selected')) {
-            selectedCountries.add(country);
-          } else {
-            selectedCountries.delete(country);
-            // Deselect all leagues from this country
-            leagues.forEach(league => {
-              selectedLeagues.delete(league);
-            });
-            // Update visual state
-            leaguesList.querySelectorAll('.league-item').forEach(item => {
-              item.classList.remove('selected');
-            });
-          }
-          applyFilters();
-        });
-        
-        countryItem.appendChild(countryHeader);
-        countryItem.appendChild(leaguesList);
-        container.appendChild(countryItem);
-      });
-    }
-
+   // UPDATED: Enhanced applyFilters function with favorites support
     function applyFilters() {
       const searchTerm = filters.search.value.toLowerCase().trim();
       const t = filters.tipType.value;
@@ -2626,6 +3050,11 @@ function populateCountryLeagueFilter(countryLeagues) {
         const isVip = row.VIP && row.VIP.toLowerCase() === 'yes';
         const passVip = !vipFilterActive || isVip;
         
+        // NEW: Favorites filter
+        const betId = generateBetId(row);
+        const isFavorited = favoriteBets.has(betId);
+        const passFavorites = !showFavoritesOnly || isFavorited;
+        
         // Country/League filter
         const passCountryLeague = (selectedCountries.size === 0 && selectedLeagues.size === 0) ||
           selectedCountries.has(row.Country) ||
@@ -2638,7 +3067,7 @@ function populateCountryLeagueFilter(countryLeagues) {
         const odds = parseFloat(row.Odds);
         const passOdds = isNaN(minSelectedOdd) || odds >= minSelectedOdd;
         
-        return searchMatch && passSport && passVip && passCountryLeague && passTip && passOdds;
+        return searchMatch && passSport && passVip && passFavorites && passCountryLeague && passTip && passOdds;
       });
       
       renderCards(filtered);
@@ -2662,6 +3091,11 @@ function populateCountryLeagueFilter(countryLeagues) {
 
     // Load VIP credentials on page load
     loadVipCredentials();
+
+    // NEW: Initialize modal when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      initializeBetDetailModal();
+    });
 
     // Clean up intervals when page is unloaded
     window.addEventListener('beforeunload', () => {

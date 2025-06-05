@@ -1969,16 +1969,17 @@
         
         // Call your Google Apps Script
         const response = await fetch('https://script.google.com/macros/s/AKfycbwqLiatPvMS_o1Zc_UmLq2mIiQBaD0JCLKfORSZumnI4EK2voDlZrXJCtG3fZlP4mL6/exec', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            username: currentUser.Username,
-            newStatus: 'Cancelled',
-            cancellationDate: new Date().toISOString().split('T')[0] // YYYY-MM-DD format
-          })
-        });
+  method: 'POST',
+  mode: 'no-cors',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    username: currentUser.Username,
+    newStatus: 'Cancelled',
+    cancellationDate: new Date().toISOString().split('T')[0]
+  })
+});
         
         console.log('Response received:', response);
         

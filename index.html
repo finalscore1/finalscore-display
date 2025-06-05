@@ -25,6 +25,8 @@ updateInterfaceVisibility();
     }
     
     function initializeGamification() {
+      console.log('🎮 Initializing gamification features...');
+      
       const leaderboardBtn = document.getElementById('leaderboardBtn');
       const closeLeaderboardBtn = document.getElementById('closeLeaderboardBtn');
       const viewAchievementsBtn = document.getElementById('viewAchievementsBtn');
@@ -32,10 +34,20 @@ updateInterfaceVisibility();
       const achievementsModal = document.getElementById('achievementsModal');
       const leaderboardContainer = document.getElementById('leaderboardContainer');
       
+      console.log('Leaderboard button found:', !!leaderboardBtn);
+      console.log('Leaderboard container found:', !!leaderboardContainer);
+      
       // Leaderboard events
       if (leaderboardBtn) {
-        leaderboardBtn.addEventListener('click', showLeaderboard);
+        leaderboardBtn.addEventListener('click', () => {
+          console.log('🏆 Leaderboard button clicked');
+          showLeaderboard();
+        });
+        console.log('✅ Leaderboard button event attached');
+      } else {
+        console.log('❌ Leaderboard button not found');
       }
+      
       if (closeLeaderboardBtn) {
         closeLeaderboardBtn.addEventListener('click', hideLeaderboard);
       }
@@ -60,6 +72,7 @@ updateInterfaceVisibility();
       
       // Update initial stats
       updateGameStats();
+      console.log('🎮 Gamification initialization complete');
     }
     
     function initializeAIFeatures() {
@@ -877,12 +890,13 @@ updateInterfaceVisibility();
       gap: 20px;
     }
     .bet-card {
-      background: #1a1a1a;
+      background: var(--secondary-bg);
       border-radius: 16px;
       padding: 20px;
       box-shadow: 0 6px 16px rgba(0,0,0,0.5);
       transition: all 0.3s;
       position: relative;
+      border: 1px solid var(--border-color);
     }
     .bet-card:hover {
       transform: translateY(-4px);
@@ -903,17 +917,19 @@ updateInterfaceVisibility();
     }
     .meta {
       font-size: 13px;
-      color: #aaa;
+      color: var(--text-secondary);
       margin-bottom: 8px;
     }
     .teams {
       font-size: 18px;
       font-weight: 600;
       margin-bottom: 6px;
+      color: var(--text-primary);
     }
     .tip {
       font-size: 14px;
       margin-bottom: 10px;
+      color: var(--text-primary);
     }
     .odds {
       background: #2e2e2e;
@@ -3637,16 +3653,24 @@ updateInterfaceVisibility();
 
     // Leaderboard Management
     function showLeaderboard() {
+      console.log('📋 Attempting to show leaderboard...');
       const leaderboardContainer = document.getElementById('leaderboardContainer');
+      console.log('Leaderboard container found:', !!leaderboardContainer);
+      
       if (leaderboardContainer) {
         leaderboardContainer.style.display = 'block';
+        console.log('✅ Leaderboard displayed');
+      } else {
+        console.log('❌ Leaderboard container not found');
       }
     }
     
     function hideLeaderboard() {
+      console.log('🚫 Hiding leaderboard...');
       const leaderboardContainer = document.getElementById('leaderboardContainer');
       if (leaderboardContainer) {
         leaderboardContainer.style.display = 'none';
+        console.log('✅ Leaderboard hidden');
       }
     }
 
@@ -4347,18 +4371,7 @@ updateInterfaceVisibility();
 
     // Initialize all features when page loads
     document.addEventListener('DOMContentLoaded', () => {
-      initializeBetDetailModal();
-      initializeFavoritesToggle();
-      initializeInterfaceSettings();
-      initializeThemeSettings();
-      initializeGamification();
-      initializeAIFeatures();
-      updateVipFeaturesVisibility();
-      
-      // Start auto-refresh by default
-      startAutoRefresh();
-      
-      // Add interface elements to sidebar
+      // First, add interface elements to sidebar
       const sidebar = document.querySelector('.sidebar');
       if (sidebar) {
         // Add live indicator
@@ -4396,6 +4409,20 @@ updateInterfaceVisibility();
         `;
         sidebar.insertBefore(quickStats, sidebar.children[2]);
       }
+      
+      // Then initialize all features
+      initializeBetDetailModal();
+      initializeFavoritesToggle();
+      initializeInterfaceSettings();
+      initializeThemeSettings();
+      initializeGamification();
+      initializeAIFeatures();
+      updateVipFeaturesVisibility();
+      
+      // Start auto-refresh by default
+      startAutoRefresh();
+      
+      console.log('✅ All features initialized successfully');
     });
 
     // Clean up intervals when page is unloaded

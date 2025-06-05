@@ -1,4 +1,33 @@
-<!DOCTYPE html>
+function applyFilters() {
+      if (!filters.search || !filters.tipType || !filters.odds) return;
+      
+      const searchTerm = filters.search.value.toLowerCase().trim();
+      const t = filters.tipType.value;
+      const minSelectedOdd = parseFloat(filters.odds.value);
+
+      const filtered = allData.filter(row => {
+        const searchMatch = !searchTerm || 
+          row.TeamA?.toLowerCase().includes(searchTerm) ||
+          row.TeamB?.toLowerCase().includes(searchTerm) ||
+          row.Country?.toLowerCase().includes(searchTerm) ||
+          row.League?.toLowerCase().includes(searchTerm);
+        
+        const passSport = selectedSports.size === 0 || selectedSports.has(row.Sport);
+        
+        const isVip = row.VIP && row.VIP.toLowerCase() === 'yes';
+        const passVip = !vipFilterActive || isVip;
+        
+        const betId = generateBetId(row);
+        const isFavorited = favoriteBets.has(betId);
+        const passFavorites = !showFavoritesOnly || isFavorited;
+        
+        const passCountryLeague = (selectedCountries.size === 0 && selectedLeagues.size === 0) ||
+          selectedCountries.has(row.Country) ||
+          selectedLeagues.has(row.League);
+        
+        const passTip = !t || row.TipType === t;
+        
+        const odds = parseFloat(row.<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
@@ -62,7 +91,126 @@
       border-color: #4a90e2;
     }
     
-    /* Favorites Toggle */
+    /* Quick Stats Panel */
+    .quick-stats {
+      background: #1a1a1a;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+      border: 1px solid #333;
+    }
+    
+    .quick-stats h3 {
+      color: #fff;
+      font-size: 14px;
+      margin: 0 0 12px 0;
+      font-weight: 600;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    
+    .stat-item {
+      text-align: center;
+      padding: 8px;
+      background: #262626;
+      border-radius: 8px;
+      border: 1px solid #333;
+    }
+    
+    .stat-value {
+      color: #4a90e2;
+      font-size: 18px;
+      font-weight: 700;
+      display: block;
+    }
+    
+    .stat-label {
+      color: #aaa;
+      font-size: 11px;
+      margin-top: 2px;
+    }
+    
+    .stat-vip .stat-value {
+      color: #DAA520;
+    }
+    
+    /* Auto-refresh Toggle */
+    .auto-refresh-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      padding: 10px 12px;
+      background: #262626;
+      border-radius: 8px;
+      border: 1px solid #333;
+    }
+    
+    .auto-refresh-label {
+      color: #fff;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    
+    .toggle-switch {
+      position: relative;
+      width: 40px;
+      height: 20px;
+      background: #444;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .toggle-switch.active {
+      background: #4a90e2;
+    }
+    
+    .toggle-slider {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 16px;
+      height: 16px;
+      background: #fff;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+    
+    .toggle-switch.active .toggle-slider {
+      transform: translateX(20px);
+    }
+    
+    /* Live Indicator */
+    .live-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 15px;
+      padding: 8px 12px;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      border-radius: 8px;
+      color: white;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      background: #fff;
+      border-radius: 50%;
+      animation: livePulse 1.5s infinite;
+    }
+    
+    @keyframes livePulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(1.2); }
+    }
     .favorites-toggle {
       display: flex;
       align-items: center;
@@ -90,7 +238,7 @@
     }
     
     .star-icon {
-      font-size: 24px;
+      font-size: 18px;
       transition: all 0.3s ease;
       color: #666;
     }
@@ -899,55 +1047,50 @@
     }
     .tooltip-text {
       visibility: hidden;
-      width: 240px;
+      width: 200px;
       background: #1f2937;
       color: #ffffff;
       text-align: left;
       border-radius: 8px;
-      padding: 12px;
+      padding: 10px;
       position: absolute;
       z-index: 1000;
       bottom: 125%;
-      left: 50%;
-      margin-left: -120px;
+      right: 0;
       opacity: 0;
       transition: opacity 0.3s;
-      font-size: 13px;
+      font-size: 12px;
       line-height: 1.4;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
       border: 1px solid #374151;
-      max-width: calc(100vw - 40px);
       word-wrap: break-word;
+    }
+    
+    .tooltip-text::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      right: 20px;
+      margin-right: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: #1f2937 transparent transparent transparent;
     }
     
     @media (max-width: 768px) {
       .tooltip-text {
-        width: 200px;
-        margin-left: -100px;
-        left: 50%;
-        right: auto;
-        font-size: 12px;
-        padding: 10px;
+        width: 180px;
+        font-size: 11px;
+        padding: 8px;
       }
     }
     
     @media (max-width: 480px) {
       .tooltip-text {
-        width: 180px;
-        margin-left: -90px;
-        font-size: 11px;
-        padding: 8px;
+        width: 160px;
+        font-size: 10px;
+        padding: 6px;
       }
-    }
-    .tooltip-text::after {
-      content: "";
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      margin-left: -5px;
-      border-width: 5px;
-      border-style: solid;
-      border-color: #1f2937 transparent transparent transparent;
     }
     .info-tooltip:hover .tooltip-text {
       visibility: visible;
@@ -1211,8 +1354,8 @@
     }
     
     .vip-status {
-      position: fixed;
-      top: 30px;
+      position: absolute;
+      top: 0;
       right: 160px;
       background: linear-gradient(135deg, #DAA520, #B8860B);
       color: #000;
@@ -1223,6 +1366,7 @@
       display: none;
       z-index: 999;
       box-shadow: 0 4px 12px rgba(218, 165, 32, 0.3);
+      transform: translateY(10px);
     }
     
     .vip-logout-btn {
@@ -1740,6 +1884,43 @@
       <h2>Filter</h2>
       
       <input type="text" id="searchFilter" placeholder="Search..." />
+
+      <!-- Live Status Indicator -->
+      <div class="live-indicator" id="liveIndicator">
+        <div class="live-dot"></div>
+        <span>Live Updates Active</span>
+      </div>
+
+      <!-- Auto-refresh Toggle -->
+      <div class="auto-refresh-toggle">
+        <span class="auto-refresh-label">Auto-refresh</span>
+        <div class="toggle-switch active" id="autoRefreshToggle">
+          <div class="toggle-slider"></div>
+        </div>
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="quick-stats">
+        <h3>Quick Stats</h3>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <span class="stat-value" id="totalBetsCount">0</span>
+            <div class="stat-label">Total Bets</div>
+          </div>
+          <div class="stat-item stat-vip">
+            <span class="stat-value" id="vipBetsCount">0</span>
+            <div class="stat-label">VIP Bets</div>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value" id="liveBetsCount">0</span>
+            <div class="stat-label">Live Now</div>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value" id="favoritesCount">0</span>
+            <div class="stat-label">Favorites</div>
+          </div>
+        </div>
+      </div>
 
       <!-- Favorites Toggle -->
       <div class="favorites-toggle" id="favoritesToggle" title="Show Favorites Only">
@@ -2952,11 +3133,94 @@
     let countdownIntervals = new Map();
     let historyGames = [];
     let previousCardCount = 0;
+    let previousVipCardCount = 0;
+    let isInitialLoad = true;
+    let autoRefreshEnabled = true;
+    let refreshInterval = null;
 
-    // Sound notification for new cards
-    function playNewCardSound() {
+    // Auto-refresh functionality
+    function startAutoRefresh() {
+      if (refreshInterval) clearInterval(refreshInterval);
+      
+      refreshInterval = setInterval(() => {
+        if (autoRefreshEnabled) {
+          console.log('🔄 Auto-refreshing data...');
+          Papa.parse(sheetURL, {
+            download: true,
+            header: true,
+            complete: function(results) {
+              const newData = results.data.filter(row => row.TeamA && row.TeamB && row.Odds);
+              allData = newData;
+              applyFilters();
+              updateQuickStats();
+            }
+          });
+        }
+      }, 30000); // Refresh every 30 seconds
+    }
+
+    function stopAutoRefresh() {
+      if (refreshInterval) {
+        clearInterval(refreshInterval);
+        refreshInterval = null;
+      }
+    }
+
+    // Quick Stats Update
+    function updateQuickStats() {
+      const activeGames = allData.filter(row => {
+        const gameDateTime = parseGameDateTime(row.Date, row.Time);
+        const status = getGameStatus(gameDateTime);
+        return status !== 'ended';
+      });
+      
+      const vipBets = activeGames.filter(row => row.VIP && row.VIP.toLowerCase() === 'yes');
+      const liveBets = activeGames.filter(row => {
+        const gameDateTime = parseGameDateTime(row.Date, row.Time);
+        return getGameStatus(gameDateTime) === 'live';
+      });
+      
+      const totalBetsEl = document.getElementById('totalBetsCount');
+      const vipBetsEl = document.getElementById('vipBetsCount');
+      const liveBetsEl = document.getElementById('liveBetsCount');
+      const favoritesEl = document.getElementById('favoritesCount');
+      
+      if (totalBetsEl) totalBetsEl.textContent = activeGames.length;
+      if (vipBetsEl) vipBetsEl.textContent = vipBets.length;
+      if (liveBetsEl) liveBetsEl.textContent = liveBets.length;
+      if (favoritesEl) favoritesEl.textContent = favoriteBets.size;
+    }
+
+    // Initialize auto-refresh toggle
+    function initializeAutoRefresh() {
+      const autoRefreshToggle = document.getElementById('autoRefreshToggle');
+      const liveIndicator = document.getElementById('liveIndicator');
+      
+      if (autoRefreshToggle) {
+        autoRefreshToggle.addEventListener('click', () => {
+          autoRefreshEnabled = !autoRefreshEnabled;
+          
+          if (autoRefreshEnabled) {
+            autoRefreshToggle.classList.add('active');
+            if (liveIndicator) liveIndicator.style.display = 'flex';
+            startAutoRefresh();
+            console.log('✅ Auto-refresh enabled');
+          } else {
+            autoRefreshToggle.classList.remove('active');
+            if (liveIndicator) liveIndicator.style.display = 'none';
+            stopAutoRefresh();
+            console.log('⏸️ Auto-refresh disabled');
+          }
+        });
+      }
+      
+      // Start auto-refresh by default
+      startAutoRefresh();
+    }
+
+    // Sound notifications for new cards
+    function playVipNotificationSound() {
       try {
-        // Create a subtle notification sound using Web Audio API
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
         const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
@@ -2964,21 +3228,47 @@
         oscillator.connect(gainNode);
         gainNode.connect(audioContext.destination);
         
-        // Configure sound - pleasant notification tone
-        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-        oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.1);
-        oscillator.frequency.setValueAtTime(700, audioContext.currentTime + 0.2);
+        // VIP sound - premium golden tone
+        oscillator.frequency.setValueAtTime(1000, audioContext.currentTime);
+        oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.1);
+        oscillator.frequency.setValueAtTime(1200, audioContext.currentTime + 0.2);
         
         gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-        gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + 0.05);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+        gainNode.gain.linearRampToValueAtTime(0.15, audioContext.currentTime + 0.05);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
         
         oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.3);
+        oscillator.stop(audioContext.currentTime + 0.4);
         
-        console.log('🔔 New bet card detected - notification sound played');
+        console.log('🌟 New VIP bet detected - premium notification played');
       } catch (error) {
-        console.log('Sound notification not available:', error);
+        console.log('VIP sound notification not available:', error);
+      }
+    }
+
+    function playRegularNotificationSound() {
+      try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        // Regular sound - gentle notification
+        oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
+        oscillator.frequency.setValueAtTime(500, audioContext.currentTime + 0.1);
+        
+        gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.08, audioContext.currentTime + 0.05);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.25);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.25);
+        
+        console.log('🔔 New regular bet detected - notification played');
+      } catch (error) {
+        console.log('Regular sound notification not available:', error);
       }
     }
 
@@ -3139,17 +3429,36 @@
         }
       });
       
-      // Check for new cards and play sound notification
-      const currentCardCount = activeGames.length;
-      if (previousCardCount > 0 && currentCardCount > previousCardCount) {
-        playNewCardSound();
+      // Check for new cards and play appropriate sound notifications
+      if (!isInitialLoad) {
+        const currentCardCount = activeGames.length;
+        const currentVipCardCount = activeGames.filter(game => game.VIP && game.VIP.toLowerCase() === 'yes').length;
+        
+        // Check for new VIP cards
+        if (previousVipCardCount > 0 && currentVipCardCount > previousVipCardCount) {
+          playVipNotificationSound();
+        }
+        // Check for new regular cards (only if no new VIP cards to avoid double sound)
+        else if (previousCardCount > 0 && currentCardCount > previousCardCount) {
+          playRegularNotificationSound();
+        }
+        
+        previousCardCount = currentCardCount;
+        previousVipCardCount = currentVipCardCount;
+      } else {
+        // Set initial counts without playing sounds
+        previousCardCount = activeGames.length;
+        previousVipCardCount = activeGames.filter(game => game.VIP && game.VIP.toLowerCase() === 'yes').length;
+        isInitialLoad = false;
       }
-      previousCardCount = currentCardCount;
       
       historyGames = endedGames;
       if (historyCount) historyCount.textContent = historyGames.length;
       
       container.innerHTML = "";
+      
+      // Update quick stats
+      updateQuickStats();
       
       activeGames.forEach((gameData) => {
         const cardId = `card-${gameData.index}`;
@@ -3425,6 +3734,11 @@
       renderCards(filtered);
     }
 
+    function saveFavorites() {
+      updateQuickStats();
+      console.log('Favorites saved:', favoriteBets.size, 'items');
+    }
+
     // Load data and initialize
     Papa.parse(sheetURL, {
       download: true,
@@ -3433,6 +3747,7 @@
         allData = results.data.filter(row => row.TeamA && row.TeamB && row.Odds);
         populateFilters(allData);
         renderCards(allData);
+        updateQuickStats();
         Object.values(filters).forEach(el => {
           if (el && el.addEventListener) {
             el.addEventListener('change', applyFilters);
@@ -3444,16 +3759,18 @@
     // Load VIP credentials on page load
     loadVipCredentials();
 
-    // Initialize modal when page loads
+    // Initialize all features when page loads
     document.addEventListener('DOMContentLoaded', () => {
       initializeBetDetailModal();
       initializeFavoritesToggle();
+      initializeAutoRefresh();
       updateVipFeaturesVisibility();
     });
 
     // Clean up intervals when page is unloaded
     window.addEventListener('beforeunload', () => {
       countdownIntervals.forEach(interval => clearInterval(interval));
+      stopAutoRefresh();
     });
   </script>
 </body>

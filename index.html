@@ -1930,7 +1930,7 @@
       }
     }
     
-    // Handle VIP logout
+   // Handle VIP logout
     function handleVipLogout() {
       isVipAuthenticated = false;
       currentUser = null;
@@ -1946,7 +1946,12 @@
       applyFilters();
     }
     
-   // Hide cancellation modal
+    // Show cancellation modal
+    function showCancelModal() {
+      vipCancelModal.style.display = 'block';
+    }
+    
+    // Hide cancellation modal
     function hideCancelModal() {
       vipCancelModal.style.display = 'none';
     }
@@ -1959,6 +1964,8 @@
         const originalText = confirmBtn.textContent;
         confirmBtn.textContent = 'Cancelling...';
         confirmBtn.disabled = true;
+        
+        console.log('Starting cancellation process for user:', currentUser.Username);
         
         // Call your Google Apps Script
         const response = await fetch('https://script.google.com/macros/s/AKfycbwV9n-zd2kr6wT8UxfNruW--OSi150tfsh_2BXRdzUzvBY4gNqCzI0_2G5Hsa4JqbV1/exec', {
@@ -1973,7 +1980,10 @@
           })
         });
         
+        console.log('Response received:', response);
+        
         const result = await response.json();
+        console.log('Parsed result:', result);
         
         if (result.success) {
           console.log('Subscription cancelled successfully in spreadsheet');

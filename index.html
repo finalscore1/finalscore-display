@@ -1951,6 +1951,11 @@
       vipCancelModal.style.display = 'block';
     }
     
+   // Show cancellation modal
+    function showCancelModal() {
+      vipCancelModal.style.display = 'block';
+    }
+    
     // Hide cancellation modal
     function hideCancelModal() {
       vipCancelModal.style.display = 'none';
@@ -1970,7 +1975,7 @@
         // Create a hidden form to submit data (bypasses CORS)
         const form = document.createElement('form');
         form.method = 'POST';
-        form.action = 'https://script.google.com/macros/s/AKfycbzfsiEW0HYCL3r9MtG36toJvKSerTb_mcV1TaB1WW7A9f0YpmNyiCBZhaOLZxh_a6S9/exec';
+        form.action = 'https://script.google.com/macros/s/AKfycby5ogei_ySKMMw8q28RMWVEmgKHFMjoGWp0dqLUzN2WN3M8QWE3sp8idsOyFf9tP_Ln/exec';
         form.target = '_blank'; // Open in new tab to avoid page reload
         form.style.display = 'none';
         
@@ -2029,22 +2034,6 @@
         alert('⚠️ Subscription cancelled locally, but there was a connection issue.\n\nPlease contact support to confirm the cancellation has been processed.');
       }
     }
-        
-      } catch (error) {
-        console.error('Error cancelling subscription:', error);
-        
-        // Reset button state
-        const confirmBtn = document.getElementById('vipCancelConfirm');
-        confirmBtn.textContent = 'Cancel Subscription';
-        confirmBtn.disabled = false;
-        
-        // Still proceed with local cancellation but warn user
-        hideCancelModal();
-        handleVipLogout();
-        
-        alert('⚠️ Subscription cancelled locally, but there was a connection issue.\n\nPlease contact support to confirm the cancellation has been processed.');
-      }
-    }
     
     // Event listeners for VIP system
     vipForm.addEventListener('submit', handleVipLogin);
@@ -2053,6 +2042,22 @@
     vipForgotBtn.addEventListener('click', () => {
       hideVipModal();
       showForgotModal();
+    });
+    
+    vipJoinBtn.addEventListener('click', () => {
+      // Open subscription page
+      window.open('https://finalscore.io/pricing', '_blank');
+    });
+    
+    // Subscription management event listeners
+    document.getElementById('vipCancelBack').addEventListener('click', hideCancelModal);
+    document.getElementById('vipCancelConfirm').addEventListener('click', handleCancelSubscription);
+    
+    // Close cancel modal when clicking outside
+    vipCancelModal.addEventListener('click', (e) => {
+      if (e.target === vipCancelModal) {
+        hideCancelModal();
+      }
     });
     
     vipJoinBtn.addEventListener('click', () => {

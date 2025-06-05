@@ -1,4 +1,117 @@
-function applyFilters() {
+updateInterfaceVisibility();
+    }
+
+    function initializeThemeSettings() {
+      const themeSelector = document.getElementById('themeSelector');
+      const colorOptions = document.querySelectorAll('.color-option');
+      
+      // Theme selector
+      if (themeSelector) {
+        themeSelector.addEventListener('change', (e) => {
+          setTheme(e.target.value);
+        });
+      }
+      
+      // Color options
+      colorOptions.forEach(option => {
+        option.addEventListener('click', () => {
+          updateAccentColor(option.dataset.color);
+        });
+      });
+      
+      // Set initial theme and color
+      setTheme(currentTheme);
+      updateAccentColor(currentAccent);
+    }
+    
+    function initializeGamification() {
+      const leaderboardBtn = document.getElementById('leaderboardBtn');
+      const closeLeaderboardBtn = document.getElementById('closeLeaderboardBtn');
+      const viewAchievementsBtn = document.getElementById('viewAchievementsBtn');
+      const achievementsCloseBtn = document.getElementById('achievementsCloseBtn');
+      const achievementsModal = document.getElementById('achievementsModal');
+      const leaderboardContainer = document.getElementById('leaderboardContainer');
+      
+      // Leaderboard events
+      if (leaderboardBtn) {
+        leaderboardBtn.addEventListener('click', showLeaderboard);
+      }
+      if (closeLeaderboardBtn) {
+        closeLeaderboardBtn.addEventListener('click', hideLeaderboard);
+      }
+      if (leaderboardContainer) {
+        leaderboardContainer.addEventListener('click', (e) => {
+          if (e.target === leaderboardContainer) hideLeaderboard();
+        });
+      }
+      
+      // Achievements events  
+      if (viewAchievementsBtn) {
+        viewAchievementsBtn.addEventListener('click', showAchievements);
+      }
+      if (achievementsCloseBtn) {
+        achievementsCloseBtn.addEventListener('click', hideAchievements);
+      }
+      if (achievementsModal) {
+        achievementsModal.addEventListener('click', (e) => {
+          if (e.target === achievementsModal) hideAchievements();
+        });
+      }
+      
+      // Update initial stats
+      updateGameStats();
+    }
+    
+    function initializeAIFeatures() {
+      const aiRecommendationsToggle = document.getElementById('aiRecommendationsToggle');
+      const aiConfidenceToggle = document.getElementById('aiConfidenceToggle');
+      const aiPatternToggle = document.getElementById('aiPatternToggle');
+      
+      // AI Recommendations toggle
+      if (aiRecommendationsToggle) {
+        aiRecommendationsToggle.addEventListener('click', () => {
+          aiRecommendationsEnabled = !aiRecommendationsEnabled;
+          
+          if (aiRecommendationsEnabled) {
+            aiRecommendationsToggle.classList.add('active');
+            console.log('🤖 AI Recommendations enabled');
+          } else {
+            aiRecommendationsToggle.classList.remove('active');
+            console.log('🤖 AI Recommendations disabled');
+          }
+        });
+      }
+      
+      // AI Confidence toggle
+      if (aiConfidenceToggle) {
+        aiConfidenceToggle.addEventListener('click', () => {
+          aiConfidenceEnabled = !aiConfidenceEnabled;
+          
+          if (aiConfidenceEnabled) {
+            aiConfidenceToggle.classList.add('active');
+            console.log('🎯 AI Confidence Scoring enabled');
+          } else {
+            aiConfidenceToggle.classList.remove('active');
+            console.log('🎯 AI Confidence Scoring disabled');
+          }
+        });
+      }
+      
+      // AI Pattern toggle
+      if (aiPatternToggle) {
+        aiPatternToggle.addEventListener('click', () => {
+          aiPatternEnabled = !aiPatternEnabled;
+          
+          if (aiPatternEnabled) {
+            aiPatternToggle.classList.add('active');
+            console.log('🔍 AI Pattern Recognition enabled');
+          } else {
+            aiPatternToggle.classList.remove('active');
+            console.log('🔍 AI Pattern Recognition disabled');
+          }
+        });
+      }
+    }    function applyFilters() {
       if (!filters.search || !filters.tipType || !filters.odds) return;
       
       const searchTerm = filters.search.value.toLowerCase().trim();
@@ -35,12 +148,51 @@ function applyFilters() {
   <title>Finalscore Featured Bets</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
+    /* Theme Variables */
+    :root {
+      --primary-bg: #0f0f0f;
+      --secondary-bg: #1a1a1a;
+      --card-bg: #262626;
+      --text-primary: #fff;
+      --text-secondary: #aaa;
+      --border-color: #333;
+      --accent-color: #4a90e2;
+      --vip-color: #DAA520;
+    }
+    
+    /* Light Theme */
+    [data-theme="light"] {
+      --primary-bg: #f8f9fa;
+      --secondary-bg: #ffffff;
+      --card-bg: #f1f3f4;
+      --text-primary: #202124;
+      --text-secondary: #5f6368;
+      --border-color: #dadce0;
+      --accent-color: #1a73e8;
+      --vip-color: #ea8600;
+    }
+    
+    /* Auto Theme (follows system preference) */
+    @media (prefers-color-scheme: light) {
+      [data-theme="auto"] {
+        --primary-bg: #f8f9fa;
+        --secondary-bg: #ffffff;
+        --card-bg: #f1f3f4;
+        --text-primary: #202124;
+        --text-secondary: #5f6368;
+        --border-color: #dadce0;
+        --accent-color: #1a73e8;
+        --vip-color: #ea8600;
+      }
+    }
+    
     body {
-      background-color: #0f0f0f;
-      color: #fff;
+      background-color: var(--primary-bg);
+      color: var(--text-primary);
       font-family: 'Inter', sans-serif;
       margin: 0;
       padding: 0;
+      transition: all 0.3s ease;
     }
     .main {
       display: flex;
@@ -52,11 +204,12 @@ function applyFilters() {
     }
     .sidebar {
       flex: 0 0 260px;
-      background: #1a1a1a;
+      background: var(--secondary-bg);
       border-radius: 16px;
       padding: 20px;
       box-shadow: 0 0 10px rgba(0,0,0,0.3);
       height: fit-content;
+      border: 1px solid var(--border-color);
     }
     .sidebar h2 {
       font-size: 20px;
@@ -210,6 +363,113 @@ function applyFilters() {
     @keyframes livePulse {
       0%, 100% { opacity: 1; transform: scale(1); }
       50% { opacity: 0.6; transform: scale(1.2); }
+    }
+    
+    /* Leaderboard Styles */
+    .leaderboard-item {
+      display: flex;
+      align-items: center;
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      background: var(--secondary-bg);
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      transition: all 0.3s ease;
+    }
+    
+    .leaderboard-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .rank {
+      font-size: 18px;
+      font-weight: 700;
+      margin-right: 16px;
+      min-width: 40px;
+      text-align: center;
+    }
+    
+    .player-info {
+      flex: 1;
+    }
+    
+    .player-name {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    
+    .player-stats {
+      font-size: 12px;
+      opacity: 0.8;
+    }
+    
+    .player-score {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--accent-color);
+    }
+    
+    /* Achievement Styles */
+    .achievement-card {
+      background: var(--secondary-bg);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      border: 2px solid var(--border-color);
+      transition: all 0.3s ease;
+    }
+    
+    .achievement-card.unlocked {
+      border-color: var(--accent-color);
+      background: linear-gradient(135deg, rgba(74, 144, 226, 0.1), rgba(74, 144, 226, 0.05));
+    }
+    
+    .achievement-card.locked {
+      opacity: 0.6;
+    }
+    
+    .achievement-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+    }
+    
+    .achievement-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+    
+    .achievement-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+    
+    .achievement-progress {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent-color);
+    }
+    
+    .achievement-card.unlocked .achievement-progress {
+      color: #22c55e;
+    }
+    
+    /* Color Options */
+    .color-option {
+      transition: all 0.3s ease;
+    }
+    
+    .color-option:hover {
+      transform: scale(1.1);
+    }
+    
+    .color-option.selected {
+      border-color: var(--text-primary) !important;
     }
     .favorites-toggle {
       display: flex;
@@ -1919,20 +2179,17 @@ function applyFilters() {
       <div class="main-header">
         <div style="display: flex; align-items: center;">
           <h1 class="main-title">Featured Bets</h1>
-          <div class="info-tooltip">
-            <div class="info-icon">?</div>
-            <div class="tooltip-text">
-              VIP bets provide exclusive high-accuracy predictions with detailed analysis. 
-              <br><br>
-              To view VIP bet tips and access premium features, 
-              <a href="https://finalscore.io/pricing" target="_blank" class="tooltip-link">upgrade your plan here</a>.
-            </div>
-          </div>
         </div>
-        <button id="historyBtn" class="history-btn">
-          <span>History</span>
-          <span class="history-count" id="historyCount">0</span>
-        </button>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <button id="leaderboardBtn" class="history-btn">
+            <span>🏆</span>
+            <span>Leaderboard</span>
+          </button>
+          <button id="historyBtn" class="history-btn">
+            <span>History</span>
+            <span class="history-count" id="historyCount">0</span>
+          </button>
+        </div>
       </div>
       <div class="card-grid" id="cardContainer"></div>
       <div id="historyContainer" class="history-container" style="display: none;">
@@ -2046,6 +2303,85 @@ function applyFilters() {
           <div class="auto-refresh-toggle" style="margin-top: 12px;">
             <span class="auto-refresh-label">Show Live Indicator</span>
             <div class="toggle-switch" id="liveIndicatorToggle">
+              <div class="toggle-slider"></div>
+            </div>
+          </div>
+          
+          <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border-color);">
+            <label style="color: var(--text-primary); font-size: 14px; font-weight: 600; margin-bottom: 8px; display: block;">Theme</label>
+            <select id="themeSelector" style="width: 100%; padding: 8px; border-radius: 6px; background: var(--card-bg); color: var(--text-primary); border: 1px solid var(--border-color);">
+              <option value="dark">Dark Mode</option>
+              <option value="light">Light Mode</option>
+              <option value="auto">Auto (System)</option>
+            </select>
+          </div>
+          
+          <div style="margin-top: 16px;">
+            <label style="color: var(--text-primary); font-size: 14px; font-weight: 600; margin-bottom: 8px; display: block;">Accent Color</label>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+              <div class="color-option" data-color="blue" style="background: #4a90e2; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid transparent;"></div>
+              <div class="color-option" data-color="purple" style="background: #8b5cf6; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid transparent;"></div>
+              <div class="color-option" data-color="green" style="background: #22c55e; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid transparent;"></div>
+              <div class="color-option" data-color="orange" style="background: #f59e0b; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid transparent;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Gamification Section -->
+      <div class="settings-section-content">
+        <div class="settings-section-header">
+          <h3 class="settings-section-title">🎮 Gamification</h3>
+        </div>
+        
+        <div class="account-info">
+          <div class="info-row">
+            <span class="info-label">Current Streak</span>
+            <span class="info-value" id="userStreak">0 days</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Total Points</span>
+            <span class="info-value" id="userPoints">0 pts</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Rank</span>
+            <span class="info-value" id="userRank">Beginner</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Achievements</span>
+            <span class="info-value" id="userAchievements">0/15</span>
+          </div>
+        </div>
+        
+        <div style="margin-top: 16px;">
+          <button class="subscription-btn btn-primary" id="viewAchievementsBtn">View Achievements</button>
+        </div>
+      </div>
+      
+      <!-- AI Features Section -->
+      <div class="settings-section-content">
+        <div class="settings-section-header">
+          <h3 class="settings-section-title">🤖 AI Features</h3>
+        </div>
+        
+        <div class="account-actions">
+          <div class="auto-refresh-toggle">
+            <span class="auto-refresh-label">Smart Recommendations</span>
+            <div class="toggle-switch active" id="aiRecommendationsToggle">
+              <div class="toggle-slider"></div>
+            </div>
+          </div>
+          
+          <div class="auto-refresh-toggle" style="margin-top: 12px;">
+            <span class="auto-refresh-label">Confidence Scoring</span>
+            <div class="toggle-switch active" id="aiConfidenceToggle">
+              <div class="toggle-slider"></div>
+            </div>
+          </div>
+          
+          <div class="auto-refresh-toggle" style="margin-top: 12px;">
+            <span class="auto-refresh-label">Pattern Recognition</span>
+            <div class="toggle-switch" id="aiPatternToggle">
               <div class="toggle-slider"></div>
             </div>
           </div>
@@ -2172,7 +2508,124 @@ function applyFilters() {
     </div>
   </div>
 
-  <!-- Bet Detail Modal -->
+  <!-- Leaderboard Modal -->
+  <div id="leaderboardContainer" class="history-container" style="display: none;">
+    <div class="history-header">
+      <h2>🏆 Monthly Leaderboard</h2>
+      <button id="closeLeaderboardBtn" class="close-history-btn">✕ Close</button>
+    </div>
+    <div style="max-width: 800px; margin: 0 auto;">
+      <div style="background: var(--secondary-bg); border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 1px solid var(--border-color);">
+        <h3 style="color: var(--text-primary); margin: 0 0 16px 0;">🎯 Monthly Challenge</h3>
+        <p style="color: var(--text-secondary); margin: 0 0 12px 0;">Predict 10 winning bets this month to earn the "Oracle" badge!</p>
+        <div style="background: var(--card-bg); border-radius: 8px; height: 8px; overflow: hidden;">
+          <div style="background: linear-gradient(90deg, var(--accent-color), var(--vip-color)); height: 100%; width: 30%; transition: width 0.3s ease;"></div>
+        </div>
+        <p style="color: var(--text-secondary); font-size: 12px; margin: 8px 0 0 0;">3/10 wins completed</p>
+      </div>
+      
+      <div id="leaderboardList">
+        <div class="leaderboard-item" style="background: linear-gradient(135deg, #FFD700, #FFA500); color: #000;">
+          <div class="rank">🥇</div>
+          <div class="player-info">
+            <div class="player-name">BetMaster2024</div>
+            <div class="player-stats">🔥 15-day streak • ⭐ Oracle</div>
+          </div>
+          <div class="player-score">2,847 pts</div>
+        </div>
+        
+        <div class="leaderboard-item" style="background: linear-gradient(135deg, #C0C0C0, #A8A8A8); color: #000;">
+          <div class="rank">🥈</div>
+          <div class="player-info">
+            <div class="player-name">LuckyPunter</div>
+            <div class="player-stats">🔥 8-day streak • ⚡ Expert</div>
+          </div>
+          <div class="player-score">2,156 pts</div>
+        </div>
+        
+        <div class="leaderboard-item" style="background: linear-gradient(135deg, #CD7F32, #B87333); color: #fff;">
+          <div class="rank">🥉</div>
+          <div class="player-info">
+            <div class="player-name">TipGenius</div>
+            <div class="player-stats">🔥 5-day streak • 🎯 Analyst</div>
+          </div>
+          <div class="player-score">1,923 pts</div>
+        </div>
+        
+        <div class="leaderboard-item">
+          <div class="rank">4</div>
+          <div class="player-info">
+            <div class="player-name">PredictorPro</div>
+            <div class="player-stats">🔥 12-day streak • 🏆 Champion</div>
+          </div>
+          <div class="player-score">1,742 pts</div>
+        </div>
+        
+        <div class="leaderboard-item">
+          <div class="rank">5</div>
+          <div class="player-info">
+            <div class="player-name">You</div>
+            <div class="player-stats">🔥 3-day streak • 🌟 Rising Star</div>
+          </div>
+          <div class="player-score">892 pts</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Achievements Modal -->
+  <div id="achievementsModal" class="settings-modal">
+    <div class="settings-modal-content">
+      <div class="settings-modal-header">
+        <h2 class="settings-modal-title">🏆 Achievements</h2>
+        <button id="achievementsCloseBtn" class="settings-close-btn">✕</button>
+      </div>
+      
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+        <div class="achievement-card unlocked">
+          <div class="achievement-icon">🌟</div>
+          <div class="achievement-title">First Star</div>
+          <div class="achievement-desc">Add your first favorite bet</div>
+          <div class="achievement-progress">Completed!</div>
+        </div>
+        
+        <div class="achievement-card unlocked">
+          <div class="achievement-icon">🎯</div>
+          <div class="achievement-title">Beginner's Luck</div>
+          <div class="achievement-desc">Make your first correct prediction</div>
+          <div class="achievement-progress">Completed!</div>
+        </div>
+        
+        <div class="achievement-card locked">
+          <div class="achievement-icon">🔥</div>
+          <div class="achievement-title">Hot Streak</div>
+          <div class="achievement-desc">Maintain a 5-day login streak</div>
+          <div class="achievement-progress">3/5 days</div>
+        </div>
+        
+        <div class="achievement-card locked">
+          <div class="achievement-icon">⭐</div>
+          <div class="achievement-title">Oracle</div>
+          <div class="achievement-desc">Get 10 predictions correct in a month</div>
+          <div class="achievement-progress">3/10 correct</div>
+        </div>
+        
+        <div class="achievement-card locked">
+          <div class="achievement-icon">💎</div>
+          <div class="achievement-title">VIP Member</div>
+          <div class="achievement-desc">Subscribe to VIP for 30 days</div>
+          <div class="achievement-progress">0/30 days</div>
+        </div>
+        
+        <div class="achievement-card locked">
+          <div class="achievement-icon">🏆</div>
+          <div class="achievement-title">Champion</div>
+          <div class="achievement-desc">Reach top 3 in monthly leaderboard</div>
+          <div class="achievement-progress">Rank #5</div>
+        </div>
+      </div>
+    </div>
+  </div>
   <div id="betDetailModal" class="bet-detail-modal">
     <div class="bet-detail-content">
       <div class="bet-detail-header">
@@ -3132,6 +3585,97 @@ function applyFilters() {
     let quickStatsEnabled = false;
     let liveIndicatorEnabled = false;
     let refreshInterval = null;
+    let currentTheme = 'dark';
+    let currentAccent = 'blue';
+    let aiRecommendationsEnabled = true;
+    let aiConfidenceEnabled = true;
+    let aiPatternEnabled = false;
+    
+    // Gamification data
+    let userStats = {
+      streak: 3,
+      points: 892,
+      rank: 'Rising Star',
+      achievements: 2,
+      totalAchievements: 15,
+      correctPredictions: 3,
+      monthlyTarget: 10
+    };
+
+    // Theme Management
+    function setTheme(theme) {
+      currentTheme = theme;
+      document.documentElement.setAttribute('data-theme', theme);
+      
+      // Update CSS custom properties for accent colors
+      updateAccentColor(currentAccent);
+      
+      console.log(`🎨 Theme changed to: ${theme}`);
+    }
+    
+    function updateAccentColor(color) {
+      currentAccent = color;
+      const colors = {
+        blue: '#4a90e2',
+        purple: '#8b5cf6', 
+        green: '#22c55e',
+        orange: '#f59e0b'
+      };
+      
+      document.documentElement.style.setProperty('--accent-color', colors[color]);
+      
+      // Update selected color indicator
+      document.querySelectorAll('.color-option').forEach(el => {
+        el.classList.remove('selected');
+        if (el.dataset.color === color) {
+          el.classList.add('selected');
+        }
+      });
+      
+      console.log(`🎨 Accent color changed to: ${color}`);
+    }
+
+    // Leaderboard Management
+    function showLeaderboard() {
+      const leaderboardContainer = document.getElementById('leaderboardContainer');
+      if (leaderboardContainer) {
+        leaderboardContainer.style.display = 'block';
+      }
+    }
+    
+    function hideLeaderboard() {
+      const leaderboardContainer = document.getElementById('leaderboardContainer');
+      if (leaderboardContainer) {
+        leaderboardContainer.style.display = 'none';
+      }
+    }
+
+    // Achievements Management
+    function showAchievements() {
+      const achievementsModal = document.getElementById('achievementsModal');
+      if (achievementsModal) {
+        achievementsModal.style.display = 'block';
+      }
+    }
+    
+    function hideAchievements() {
+      const achievementsModal = document.getElementById('achievementsModal');
+      if (achievementsModal) {
+        achievementsModal.style.display = 'none';
+      }
+    }
+    
+    function updateGameStats() {
+      const streakEl = document.getElementById('userStreak');
+      const pointsEl = document.getElementById('userPoints');
+      const rankEl = document.getElementById('userRank');
+      const achievementsEl = document.getElementById('userAchievements');
+      
+      if (streakEl) streakEl.textContent = `${userStats.streak} days`;
+      if (pointsEl) pointsEl.textContent = `${userStats.points} pts`;
+      if (rankEl) rankEl.textContent = userStats.rank;
+      if (achievementsEl) achievementsEl.textContent = `${userStats.achievements}/${userStats.totalAchievements}`;
+    }
 
     // Settings management
     function updateInterfaceVisibility() {
@@ -3806,6 +4350,9 @@ function applyFilters() {
       initializeBetDetailModal();
       initializeFavoritesToggle();
       initializeInterfaceSettings();
+      initializeThemeSettings();
+      initializeGamification();
+      initializeAIFeatures();
       updateVipFeaturesVisibility();
       
       // Start auto-refresh by default

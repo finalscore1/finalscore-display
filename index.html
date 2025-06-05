@@ -194,6 +194,44 @@
     .toggle-switch.active .toggle-slider {
       transform: translateX(20px);
     }
+/* Make sure these CSS classes are properly defined */
+.toggle-switch {
+  position: relative;
+  width: 40px;
+  height: 20px;
+  background: #444;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.toggle-switch.active {
+  background: #4a90e2;
+}
+
+.toggle-slider {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.toggle-switch.active .toggle-slider {
+  transform: translateX(20px);
+}
+
+/* Light theme colors */
+[data-theme="light"] .toggle-switch {
+  background: #ddd;
+}
+
+[data-theme="light"] .toggle-switch.active {
+  background: var(--accent-color);
+}
     
     /* Live Indicator */
     .live-indicator {
@@ -4191,6 +4229,154 @@
     function saveFavorites() {
       if (quickStatsEnabled) updateQuickStats();
       console.log('Favorites saved:', favoriteBets.size, 'items');
+
+// Add these event listeners to your JavaScript code
+
+// Leaderboard functionality
+function initializeLeaderboard() {
+  const leaderboardBtn = document.getElementById('leaderboardBtn');
+  const closeLeaderboardBtn = document.getElementById('closeLeaderboardBtn');
+  const leaderboardContainer = document.getElementById('leaderboardContainer');
+  
+  if (leaderboardBtn) {
+    leaderboardBtn.addEventListener('click', () => {
+      console.log('🏆 Leaderboard button clicked');
+      showLeaderboard();
+    });
+  }
+  
+  if (closeLeaderboardBtn) {
+    closeLeaderboardBtn.addEventListener('click', () => {
+      hideLeaderboard();
+    });
+  }
+  
+  // Close leaderboard when clicking outside
+  if (leaderboardContainer) {
+    leaderboardContainer.addEventListener('click', (e) => {
+      if (e.target === leaderboardContainer) {
+        hideLeaderboard();
+      }
+    });
+  }
+}
+
+// Theme settings functionality
+function initializeThemeSettings() {
+  const themeSelector = document.getElementById('themeSelector');
+  const colorOptions = document.querySelectorAll('.color-option');
+  
+  if (themeSelector) {
+    themeSelector.addEventListener('change', (e) => {
+      setTheme(e.target.value);
+    });
+  }
+  
+  colorOptions.forEach(option => {
+    option.addEventListener('click', () => {
+      const color = option.dataset.color;
+      if (color) {
+        updateAccentColor(color);
+      }
+    });
+  });
+}
+
+// Achievements functionality
+function initializeAchievements() {
+  const viewAchievementsBtn = document.getElementById('viewAchievementsBtn');
+  const achievementsCloseBtn = document.getElementById('achievementsCloseBtn');
+  const achievementsModal = document.getElementById('achievementsModal');
+  
+  if (viewAchievementsBtn) {
+    viewAchievementsBtn.addEventListener('click', () => {
+      showAchievements();
+    });
+  }
+  
+  if (achievementsCloseBtn) {
+    achievementsCloseBtn.addEventListener('click', () => {
+      hideAchievements();
+    });
+  }
+  
+  // Close achievements modal when clicking outside
+  if (achievementsModal) {
+    achievementsModal.addEventListener('click', (e) => {
+      if (e.target === achievementsModal) {
+        hideAchievements();
+      }
+    });
+  }
+}
+
+// AI Features functionality
+function initializeAIFeatures() {
+  const aiRecommendationsToggle = document.getElementById('aiRecommendationsToggle');
+  const aiConfidenceToggle = document.getElementById('aiConfidenceToggle');
+  const aiPatternToggle = document.getElementById('aiPatternToggle');
+  
+  if (aiRecommendationsToggle) {
+    aiRecommendationsToggle.addEventListener('click', () => {
+      aiRecommendationsEnabled = !aiRecommendationsEnabled;
+      
+      if (aiRecommendationsEnabled) {
+        aiRecommendationsToggle.classList.add('active');
+        console.log('🤖 AI recommendations enabled');
+      } else {
+        aiRecommendationsToggle.classList.remove('active');
+        console.log('🤖 AI recommendations disabled');
+      }
+    });
+  }
+  
+  if (aiConfidenceToggle) {
+    aiConfidenceToggle.addEventListener('click', () => {
+      aiConfidenceEnabled = !aiConfidenceEnabled;
+      
+      if (aiConfidenceEnabled) {
+        aiConfidenceToggle.classList.add('active');
+        console.log('🎯 AI confidence scoring enabled');
+      } else {
+        aiConfidenceToggle.classList.remove('active');
+        console.log('🎯 AI confidence scoring disabled');
+      }
+    });
+  }
+  
+  if (aiPatternToggle) {
+    aiPatternToggle.addEventListener('click', () => {
+      aiPatternEnabled = !aiPatternEnabled;
+      
+      if (aiPatternEnabled) {
+        aiPatternToggle.classList.add('active');
+        console.log('🔍 AI pattern recognition enabled');
+      } else {
+        aiPatternToggle.classList.remove('active');
+        console.log('🔍 AI pattern recognition disabled');
+      }
+    });
+  }
+}
+
+// Gamification functionality
+function initializeGamification() {
+  updateGameStats();
+}
+
+// Call all initialization functions in the DOMContentLoaded event
+document.addEventListener('DOMContentLoaded', () => {
+  // ... your existing code ...
+  
+  // Add these new initializations
+  initializeLeaderboard();
+  initializeThemeSettings();
+  initializeAchievements();
+  initializeAIFeatures();
+  initializeGamification();
+  
+  console.log('✅ All new features initialized');
+});
     }
 
     // Load data and initialize
@@ -4274,6 +4460,301 @@
       countdownIntervals.forEach(interval => clearInterval(interval));
       stopAutoRefresh();
     });
+// Add this at the end of your existing script, before the closing </script> tag
+
+// Fix for Leaderboard functionality
+function initializeLeaderboard() {
+  const leaderboardBtn = document.getElementById('leaderboardBtn');
+  const closeLeaderboardBtn = document.getElementById('closeLeaderboardBtn');
+  const leaderboardContainer = document.getElementById('leaderboardContainer');
+  
+  console.log('Initializing leaderboard...', {
+    leaderboardBtn: !!leaderboardBtn,
+    closeLeaderboardBtn: !!closeLeaderboardBtn,
+    leaderboardContainer: !!leaderboardContainer
+  });
+  
+  if (leaderboardBtn) {
+    leaderboardBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      console.log('🏆 Leaderboard button clicked');
+      showLeaderboard();
+    });
+  }
+  
+  if (closeLeaderboardBtn) {
+    closeLeaderboardBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      hideLeaderboard();
+    });
+  }
+  
+  if (leaderboardContainer) {
+    leaderboardContainer.addEventListener('click', (e) => {
+      if (e.target === leaderboardContainer) {
+        hideLeaderboard();
+      }
+    });
+  }
+}
+
+// Fix for Theme Settings
+function initializeThemeSettings() {
+  const themeSelector = document.getElementById('themeSelector');
+  const colorOptions = document.querySelectorAll('.color-option');
+  
+  console.log('Initializing theme settings...', {
+    themeSelector: !!themeSelector,
+    colorOptions: colorOptions.length
+  });
+  
+  if (themeSelector) {
+    themeSelector.value = currentTheme;
+    themeSelector.addEventListener('change', (e) => {
+      setTheme(e.target.value);
+    });
+  }
+  
+  colorOptions.forEach(option => {
+    option.addEventListener('click', () => {
+      const color = option.dataset.color;
+      if (color) {
+        updateAccentColor(color);
+      }
+    });
+  });
+  
+  // Set initial accent color
+  updateAccentColor(currentAccent);
+}
+
+// Fix for Achievements
+function initializeAchievements() {
+  const viewAchievementsBtn = document.getElementById('viewAchievementsBtn');
+  const achievementsCloseBtn = document.getElementById('achievementsCloseBtn');
+  const achievementsModal = document.getElementById('achievementsModal');
+  
+  console.log('Initializing achievements...', {
+    viewAchievementsBtn: !!viewAchievementsBtn,
+    achievementsCloseBtn: !!achievementsCloseBtn,
+    achievementsModal: !!achievementsModal
+  });
+  
+  if (viewAchievementsBtn) {
+    viewAchievementsBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      showAchievements();
+    });
+  }
+  
+  if (achievementsCloseBtn) {
+    achievementsCloseBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      hideAchievements();
+    });
+  }
+  
+  if (achievementsModal) {
+    achievementsModal.addEventListener('click', (e) => {
+      if (e.target === achievementsModal) {
+        hideAchievements();
+      }
+    });
+  }
+}
+
+// Fix for AI Features
+function initializeAIFeatures() {
+  const aiRecommendationsToggle = document.getElementById('aiRecommendationsToggle');
+  const aiConfidenceToggle = document.getElementById('aiConfidenceToggle');
+  const aiPatternToggle = document.getElementById('aiPatternToggle');
+  
+  console.log('Initializing AI features...', {
+    aiRecommendationsToggle: !!aiRecommendationsToggle,
+    aiConfidenceToggle: !!aiConfidenceToggle,
+    aiPatternToggle: !!aiPatternToggle
+  });
+  
+  // Set initial states
+  if (aiRecommendationsToggle && aiRecommendationsEnabled) {
+    aiRecommendationsToggle.classList.add('active');
+  }
+  if (aiConfidenceToggle && aiConfidenceEnabled) {
+    aiConfidenceToggle.classList.add('active');
+  }
+  if (aiPatternToggle && aiPatternEnabled) {
+    aiPatternToggle.classList.add('active');
+  }
+  
+  if (aiRecommendationsToggle) {
+    aiRecommendationsToggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      aiRecommendationsEnabled = !aiRecommendationsEnabled;
+      
+      if (aiRecommendationsEnabled) {
+        aiRecommendationsToggle.classList.add('active');
+        console.log('🤖 AI recommendations enabled');
+      } else {
+        aiRecommendationsToggle.classList.remove('active');
+        console.log('🤖 AI recommendations disabled');
+      }
+    });
+  }
+  
+  if (aiConfidenceToggle) {
+    aiConfidenceToggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      aiConfidenceEnabled = !aiConfidenceEnabled;
+      
+      if (aiConfidenceEnabled) {
+        aiConfidenceToggle.classList.add('active');
+        console.log('🎯 AI confidence scoring enabled');
+      } else {
+        aiConfidenceToggle.classList.remove('active');
+        console.log('🎯 AI confidence scoring disabled');
+      }
+    });
+  }
+  
+  if (aiPatternToggle) {
+    aiPatternToggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      aiPatternEnabled = !aiPatternEnabled;
+      
+      if (aiPatternEnabled) {
+        aiPatternToggle.classList.add('active');
+        console.log('🔍 AI pattern recognition enabled');
+      } else {
+        aiPatternToggle.classList.remove('active');
+        console.log('🔍 AI pattern recognition disabled');
+      }
+    });
+  }
+}
+
+// Fix for Gamification
+function initializeGamification() {
+  console.log('Initializing gamification...');
+  updateGameStats();
+}
+
+// Update the existing DOMContentLoaded event listener
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('DOM Content Loaded - Initializing all features...');
+  
+  // First, add interface elements to sidebar
+  const sidebar = document.querySelector('.sidebar');
+  if (sidebar) {
+    // Add live indicator
+    const liveIndicator = document.createElement('div');
+    liveIndicator.id = 'liveIndicator';
+    liveIndicator.className = 'live-indicator';
+    liveIndicator.style.display = 'none';
+    liveIndicator.innerHTML = '<div class="live-dot"></div><span>Live Updates Active</span>';
+    sidebar.insertBefore(liveIndicator, sidebar.children[1]);
+    
+    // Add quick stats
+    const quickStats = document.createElement('div');
+    quickStats.className = 'quick-stats';
+    quickStats.style.display = 'none';
+    quickStats.innerHTML = `
+      <h3>Quick Stats</h3>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <span class="stat-value" id="totalBetsCount">0</span>
+          <div class="stat-label">Total Bets</div>
+        </div>
+        <div class="stat-item stat-vip">
+          <span class="stat-value" id="vipBetsCount">0</span>
+          <div class="stat-label">VIP Bets</div>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value" id="liveBetsCount">0</span>
+          <div class="stat-label">Live Now</div>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value" id="favoritesCount">0</span>
+          <div class="stat-label">Favorites</div>
+        </div>
+      </div>
+    `;
+    sidebar.insertBefore(quickStats, sidebar.children[2]);
+  }
+  
+  // Initialize all features
+  try {
+    initializeBetDetailModal();
+    console.log('✅ Bet detail modal initialized');
+  } catch (e) {
+    console.error('❌ Bet detail modal failed:', e);
+  }
+  
+  try {
+    initializeFavoritesToggle();
+    console.log('✅ Favorites toggle initialized');
+  } catch (e) {
+    console.error('❌ Favorites toggle failed:', e);
+  }
+  
+  try {
+    initializeInterfaceSettings();
+    console.log('✅ Interface settings initialized');
+  } catch (e) {
+    console.error('❌ Interface settings failed:', e);
+  }
+  
+  try {
+    initializeLeaderboard();
+    console.log('✅ Leaderboard initialized');
+  } catch (e) {
+    console.error('❌ Leaderboard failed:', e);
+  }
+  
+  try {
+    initializeThemeSettings();
+    console.log('✅ Theme settings initialized');
+  } catch (e) {
+    console.error('❌ Theme settings failed:', e);
+  }
+  
+  try {
+    initializeAchievements();
+    console.log('✅ Achievements initialized');
+  } catch (e) {
+    console.error('❌ Achievements failed:', e);
+  }
+  
+  try {
+    initializeAIFeatures();
+    console.log('✅ AI features initialized');
+  } catch (e) {
+    console.error('❌ AI features failed:', e);
+  }
+  
+  try {
+    initializeGamification();
+    console.log('✅ Gamification initialized');
+  } catch (e) {
+    console.error('❌ Gamification failed:', e);
+  }
+  
+  try {
+    updateVipFeaturesVisibility();
+    console.log('✅ VIP features visibility updated');
+  } catch (e) {
+    console.error('❌ VIP features visibility failed:', e);
+  }
+  
+  // Start auto-refresh by default
+  try {
+    startAutoRefresh();
+    console.log('✅ Auto-refresh started');
+  } catch (e) {
+    console.error('❌ Auto-refresh failed:', e);
+  }
+  
+  console.log('🎉 All features initialization completed');
+});
   </script>
 </body>
 </html>

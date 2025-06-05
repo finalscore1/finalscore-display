@@ -61,6 +61,82 @@
       outline: none;
       border-color: #4a90e2;
     }
+    
+    /* Favorites Toggle */
+    .favorites-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding: 12px 16px;
+      background: #262626;
+      border-radius: 12px;
+      border: 2px solid #333;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .favorites-toggle:hover {
+      border-color: #444;
+      background: #333;
+    }
+    
+    .favorites-toggle.active {
+      border-color: #DAA520;
+      background: linear-gradient(135deg, rgba(218, 165, 32, 0.2), rgba(184, 134, 11, 0.2));
+      box-shadow: 0 0 15px rgba(218, 165, 32, 0.3);
+    }
+    
+    .favorites-toggle.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      border-color: #333;
+      background: #262626;
+    }
+    
+    .favorites-toggle.disabled:hover {
+      border-color: #333;
+      background: #262626;
+    }
+    
+    .favorites-label {
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      flex: 1;
+    }
+    
+    .favorites-toggle.disabled .favorites-label {
+      color: #666;
+    }
+    
+    .star-icon {
+      font-size: 20px;
+      transition: all 0.3s ease;
+      margin-left: 8px;
+    }
+    
+    .favorites-toggle:not(.active) .star-icon {
+      color: #666;
+    }
+    
+    .favorites-toggle.active .star-icon {
+      color: #DAA520;
+      text-shadow: 0 0 10px rgba(218, 165, 32, 0.5);
+      animation: starGlow 2s ease-in-out infinite;
+    }
+    
+    @keyframes starGlow {
+      0%, 100% { 
+        transform: scale(1);
+        text-shadow: 0 0 10px rgba(218, 165, 32, 0.5);
+      }
+      50% { 
+        transform: scale(1.1);
+        text-shadow: 0 0 15px rgba(218, 165, 32, 0.8);
+      }
+    }
+    
     .sport-filters {
       margin-bottom: 20px;
     }
@@ -1346,6 +1422,7 @@
       color: #ccc;
     }
 
+/* Bet Detail Modal */
 .bet-detail-modal {
   position: fixed;
   top: 0;
@@ -1410,11 +1487,50 @@
   font-size: 18px;
   transition: all 0.3s;
   flex-shrink: 0;
+  margin-left: 8px;
 }
 
 .bet-detail-close:hover {
   background: #444;
   transform: rotate(90deg);
+}
+
+.bet-detail-favorite {
+  background: #333;
+  color: #fff;
+  border: 2px solid #555;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: all 0.3s;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+.bet-detail-favorite:hover {
+  background: #444;
+  border-color: #666;
+}
+
+.bet-detail-favorite.favorited {
+  background: linear-gradient(135deg, #DAA520, #B8860B);
+  color: #000;
+  border-color: #DAA520;
+}
+
+.bet-detail-favorite.favorited:hover {
+  background: linear-gradient(135deg, #CD853F, #DAA520);
+}
+
+.bet-detail-header-buttons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .bet-detail-title-section {
@@ -1625,62 +1741,6 @@
   cursor: not-allowed;
   transform: none;
 }
-
-.favorite-btn {
-  background: #333;
-  color: #fff;
-  border: 2px solid #555;
-}
-
-.favorite-btn:hover {
-  background: #444;
-  border-color: #666;
-}
-
-.favorite-btn.favorited {
-  background: linear-gradient(135deg, #DAA520, #B8860B);
-  color: #000;
-  border-color: #DAA520;
-}
-
-.favorite-btn.favorited:hover {
-  background: linear-gradient(135deg, #CD853F, #DAA520);
-}
-
-.vip-badge {
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  background: linear-gradient(135deg, #DAA520, #B8860B);
-  color: #000;
-  padding: 2px 6px;
-  border-radius: 8px;
-  font-size: 10px;
-  font-weight: 700;
-}
-
-/* VIP Favorites Filter */
-.vip-favorites-btn {
-  background: linear-gradient(135deg, #DAA520 0%, #B8860B 50%, #CD853F 100%) !important;
-  color: #1a1a1a !important;
-  border: 2px solid #DAA520 !important;
-  box-shadow: 0 3px 10px rgba(218, 165, 32, 0.4);
-  font-weight: 700;
-  position: relative;
-}
-
-.vip-favorites-btn:hover {
-  background: linear-gradient(135deg, #CD853F 0%, #B8860B 50%, #DAA520 100%) !important;
-  box-shadow: 0 5px 15px rgba(218, 165, 32, 0.6);
-  transform: translateY(-2px);
-}
-
-.vip-favorites-btn.active {
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%) !important;
-  color: #DAA520 !important;
-  border-color: #DAA520 !important;
-  box-shadow: 0 5px 15px rgba(218, 165, 32, 0.8);
-}
   </style>
 </head>
 <body>
@@ -1689,6 +1749,12 @@
       <h2>Filter</h2>
       
       <input type="text" id="searchFilter" placeholder="Search..." />
+
+      <!-- Favorites Toggle -->
+      <div class="favorites-toggle" id="favoritesToggle">
+        <span class="favorites-label">Show Favorites Only</span>
+        <span class="star-icon">⭐</span>
+      </div>
 
       <div class="sport-filters">
         <h3>Sports</h3>
@@ -1950,7 +2016,10 @@
           <h2 class="bet-detail-teams" id="detailTeams">Team A vs Team B</h2>
           <p class="bet-detail-meta" id="detailMeta">League • Date • Time</p>
         </div>
-        <button class="bet-detail-close" id="closeDetailModal">×</button>
+        <div class="bet-detail-header-buttons">
+          <button class="bet-detail-favorite" id="detailFavoriteBtn" style="display: none;">⭐</button>
+          <button class="bet-detail-close" id="closeDetailModal">×</button>
+        </div>
       </div>
       
       <!-- Tip & Confidence Section -->
@@ -2019,10 +2088,6 @@
         <button class="action-btn preview-btn" id="detailPreviewBtn">
           View Full Preview
         </button>
-        <button class="action-btn favorite-btn" id="detailFavoriteBtn">
-          <span class="vip-badge">VIP</span>
-          Add to Favorites
-        </button>
       </div>
     </div>
   </div>
@@ -2048,7 +2113,7 @@
     let vipCredentials = [];
     let currentUser = null;
 
-    // NEW: Bet Detail Modal Variables
+    // Bet Detail Modal Variables
     let currentBetData = null;
     let favoriteBets = new Set();
     let showFavoritesOnly = false;
@@ -2079,7 +2144,48 @@
     const vipJoinBtn = document.getElementById('vipJoinBtn');
     const vipCancelModal = document.getElementById('vipCancelModal');
 
-    // NEW: Bet Detail Modal Functions
+    // Favorites Toggle
+    const favoritesToggle = document.getElementById('favoritesToggle');
+
+    // Initialize Favorites Toggle
+    function initializeFavoritesToggle() {
+      if (favoritesToggle) {
+        favoritesToggle.addEventListener('click', () => {
+          if (!isVipAuthenticated) {
+            showVipModal();
+            return;
+          }
+          
+          const isActive = favoritesToggle.classList.contains('active');
+          
+          if (isActive) {
+            favoritesToggle.classList.remove('active');
+            showFavoritesOnly = false;
+          } else {
+            favoritesToggle.classList.add('active');
+            showFavoritesOnly = true;
+          }
+          
+          applyFilters();
+        });
+      }
+    }
+
+    function updateFavoritesToggleVisibility() {
+      if (favoritesToggle) {
+        if (isVipAuthenticated) {
+          favoritesToggle.classList.remove('disabled');
+          favoritesToggle.querySelector('.favorites-label').textContent = 'Show Favorites Only';
+        } else {
+          favoritesToggle.classList.add('disabled');
+          favoritesToggle.classList.remove('active');
+          favoritesToggle.querySelector('.favorites-label').textContent = 'VIP Required for Favorites';
+          showFavoritesOnly = false;
+        }
+      }
+    }
+
+    // Bet Detail Modal Functions
     function initializeBetDetailModal() {
       const modal = document.getElementById('betDetailModal');
       const closeBtn = document.getElementById('closeDetailModal');
@@ -2270,10 +2376,10 @@
       
       if (favoriteBets.has(betId)) {
         favoriteBtn.classList.add('favorited');
-        favoriteBtn.innerHTML = '<span class="vip-badge">VIP</span>Remove from Favorites';
+        favoriteBtn.title = 'Remove from Favorites';
       } else {
         favoriteBtn.classList.remove('favorited');
-        favoriteBtn.innerHTML = '<span class="vip-badge">VIP</span>Add to Favorites';
+        favoriteBtn.title = 'Add to Favorites';
       }
     }
 
@@ -2308,50 +2414,8 @@
       console.log('Favorites loaded');
     }
 
-    function addFavoritesFilterButton() {
-      const sportButtonsContainer = document.getElementById("sportButtons");
-      if (!sportButtonsContainer) return;
-      
-      // Check if favorites button already exists
-      if (document.getElementById('favoritesFilterBtn')) {
-        return;
-      }
-      
-      const favoritesButton = document.createElement("button");
-      favoritesButton.id = "favoritesFilterBtn";
-      favoritesButton.className = "sport-btn vip-favorites-btn";
-      favoritesButton.textContent = "Favorites";
-      favoritesButton.style.display = isVipAuthenticated ? 'block' : 'none';
-      
-      favoritesButton.addEventListener("click", () => {
-        if (!isVipAuthenticated) {
-          showVipModal();
-          return;
-        }
-        
-        favoritesButton.classList.toggle("active");
-        showFavoritesOnly = favoritesButton.classList.contains("active");
-        applyFilters();
-      });
-      
-      // Insert after VIP button
-      const vipButton = document.getElementById('vipFilterBtn');
-      if (vipButton && vipButton.nextSibling) {
-        sportButtonsContainer.insertBefore(favoritesButton, vipButton.nextSibling);
-      } else {
-        sportButtonsContainer.appendChild(favoritesButton);
-      }
-    }
-
     function updateVipFeaturesVisibility() {
-      const favoritesBtn = document.getElementById('favoritesFilterBtn');
-      if (favoritesBtn) {
-        favoritesBtn.style.display = isVipAuthenticated ? 'block' : 'none';
-        if (!isVipAuthenticated) {
-          favoritesBtn.classList.remove('active');
-          showFavoritesOnly = false;
-        }
-      }
+      updateFavoritesToggleVisibility();
     }
     
     // Settings Modal Functions
@@ -2616,7 +2680,7 @@
       }
     }
     
-    // UPDATED: Handle VIP login with modal features
+    // Handle VIP login with modal features
     async function handleVipLogin(e) {
       e.preventDefault();
       
@@ -2658,8 +2722,7 @@
           }
         }
         
-        // NEW: Add VIP features
-        addFavoritesFilterButton();
+        // Update VIP features
         updateVipFeaturesVisibility();
         
         applyFilters();
@@ -2671,7 +2734,7 @@
       }
     }
     
-   // UPDATED: Handle VIP logout with modal features
+    // Handle VIP logout with modal features
     function handleVipLogout() {
       isVipAuthenticated = false;
       currentUser = null;
@@ -2684,7 +2747,7 @@
         vipFilterActive = false;
       }
       
-      // NEW: Update VIP features
+      // Update VIP features
       updateVipFeaturesVisibility();
       
       applyFilters();
@@ -2800,7 +2863,7 @@
       });
     }
     
-   // Subscription management event listeners
+    // Subscription management event listeners
     const vipCancelBack = document.getElementById('vipCancelBack');
     const vipCancelConfirm = document.getElementById('vipCancelConfirm');
     
@@ -3375,6 +3438,8 @@
     // Initialize modal when page loads
     document.addEventListener('DOMContentLoaded', () => {
       initializeBetDetailModal();
+      initializeFavoritesToggle();
+      updateVipFeaturesVisibility();
     });
 
     // Clean up intervals when page is unloaded

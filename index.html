@@ -1946,27 +1946,72 @@
       applyFilters();
     }
     
-    // Show cancellation modal
-    function showCancelModal() {
-      vipCancelModal.style.display = 'block';
-    }
-    
-    // Hide cancellation modal
+   // Hide cancellation modal
     function hideCancelModal() {
       vipCancelModal.style.display = 'none';
     }
     
-    // Handle subscription cancellation
-    function handleCancelSubscription() {
-      // In production, you would call your cancellation API here
-      console.log('Subscription cancellation requested');
-      
-      // For now, just logout the user
-      hideCancelModal();
-      handleVipLogout();
-      
-      // Show confirmation message
-      alert('Your subscription has been cancelled. Thank you for using Finalscore VIP!');
+    // Handle subscription cancellation with Google Apps Script integration
+    async function handleCancelSubscription() {
+      try {
+        // Show loading state
+        const confirmBtn = document.getElementById('vipCancelConfirm');
+        const originalText = confirmBtn.textContent;
+        confirmBtn.textContent = 'Cancelling...';
+        confirmBtn.disabled = true;
+        
+        // Call your Google Apps Script
+        const response = await fetch('https://script.google.com/macros/s/AKfycbwV9n-zd2kr6wT8UxfNruW--OSi150tfsh_2BXRdzUzvBY4gNqCzI0_2G5Hsa4JqbV1/exec', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            username: currentUser.Username,
+            newStatus: 'Cancelled',
+            cancellationDate: new Date().toISOString().split('T')[0] // YYYY-MM-DD format
+          })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          console.log('Subscription cancelled successfully in spreadsheet');
+          
+          // Update local user data
+          currentUser.SubscriptionStatus = 'Cancelled';
+          
+          // Close modals and logout
+          hideCancelModal();
+          handleVipLogout();
+          
+          // Show success message
+          alert('✅ Your subscription has been cancelled successfully!\n\nThe change has been saved to our records. Thank you for using Finalscore VIP!');
+          
+        } else {
+          console.error('Failed to update subscription:', result.message);
+          
+          // Still proceed with local cancellation but warn user
+          hideCancelModal();
+          handleVipLogout();
+          
+          alert('⚠️ Subscription cancelled locally, but there was an issue updating our records.\n\nPlease contact support to confirm the cancellation has been processed.');
+        }
+        
+      } catch (error) {
+        console.error('Error cancelling subscription:', error);
+        
+        // Reset button state
+        const confirmBtn = document.getElementById('vipCancelConfirm');
+        confirmBtn.textContent = 'Cancel Subscription';
+        confirmBtn.disabled = false;
+        
+        // Still proceed with local cancellation but warn user
+        hideCancelModal();
+        handleVipLogout();
+        
+        alert('⚠️ Subscription cancelled locally, but there was a connection issue.\n\nPlease contact support to confirm the cancellation has been processed.');
+      }
     }
     
     // Event listeners for VIP system

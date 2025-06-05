@@ -1885,43 +1885,6 @@ function applyFilters() {
       
       <input type="text" id="searchFilter" placeholder="Search..." />
 
-      <!-- Live Status Indicator -->
-      <div class="live-indicator" id="liveIndicator">
-        <div class="live-dot"></div>
-        <span>Live Updates Active</span>
-      </div>
-
-      <!-- Auto-refresh Toggle -->
-      <div class="auto-refresh-toggle">
-        <span class="auto-refresh-label">Auto-refresh</span>
-        <div class="toggle-switch active" id="autoRefreshToggle">
-          <div class="toggle-slider"></div>
-        </div>
-      </div>
-
-      <!-- Quick Stats -->
-      <div class="quick-stats">
-        <h3>Quick Stats</h3>
-        <div class="stats-grid">
-          <div class="stat-item">
-            <span class="stat-value" id="totalBetsCount">0</span>
-            <div class="stat-label">Total Bets</div>
-          </div>
-          <div class="stat-item stat-vip">
-            <span class="stat-value" id="vipBetsCount">0</span>
-            <div class="stat-label">VIP Bets</div>
-          </div>
-          <div class="stat-item">
-            <span class="stat-value" id="liveBetsCount">0</span>
-            <div class="stat-label">Live Now</div>
-          </div>
-          <div class="stat-item">
-            <span class="stat-value" id="favoritesCount">0</span>
-            <div class="stat-label">Favorites</div>
-          </div>
-        </div>
-      </div>
-
       <!-- Favorites Toggle -->
       <div class="favorites-toggle" id="favoritesToggle" title="Show Favorites Only">
         <span class="star-icon">⭐</span>
@@ -2054,6 +2017,36 @@ function applyFilters() {
             <div class="subscription-actions">
               <button class="subscription-btn btn-primary" id="managePaymentBtn">Update Payment Method</button>
               <button class="subscription-btn btn-danger" id="cancelSubscriptionBtn">Cancel Subscription</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Interface Settings Section -->
+      <div class="settings-section-content">
+        <div class="settings-section-header">
+          <h3 class="settings-section-title">🎛️ Interface Settings</h3>
+        </div>
+        
+        <div class="account-actions">
+          <div class="auto-refresh-toggle">
+            <span class="auto-refresh-label">Auto-refresh Data</span>
+            <div class="toggle-switch active" id="autoRefreshToggle">
+              <div class="toggle-slider"></div>
+            </div>
+          </div>
+          
+          <div class="auto-refresh-toggle" style="margin-top: 12px;">
+            <span class="auto-refresh-label">Show Quick Stats</span>
+            <div class="toggle-switch" id="quickStatsToggle">
+              <div class="toggle-slider"></div>
+            </div>
+          </div>
+          
+          <div class="auto-refresh-toggle" style="margin-top: 12px;">
+            <span class="auto-refresh-label">Show Live Indicator</span>
+            <div class="toggle-switch" id="liveIndicatorToggle">
+              <div class="toggle-slider"></div>
             </div>
           </div>
         </div>
@@ -3136,7 +3129,81 @@ function applyFilters() {
     let previousVipCardCount = 0;
     let isInitialLoad = true;
     let autoRefreshEnabled = true;
+    let quickStatsEnabled = false;
+    let liveIndicatorEnabled = false;
     let refreshInterval = null;
+
+    // Settings management
+    function updateInterfaceVisibility() {
+      const quickStats = document.querySelector('.quick-stats');
+      const liveIndicator = document.getElementById('liveIndicator');
+      
+      if (quickStats) {
+        quickStats.style.display = quickStatsEnabled ? 'block' : 'none';
+      }
+      if (liveIndicator) {
+        liveIndicator.style.display = (liveIndicatorEnabled && autoRefreshEnabled) ? 'flex' : 'none';
+      }
+    }
+
+    function initializeInterfaceSettings() {
+      const autoRefreshToggle = document.getElementById('autoRefreshToggle');
+      const quickStatsToggle = document.getElementById('quickStatsToggle');
+      const liveIndicatorToggle = document.getElementById('liveIndicatorToggle');
+      
+      // Auto-refresh toggle
+      if (autoRefreshToggle) {
+        autoRefreshToggle.addEventListener('click', () => {
+          autoRefreshEnabled = !autoRefreshEnabled;
+          
+          if (autoRefreshEnabled) {
+            autoRefreshToggle.classList.add('active');
+            startAutoRefresh();
+            console.log('✅ Auto-refresh enabled');
+          } else {
+            autoRefreshToggle.classList.remove('active');
+            stopAutoRefresh();
+            console.log('⏸️ Auto-refresh disabled');
+          }
+          updateInterfaceVisibility();
+        });
+      }
+      
+      // Quick stats toggle
+      if (quickStatsToggle) {
+        quickStatsToggle.addEventListener('click', () => {
+          quickStatsEnabled = !quickStatsEnabled;
+          
+          if (quickStatsEnabled) {
+            quickStatsToggle.classList.add('active');
+            console.log('📊 Quick stats enabled');
+          } else {
+            quickStatsToggle.classList.remove('active');
+            console.log('📊 Quick stats disabled');
+          }
+          updateInterfaceVisibility();
+        });
+      }
+      
+      // Live indicator toggle
+      if (liveIndicatorToggle) {
+        liveIndicatorToggle.addEventListener('click', () => {
+          liveIndicatorEnabled = !liveIndicatorEnabled;
+          
+          if (liveIndicatorEnabled) {
+            liveIndicatorToggle.classList.add('active');
+            console.log('🟢 Live indicator enabled');
+          } else {
+            liveIndicatorToggle.classList.remove('active');
+            console.log('🟢 Live indicator disabled');
+          }
+          updateInterfaceVisibility();
+        });
+      }
+      
+      // Initialize visibility
+      updateInterfaceVisibility();
+    }
 
     // Auto-refresh functionality
     function startAutoRefresh() {
@@ -3152,7 +3219,7 @@ function applyFilters() {
               const newData = results.data.filter(row => row.TeamA && row.TeamB && row.Odds);
               allData = newData;
               applyFilters();
-              updateQuickStats();
+              if (quickStatsEnabled) updateQuickStats();
             }
           });
         }
@@ -3168,6 +3235,8 @@ function applyFilters() {
 
     // Quick Stats Update
     function updateQuickStats() {
+      if (!quickStatsEnabled) return;
+      
       const activeGames = allData.filter(row => {
         const gameDateTime = parseGameDateTime(row.Date, row.Time);
         const status = getGameStatus(gameDateTime);
@@ -3189,33 +3258,6 @@ function applyFilters() {
       if (vipBetsEl) vipBetsEl.textContent = vipBets.length;
       if (liveBetsEl) liveBetsEl.textContent = liveBets.length;
       if (favoritesEl) favoritesEl.textContent = favoriteBets.size;
-    }
-
-    // Initialize auto-refresh toggle
-    function initializeAutoRefresh() {
-      const autoRefreshToggle = document.getElementById('autoRefreshToggle');
-      const liveIndicator = document.getElementById('liveIndicator');
-      
-      if (autoRefreshToggle) {
-        autoRefreshToggle.addEventListener('click', () => {
-          autoRefreshEnabled = !autoRefreshEnabled;
-          
-          if (autoRefreshEnabled) {
-            autoRefreshToggle.classList.add('active');
-            if (liveIndicator) liveIndicator.style.display = 'flex';
-            startAutoRefresh();
-            console.log('✅ Auto-refresh enabled');
-          } else {
-            autoRefreshToggle.classList.remove('active');
-            if (liveIndicator) liveIndicator.style.display = 'none';
-            stopAutoRefresh();
-            console.log('⏸️ Auto-refresh disabled');
-          }
-        });
-      }
-      
-      // Start auto-refresh by default
-      startAutoRefresh();
     }
 
     // Sound notifications for new cards
@@ -3457,8 +3499,8 @@ function applyFilters() {
       
       container.innerHTML = "";
       
-      // Update quick stats
-      updateQuickStats();
+      // Update quick stats if enabled
+      if (quickStatsEnabled) updateQuickStats();
       
       activeGames.forEach((gameData) => {
         const cardId = `card-${gameData.index}`;
@@ -3735,7 +3777,7 @@ function applyFilters() {
     }
 
     function saveFavorites() {
-      updateQuickStats();
+      if (quickStatsEnabled) updateQuickStats();
       console.log('Favorites saved:', favoriteBets.size, 'items');
     }
 
@@ -3747,7 +3789,7 @@ function applyFilters() {
         allData = results.data.filter(row => row.TeamA && row.TeamB && row.Odds);
         populateFilters(allData);
         renderCards(allData);
-        updateQuickStats();
+        if (quickStatsEnabled) updateQuickStats();
         Object.values(filters).forEach(el => {
           if (el && el.addEventListener) {
             el.addEventListener('change', applyFilters);
@@ -3763,8 +3805,50 @@ function applyFilters() {
     document.addEventListener('DOMContentLoaded', () => {
       initializeBetDetailModal();
       initializeFavoritesToggle();
-      initializeAutoRefresh();
+      initializeInterfaceSettings();
       updateVipFeaturesVisibility();
+      
+      // Start auto-refresh by default
+      startAutoRefresh();
+      
+      // Add interface elements to sidebar
+      const sidebar = document.querySelector('.sidebar');
+      if (sidebar) {
+        // Add live indicator
+        const liveIndicator = document.createElement('div');
+        liveIndicator.id = 'liveIndicator';
+        liveIndicator.className = 'live-indicator';
+        liveIndicator.style.display = 'none';
+        liveIndicator.innerHTML = '<div class="live-dot"></div><span>Live Updates Active</span>';
+        sidebar.insertBefore(liveIndicator, sidebar.children[1]);
+        
+        // Add quick stats
+        const quickStats = document.createElement('div');
+        quickStats.className = 'quick-stats';
+        quickStats.style.display = 'none';
+        quickStats.innerHTML = `
+          <h3>Quick Stats</h3>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <span class="stat-value" id="totalBetsCount">0</span>
+              <div class="stat-label">Total Bets</div>
+            </div>
+            <div class="stat-item stat-vip">
+              <span class="stat-value" id="vipBetsCount">0</span>
+              <div class="stat-label">VIP Bets</div>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value" id="liveBetsCount">0</span>
+              <div class="stat-label">Live Now</div>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value" id="favoritesCount">0</span>
+              <div class="stat-label">Favorites</div>
+            </div>
+          </div>
+        `;
+        sidebar.insertBefore(quickStats, sidebar.children[2]);
+      }
     });
 
     // Clean up intervals when page is unloaded

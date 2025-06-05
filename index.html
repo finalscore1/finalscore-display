@@ -66,14 +66,16 @@
     .favorites-toggle {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: center;
       margin-bottom: 20px;
-      padding: 12px 16px;
+      padding: 12px;
       background: #262626;
       border-radius: 12px;
       border: 2px solid #333;
       cursor: pointer;
       transition: all 0.3s ease;
+      width: 60px;
+      height: 50px;
     }
     
     .favorites-toggle:hover {
@@ -87,37 +89,14 @@
       box-shadow: 0 0 15px rgba(218, 165, 32, 0.3);
     }
     
-    .favorites-toggle.disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      border-color: #333;
-      background: #262626;
-    }
-    
-    .favorites-toggle.disabled:hover {
-      border-color: #333;
-      background: #262626;
-    }
-    
-    .favorites-label {
-      color: #fff;
-      font-size: 14px;
-      font-weight: 600;
-      flex: 1;
-    }
-    
-    .favorites-toggle.disabled .favorites-label {
-      color: #666;
-    }
-    
     .star-icon {
-      font-size: 20px;
+      font-size: 24px;
       transition: all 0.3s ease;
-      margin-left: 8px;
+      color: #666;
     }
     
-    .favorites-toggle:not(.active) .star-icon {
-      color: #666;
+    .favorites-toggle:hover .star-icon {
+      color: #888;
     }
     
     .favorites-toggle.active .star-icon {
@@ -920,7 +899,7 @@
     }
     .tooltip-text {
       visibility: hidden;
-      width: 280px;
+      width: 240px;
       background: #1f2937;
       color: #ffffff;
       text-align: left;
@@ -930,7 +909,7 @@
       z-index: 1000;
       bottom: 125%;
       left: 50%;
-      margin-left: -140px;
+      margin-left: -120px;
       opacity: 0;
       transition: opacity 0.3s;
       font-size: 13px;
@@ -938,14 +917,26 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
       border: 1px solid #374151;
       max-width: calc(100vw - 40px);
+      word-wrap: break-word;
     }
     
     @media (max-width: 768px) {
       .tooltip-text {
-        width: 250px;
-        margin-left: -125px;
+        width: 200px;
+        margin-left: -100px;
         left: 50%;
         right: auto;
+        font-size: 12px;
+        padding: 10px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .tooltip-text {
+        width: 180px;
+        margin-left: -90px;
+        font-size: 11px;
+        padding: 8px;
       }
     }
     .tooltip-text::after {
@@ -1220,9 +1211,9 @@
     }
     
     .vip-status {
-      position: absolute;
+      position: fixed;
       top: 30px;
-      right: 180px;
+      right: 160px;
       background: linear-gradient(135deg, #DAA520, #B8860B);
       color: #000;
       padding: 8px 16px;
@@ -1751,8 +1742,7 @@
       <input type="text" id="searchFilter" placeholder="Search..." />
 
       <!-- Favorites Toggle -->
-      <div class="favorites-toggle" id="favoritesToggle">
-        <span class="favorites-label">Show Favorites Only</span>
+      <div class="favorites-toggle" id="favoritesToggle" title="Show Favorites Only">
         <span class="star-icon">⭐</span>
       </div>
 
@@ -2147,15 +2137,10 @@
     // Favorites Toggle
     const favoritesToggle = document.getElementById('favoritesToggle');
 
-    // Initialize Favorites Toggle
+    // Initialize Favorites Toggle (now free for all users)
     function initializeFavoritesToggle() {
       if (favoritesToggle) {
         favoritesToggle.addEventListener('click', () => {
-          if (!isVipAuthenticated) {
-            showVipModal();
-            return;
-          }
-          
           const isActive = favoritesToggle.classList.contains('active');
           
           if (isActive) {
@@ -2172,16 +2157,9 @@
     }
 
     function updateFavoritesToggleVisibility() {
+      // Favorites are now free for all users - no VIP requirement
       if (favoritesToggle) {
-        if (isVipAuthenticated) {
-          favoritesToggle.classList.remove('disabled');
-          favoritesToggle.querySelector('.favorites-label').textContent = 'Show Favorites Only';
-        } else {
-          favoritesToggle.classList.add('disabled');
-          favoritesToggle.classList.remove('active');
-          favoritesToggle.querySelector('.favorites-label').textContent = 'VIP Required for Favorites';
-          showFavoritesOnly = false;
-        }
+        favoritesToggle.style.display = 'flex';
       }
     }
 
@@ -2367,11 +2345,7 @@
       
       const betId = generateBetId(betData);
       
-      if (!isVipAuthenticated) {
-        favoriteBtn.style.display = 'none';
-        return;
-      }
-      
+      // Favorites are now free for all users
       favoriteBtn.style.display = 'flex';
       
       if (favoriteBets.has(betId)) {
@@ -2384,10 +2358,7 @@
     }
 
     function toggleFavorite() {
-      if (!isVipAuthenticated || !currentBetData) {
-        showVipModal();
-        return;
-      }
+      if (!currentBetData) return;
       
       const betId = generateBetId(currentBetData);
       
@@ -2980,6 +2951,36 @@
     let allData = [];
     let countdownIntervals = new Map();
     let historyGames = [];
+    let previousCardCount = 0;
+
+    // Sound notification for new cards
+    function playNewCardSound() {
+      try {
+        // Create a subtle notification sound using Web Audio API
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        // Configure sound - pleasant notification tone
+        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+        oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.1);
+        oscillator.frequency.setValueAtTime(700, audioContext.currentTime + 0.2);
+        
+        gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + 0.05);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.3);
+        
+        console.log('🔔 New bet card detected - notification sound played');
+      } catch (error) {
+        console.log('Sound notification not available:', error);
+      }
+    }
 
     // History button functionality
     const historyBtn = document.getElementById("historyBtn");
@@ -3123,7 +3124,6 @@
       countdownIntervals.clear();
       
       if (!container) return;
-      container.innerHTML = "";
       
       const activeGames = [];
       const endedGames = [];
@@ -3139,8 +3139,17 @@
         }
       });
       
+      // Check for new cards and play sound notification
+      const currentCardCount = activeGames.length;
+      if (previousCardCount > 0 && currentCardCount > previousCardCount) {
+        playNewCardSound();
+      }
+      previousCardCount = currentCardCount;
+      
       historyGames = endedGames;
       if (historyCount) historyCount.textContent = historyGames.length;
+      
+      container.innerHTML = "";
       
       activeGames.forEach((gameData) => {
         const cardId = `card-${gameData.index}`;

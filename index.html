@@ -167,6 +167,244 @@
       width: 95%;
       margin-bottom: 10px;
     }
+    
+    /* Settings Button */
+    .settings-section {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #333;
+    }
+    
+    .settings-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #4a90e2, #357abd);
+      color: white;
+      border: none;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 2px 8px rgba(74, 144, 226, 0.2);
+    }
+    
+    .settings-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+    }
+    
+    .settings-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    /* Settings Modal */
+    .settings-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      z-index: 10000;
+      backdrop-filter: blur(5px);
+    }
+    
+    .settings-modal-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #1a1a1a;
+      border-radius: 16px;
+      padding: 32px;
+      width: 480px;
+      max-width: 90vw;
+      max-height: 80vh;
+      overflow-y: auto;
+      border: 2px solid #333;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+    }
+    
+    .settings-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #333;
+    }
+    
+    .settings-modal-title {
+      color: #fff;
+      font-size: 24px;
+      font-weight: 600;
+      margin: 0;
+    }
+    
+    .settings-close-btn {
+      background: #333;
+      color: #fff;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+    
+    .settings-close-btn:hover {
+      background: #444;
+    }
+    
+    .settings-section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #333;
+    }
+    
+    .settings-section-title {
+      color: #fff;
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0;
+    }
+    
+    .settings-section-content {
+      margin-bottom: 32px;
+    }
+    
+    .account-info {
+      display: grid;
+      gap: 16px;
+    }
+    
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: #262626;
+      border-radius: 8px;
+      border: 1px solid #333;
+    }
+    
+    .info-label {
+      color: #aaa;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .info-value {
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    
+    .status-badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .status-active {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: white;
+    }
+    
+    .status-expired {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white;
+    }
+    
+    .status-inactive {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: white;
+    }
+    
+    .subscription-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    
+    .subscription-btn {
+      flex: 1;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #4a90e2, #357abd);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
+    }
+    
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+    }
+    
+    .btn-secondary {
+      background: #333;
+      color: #fff;
+      border: 1px solid #555;
+    }
+    
+    .btn-secondary:hover {
+      background: #444;
+    }
+    
+    .account-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .account-btn {
+      width: 100%;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
     .content {
       flex: 1;
     }
@@ -647,7 +885,7 @@
     .info-tooltip:hover .tooltip-text {
       visibility: visible;
       opacity: 1;
-    }
+}
     .tooltip-link {
       color: #60a5fa;
       text-decoration: none;
@@ -935,30 +1173,6 @@
       background: #dc2626;
     }
     
-    .vip-manage-subscription {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: rgba(30, 30, 30, 0.9);
-      color: #888;
-      padding: 6px 12px;
-      border-radius: 15px;
-      font-size: 11px;
-      font-weight: 500;
-      display: none;
-      z-index: 998;
-      backdrop-filter: blur(10px);
-      border: 1px solid #333;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-    
-    .vip-manage-subscription:hover {
-      background: rgba(50, 50, 50, 0.95);
-      color: #aaa;
-      border-color: #555;
-    }
-    
     .vip-cancel-modal {
       position: fixed;
       top: 0;
@@ -1155,6 +1369,14 @@
 
       <label for="oddsSlider">Min Odds: <span id="oddsValue">1.00</span></label>
       <input type="range" id="oddsSlider" min="1" max="20" step="0.01" value="1"/>
+      
+      <!-- Settings Section -->
+      <div class="settings-section">
+        <button id="settingsBtn" class="settings-btn">
+          <span>⚙️</span>
+          <span>Settings</span>
+        </button>
+      </div>
     </div>
 
     <div class="content">
@@ -1183,6 +1405,111 @@
           <button id="closeHistoryBtn" class="close-history-btn">✕ Close</button>
         </div>
         <div class="card-grid" id="historyCards"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settingsModal" class="settings-modal">
+    <div class="settings-modal-content">
+      <div class="settings-modal-header">
+        <h2 class="settings-modal-title">Settings</h2>
+        <button id="settingsCloseBtn" class="settings-close-btn">✕</button>
+      </div>
+      
+      <!-- Account Information Section -->
+      <div class="settings-section-content">
+        <div class="settings-section-header">
+          <h3 class="settings-section-title">👤 Account Information</h3>
+        </div>
+        
+        <div id="accountInfoSection">
+          <!-- Show login prompt if not authenticated -->
+          <div id="notLoggedInSection" style="text-align: center; padding: 20px;">
+            <p style="color: #aaa; margin-bottom: 16px;">Please log in to view your account details</p>
+            <button class="subscription-btn btn-primary" id="settingsLoginBtn">Login to VIP</button>
+          </div>
+          
+          <!-- Show account details if authenticated -->
+          <div id="loggedInSection" style="display: none;">
+            <div class="account-info">
+              <div class="info-row">
+                <span class="info-label">Username</span>
+                <span class="info-value" id="accountUsername">-</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Email</span>
+                <span class="info-value" id="accountEmail">-</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Subscription Status</span>
+                <span class="status-badge status-active" id="accountStatus">Active</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Expiry Date</span>
+                <span class="info-value" id="accountExpiry">-</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Member Since</span>
+                <span class="info-value" id="accountMemberSince">-</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Subscription Management Section -->
+      <div class="settings-section-content">
+        <div class="settings-section-header">
+          <h3 class="settings-section-title">💳 Subscription Management</h3>
+        </div>
+        
+        <div id="subscriptionSection">
+          <!-- Show upgrade prompt if not authenticated -->
+          <div id="notSubscribedSection" style="text-align: center; padding: 20px;">
+            <p style="color: #aaa; margin-bottom: 16px;">Upgrade to VIP for exclusive predictions and premium features</p>
+            <div class="subscription-actions">
+              <button class="subscription-btn btn-primary" id="upgradeBtn">Upgrade to VIP</button>
+            </div>
+          </div>
+          
+          <!-- Show subscription management if authenticated -->
+          <div id="subscribedSection" style="display: none;">
+            <p style="color: #ccc; font-size: 14px; margin-bottom: 20px;">
+              Manage your VIP subscription and billing preferences
+            </p>
+            <div class="subscription-actions">
+              <button class="subscription-btn btn-primary" id="managePaymentBtn">Update Payment Method</button>
+              <button class="subscription-btn btn-danger" id="cancelSubscriptionBtn">Cancel Subscription</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Account Actions Section -->
+      <div class="settings-section-content">
+        <div class="settings-section-header">
+          <h3 class="settings-section-title">🔧 Account Actions</h3>
+        </div>
+        
+        <div class="account-actions">
+          <button class="account-btn btn-secondary" id="changePasswordBtn">
+            <span>🔑</span>
+            <span>Change Password</span>
+          </button>
+          <button class="account-btn btn-secondary" id="downloadDataBtn">
+            <span>📥</span>
+            <span>Download My Data</span>
+          </button>
+          <button class="account-btn btn-danger" id="deleteAccountBtn" style="display: none;">
+            <span>🗑️</span>
+            <span>Delete Account</span>
+          </button>
+          <button class="account-btn btn-secondary" id="logoutBtn" style="display: none;">
+            <span>🚪</span>
+            <span>Logout</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -1260,11 +1587,6 @@
     <button class="vip-logout-btn" id="vipLogoutBtn">Logout</button>
   </div>
 
-  <!-- VIP Subscription Management -->
-  <div id="vipManageSubscription" class="vip-manage-subscription">
-    Manage Subscription
-  </div>
-
   <!-- VIP Cancellation Modal -->
   <div id="vipCancelModal" class="vip-cancel-modal">
     <div class="vip-cancel-content">
@@ -1303,6 +1625,20 @@
     let vipFilterActive = false;
     let isVipAuthenticated = false;
     let vipCredentials = [];
+    let currentUser = null;
+
+    // Settings Modal Elements
+    const settingsBtn = document.getElementById('settingsBtn');
+    const settingsModal = document.getElementById('settingsModal');
+    const settingsCloseBtn = document.getElementById('settingsCloseBtn');
+    const settingsLoginBtn = document.getElementById('settingsLoginBtn');
+    const upgradeBtn = document.getElementById('upgradeBtn');
+    const managePaymentBtn = document.getElementById('managePaymentBtn');
+    const cancelSubscriptionBtn = document.getElementById('cancelSubscriptionBtn');
+    const changePasswordBtn = document.getElementById('changePasswordBtn');
+    const downloadDataBtn = document.getElementById('downloadDataBtn');
+    const deleteAccountBtn = document.getElementById('deleteAccountBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
 
     // VIP Authentication System
     const vipModal = document.getElementById('vipModal');
@@ -1315,9 +1651,179 @@
     const vipForgotModal = document.getElementById('vipForgotModal');
     const vipForgotForm = document.getElementById('vipForgotForm');
     const vipJoinBtn = document.getElementById('vipJoinBtn');
-    const vipManageSubscription = document.getElementById('vipManageSubscription');
     const vipCancelModal = document.getElementById('vipCancelModal');
     
+    // Settings Modal Functions
+    function showSettingsModal() {
+      settingsModal.style.display = 'block';
+      updateSettingsContent();
+    }
+    
+    function hideSettingsModal() {
+      settingsModal.style.display = 'none';
+    }
+    
+    function updateSettingsContent() {
+      const notLoggedInSection = document.getElementById('notLoggedInSection');
+      const loggedInSection = document.getElementById('loggedInSection');
+      const notSubscribedSection = document.getElementById('notSubscribedSection');
+      const subscribedSection = document.getElementById('subscribedSection');
+      
+      if (isVipAuthenticated && currentUser) {
+        // Show authenticated sections
+        notLoggedInSection.style.display = 'none';
+        loggedInSection.style.display = 'block';
+        notSubscribedSection.style.display = 'none';
+        subscribedSection.style.display = 'block';
+        
+        // Update account information
+        document.getElementById('accountUsername').textContent = currentUser.Username || '-';
+        document.getElementById('accountEmail').textContent = currentUser.Email || '-';
+        
+        // Update subscription status
+        const statusElement = document.getElementById('accountStatus');
+        const expiryElement = document.getElementById('accountExpiry');
+        const memberSinceElement = document.getElementById('accountMemberSince');
+        
+        if (currentUser.ExpiryDate) {
+          const expiryDate = new Date(currentUser.ExpiryDate);
+          const now = new Date();
+          
+          if (now > expiryDate) {
+            statusElement.textContent = 'Expired';
+            statusElement.className = 'status-badge status-expired';
+          } else {
+            statusElement.textContent = 'Active';
+            statusElement.className = 'status-badge status-active';
+          }
+          
+          expiryElement.textContent = expiryDate.toLocaleDateString();
+        } else {
+          statusElement.textContent = 'Active';
+          statusElement.className = 'status-badge status-active';
+          expiryElement.textContent = 'No expiry';
+        }
+        
+        memberSinceElement.textContent = currentUser.MemberSince ? 
+          new Date(currentUser.MemberSince).toLocaleDateString() : 
+          'N/A';
+        
+        // Show account action buttons for authenticated users
+        deleteAccountBtn.style.display = 'block';
+        logoutBtn.style.display = 'block';
+        
+      } else {
+        // Show non-authenticated sections
+        notLoggedInSection.style.display = 'block';
+        loggedInSection.style.display = 'none';
+        notSubscribedSection.style.display = 'block';
+        subscribedSection.style.display = 'none';
+        
+        // Hide account action buttons for non-authenticated users
+        deleteAccountBtn.style.display = 'none';
+        logoutBtn.style.display = 'none';
+      }
+    }
+    
+    // Settings Event Listeners
+    settingsBtn.addEventListener('click', showSettingsModal);
+    settingsCloseBtn.addEventListener('click', hideSettingsModal);
+    
+    settingsLoginBtn.addEventListener('click', () => {
+      hideSettingsModal();
+      showVipModal();
+    });
+    
+    upgradeBtn.addEventListener('click', () => {
+      window.open('https://finalscore.io/pricing', '_blank');
+    });
+    
+    managePaymentBtn.addEventListener('click', () => {
+      // In production, this would open a payment management portal
+      alert('Payment management portal would open here. This feature connects to your payment processor (Stripe, PayPal, etc.)');
+    });
+    
+    cancelSubscriptionBtn.addEventListener('click', () => {
+      hideSettingsModal();
+      showCancelModal();
+    });
+    
+    changePasswordBtn.addEventListener('click', () => {
+      if (!isVipAuthenticated) {
+        alert('Please log in first to change your password');
+        return;
+      }
+      hideSettingsModal();
+      showForgotModal();
+    });
+    
+    downloadDataBtn.addEventListener('click', () => {
+      if (!isVipAuthenticated) {
+        alert('Please log in first to download your data');
+        return;
+      }
+      
+      // Generate user data export
+      const userData = {
+        username: currentUser.Username,
+        email: currentUser.Email,
+        memberSince: currentUser.MemberSince,
+        subscriptionStatus: currentUser.SubscriptionStatus,
+        expiryDate: currentUser.ExpiryDate,
+        exportDate: new Date().toISOString()
+      };
+      
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(userData, null, 2));
+      const downloadAnchorNode = document.createElement('a');
+      downloadAnchorNode.setAttribute("href", dataStr);
+      downloadAnchorNode.setAttribute("download", `finalscore_data_${currentUser.Username}.json`);
+      document.body.appendChild(downloadAnchorNode);
+      downloadAnchorNode.click();
+      downloadAnchorNode.remove();
+      
+      alert('Your data has been downloaded successfully!');
+    });
+    
+    deleteAccountBtn.addEventListener('click', () => {
+      if (!isVipAuthenticated) {
+        alert('Please log in first');
+        return;
+      }
+      
+      const confirmDelete = confirm(
+        'Are you sure you want to delete your account? This action cannot be undone.\n\n' +
+        'All your data will be permanently deleted including:\n' +
+        '• Account information\n' +
+        '• Subscription history\n' +
+        '• Preferences and settings\n\n' +
+        'Type "DELETE" to confirm:'
+      );
+      
+      if (confirmDelete) {
+        const confirmation = prompt('Please type "DELETE" to confirm account deletion:');
+        if (confirmation === 'DELETE') {
+          // In production, this would call your account deletion API
+          alert('Account deletion request submitted. You will receive a confirmation email shortly.');
+          handleVipLogout();
+          hideSettingsModal();
+        } else {
+          alert('Account deletion cancelled.');
+        }
+      }
+    });
+    
+    logoutBtn.addEventListener('click', () => {
+      handleVipLogout();
+      hideSettingsModal();
+    });
+    
+    // Close settings modal when clicking outside
+    settingsModal.addEventListener('click', (e) => {
+      if (e.target === settingsModal) {
+        hideSettingsModal();
+      }
+    });
+
     // Load VIP credentials from Google Sheets
     async function loadVipCredentials() {
       try {
@@ -1404,15 +1910,17 @@
       
       if (result.success) {
         isVipAuthenticated = true;
+        currentUser = result.user;
         hideVipModal();
         vipStatus.style.display = 'block';
-        vipManageSubscription.style.display = 'block';
         
         // Auto-activate VIP filter if not already active
         if (!vipFilterActive) {
           const vipBtn = document.getElementById('vipFilterBtn');
-          vipBtn.classList.add('active');
-          vipFilterActive = true;
+          if (vipBtn) {
+            vipBtn.classList.add('active');
+            vipFilterActive = true;
+          }
         }
         
         applyFilters();
@@ -1425,8 +1933,8 @@
     // Handle VIP logout
     function handleVipLogout() {
       isVipAuthenticated = false;
+      currentUser = null;
       vipStatus.style.display = 'none';
-      vipManageSubscription.style.display = 'none';
       
       // Deactivate VIP filter
       const vipBtn = document.getElementById('vipFilterBtn');
@@ -1476,7 +1984,6 @@
     });
     
     // Subscription management event listeners
-    vipManageSubscription.addEventListener('click', showCancelModal);
     document.getElementById('vipCancelBack').addEventListener('click', hideCancelModal);
     document.getElementById('vipCancelConfirm').addEventListener('click', handleCancelSubscription);
     
@@ -1944,7 +2451,7 @@
       populateCountryLeagueFilter(countryLeagues);
     }
 
-    function populateCountryLeagueFilter(countryLeagues) {
+function populateCountryLeagueFilter(countryLeagues) {
       const container = filters.countryLeague;
       container.innerHTML = '';
       
@@ -2055,6 +2562,7 @@
       renderCards(filtered);
     }
 
+    // Load data and initialize
     Papa.parse(sheetURL, {
       download: true,
       header: true,

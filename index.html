@@ -2668,6 +2668,7 @@
           memberSince: currentUser.MemberSince,
           subscriptionStatus: currentUser.SubscriptionStatus,
           expiryDate: currentUser.ExpiryDate,
+          leaderboardData: currentUserProgress,
           exportDate: new Date().toISOString()
         };
         
@@ -2695,6 +2696,8 @@
           'All your data will be permanently deleted including:\n' +
           '• Account information\n' +
           '• Subscription history\n' +
+          '• Leaderboard progress\n' +
+          '• Achievements and rewards\n' +
           '• Preferences and settings\n\n' +
           'Type "DELETE" to confirm:'
         );
@@ -2737,6 +2740,582 @@
         vipCredentials = parsed.data.filter(row => row.Username && row.Password);
         console.log('VIP credentials loaded:', vipCredentials.length, 'users');
       } catch (error) {
+        console.log('VIP sound notification not available:', error);
+      }
+    }
+
+    function playRegularNotificationSound() {
+      try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        // Regular sound - gentle notification
+        oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
+        oscillator.frequency.setValueAtTime(500, audioContext.currentTime + 0.1);
+        
+        gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.08, audioContext.currentTime + 0.05);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.25);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.25);
+        
+        console.log('🔔 New regular bet detected - notification played');
+      } catch (error) {
+        console.log('Regular sound notification not available:', error);
+      }
+    }
+
+    // History button functionality
+    const historyBtn = document.getElementById("historyBtn");
+    const historyContainer = document.getElementById("historyContainer");
+    const closeHistoryBtn = document.getElementById("closeHistoryBtn");
+    const historyCount = document.getElementById("historyCount");
+    const historyCards = document.getElementById("historyCards");
+
+    if (historyBtn && historyContainer) {
+      historyBtn.addEventListener("click", () => {
+        historyContainer.style.display = "block";
+        renderHistoryCards();
+      });
+    }
+
+    if (closeHistoryBtn && historyContainer) {
+      closeHistoryBtn.addEventListener("click", () => {
+        historyContainer.style.display = "none";
+      });
+    }
+
+    // Close history when clicking outside
+    if (historyContainer) {
+      historyContainer.addEventListener("click", (e) => {
+        if (e.target === historyContainer) {
+          historyContainer.style.display = "none";
+        }
+      });
+    }
+
+    function parseGameDateTime(dateStr, timeStr) {
+      if (!dateStr || !timeStr) return null;
+      
+      let date;
+      
+      if (dateStr.includes('/') && dateStr.includes(',')) {
+        const datePart = dateStr.split('/')[1].trim();
+        date = new Date(datePart);
+      }
+      else if (dateStr.includes('/')) {
+        const parts = dateStr.split('/');
+        if (parts.length === 3) {
+          date = new Date(parts[2], parts[0] - 1, parts[1]);
+        }
+      } else if (dateStr.includes('-')) {
+        date = new Date(dateStr);
+      } else {
+        date = new Date(dateStr);
+      }
+      
+      if (!date || isNaN(date.getTime())) {
+        console.log('Failed to parse date:', dateStr);
+        return null;
+      }
+      
+      const timeParts = timeStr.split(':');
+      if (timeParts.length >= 2) {
+        const hours = parseInt(timeParts[0]);
+        const minutes = parseInt(timeParts[1]);
+        date.setHours(hours, minutes, 0, 0);
+      }
+      
+      return date;
+    }
+
+    function getCountdownText(gameDateTime) {
+      if (!gameDateTime) return "Time TBD";
+      
+      const now = new Date();
+      const timeDiff = gameDateTime.getTime() - now.getTime();
+      
+      if (timeDiff < -125 * 60 * 1000) {
+        return "Ended";
+      }
+      
+      if (timeDiff < 0) {
+        return "LIVE";
+      }
+      
+      const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+      
+      if (days > 0) {
+        return `${days}d ${hours}h ${minutes}m`;
+      } else if (hours > 0) {
+        return `${hours}h ${minutes}m ${seconds}s`;
+      } else if (minutes > 0) {
+        return `${minutes}m ${seconds}s`;
+      } else {
+        return `${seconds}s`;
+      }
+    }
+
+    function getGameStatus(gameDateTime) {
+      if (!gameDateTime) return "unknown";
+      
+      const now = new Date();
+      const timeDiff = gameDateTime.getTime() - now.getTime();
+      
+      if (timeDiff < -125 * 60 * 1000) {
+        return "ended";
+      }
+      
+      if (timeDiff < 0) {
+        return "live";
+      } else if (timeDiff < 30 * 60 * 1000) {
+        return "starting-soon";
+      } else {
+        return "upcoming";
+      }
+    }
+
+    function updateCountdown(cardId, gameDateTime) {
+      const countdownEl = document.querySelector(`[data-card-id="${cardId}"] .countdown`);
+      const cardEl = document.querySelector(`[data-card-id="${cardId}"]`);
+      const statusEl = document.querySelector(`[data-card-id="${cardId}"] .status-indicator`);
+      
+      if (!countdownEl || !cardEl || !statusEl) return;
+      
+      const countdownText = getCountdownText(gameDateTime);
+      const status = getGameStatus(gameDateTime);
+      
+      const wasVip = cardEl.classList.contains('vip');
+      
+      countdownEl.textContent = countdownText;
+      
+      const baseClasses = ['bet-card'];
+      if (wasVip) baseClasses.push('vip');
+      if (status === 'starting-soon') baseClasses.push('starting-soon');
+      if (status === 'live') baseClasses.push('expired');
+      
+      cardEl.className = baseClasses.join(' ');
+      countdownEl.className = `countdown ${status === 'live' ? 'live' : ''} ${!gameDateTime ? 'expired' : ''}`;
+      statusEl.className = `status-indicator ${status}`;
+    }
+
+    function renderCards(data) {
+      countdownIntervals.forEach(interval => clearInterval(interval));
+      countdownIntervals.clear();
+      
+      if (!container) return;
+      
+      const activeGames = [];
+      const endedGames = [];
+      
+      data.forEach((row, index) => {
+        const gameDateTime = parseGameDateTime(row.Date, row.Time);
+        const status = getGameStatus(gameDateTime);
+        
+        if (status === 'ended') {
+          endedGames.push({...row, index, gameDateTime});
+        } else {
+          activeGames.push({...row, index, gameDateTime});
+        }
+      });
+      
+      // Check for new cards and play appropriate sound notifications
+      if (!isInitialLoad) {
+        const currentCardCount = activeGames.length;
+        const currentVipCardCount = activeGames.filter(game => game.VIP && game.VIP.toLowerCase() === 'yes').length;
+        
+        // Check for new VIP cards
+        if (previousVipCardCount > 0 && currentVipCardCount > previousVipCardCount) {
+          playVipNotificationSound();
+        }
+        // Check for new regular cards (only if no new VIP cards to avoid double sound)
+        else if (previousCardCount > 0 && currentCardCount > previousCardCount) {
+          playRegularNotificationSound();
+        }
+        
+        previousCardCount = currentCardCount;
+        previousVipCardCount = currentVipCardCount;
+      } else {
+        // Set initial counts without playing sounds
+        previousCardCount = activeGames.length;
+        previousVipCardCount = activeGames.filter(game => game.VIP && game.VIP.toLowerCase() === 'yes').length;
+        isInitialLoad = false;
+      }
+      
+      historyGames = endedGames;
+      if (historyCount) historyCount.textContent = historyGames.length;
+      
+      container.innerHTML = "";
+      
+      // Update quick stats if enabled
+      if (quickStatsEnabled) updateQuickStats();
+      
+      activeGames.forEach((gameData) => {
+        const cardId = `card-${gameData.index}`;
+        const countdownText = getCountdownText(gameData.gameDateTime);
+        const status = getGameStatus(gameData.gameDateTime);
+        const isVip = gameData.VIP && gameData.VIP.toLowerCase() === 'yes';
+        
+        const card = document.createElement("div");
+        card.className = `bet-card ${status === 'starting-soon' ? 'starting-soon' : ''} ${status === 'live' ? 'expired' : ''} ${isVip ? 'vip' : ''}`;
+        card.setAttribute('data-card-id', cardId);
+        
+        card.addEventListener('click', (e) => {
+          if (!e.target.closest('.odds') && !e.target.closest('.countdown')) {
+            if (isVip && !isVipAuthenticated) {
+              showVipModal();
+            } else {
+              showBetDetailModal(gameData);
+            }
+          }
+        });
+        
+        card.innerHTML = `
+          <div class="status-indicator ${status}"></div>
+          <div class="meta">${gameData.Date} ${gameData.Time} &nbsp;&nbsp; ${gameData.League}</div>
+          <div class="teams">${gameData.TeamA} vs ${gameData.TeamB}</div>
+          <div class="tip ${isVip && isVipAuthenticated ? 'vip-unlocked' : ''}">Tip: <strong>${gameData.Tip}</strong></div>
+          <div class="odds">Odds: ${gameData.Odds}</div>
+          <div class="countdown ${status === 'live' ? 'live' : ''} ${!gameData.gameDateTime ? 'expired' : ''}" style="${isVip ? 'background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%); color: #DAA520; position: relative; z-index: 5; border: 2px solid #DAA520; box-shadow: 0 0 10px rgba(218, 165, 32, 0.4), inset 0 1px 0 rgba(218, 165, 32, 0.2); font-weight: 700;' : ''}">${countdownText}</div>
+        `;
+        
+        container.appendChild(card);
+        
+        if (gameData.gameDateTime) {
+          const interval = setInterval(() => {
+            updateCountdown(cardId, gameData.gameDateTime);
+            if (getGameStatus(gameData.gameDateTime) === 'ended') {
+              applyFilters();
+            }
+          }, 1000);
+          countdownIntervals.set(cardId, interval);
+        }
+      });
+    }
+
+    function renderHistoryCards() {
+      if (!historyCards) return;
+      historyCards.innerHTML = "";
+      
+      historyGames.forEach((gameData, index) => {
+        const isVip = gameData.VIP && gameData.VIP.toLowerCase() === 'yes';
+        const won = gameData.Won && gameData.Won.toLowerCase() === 'yes';
+        const lost = gameData.Won && gameData.Won.toLowerCase() === 'no';
+        
+        let resultLabel = 'Ended';
+        
+        if (won) {
+          resultLabel = 'Won';
+        } else if (lost) {
+          resultLabel = 'Lost';
+        }
+        
+        const card = document.createElement("div");
+        card.className = `bet-card ended ${isVip ? 'vip' : ''}`;
+        
+        card.innerHTML = `
+          <div class="status-indicator" style="background: #666;"></div>
+          <div class="meta">${gameData.Date} ${gameData.Time} &nbsp;&nbsp; ${gameData.League}</div>
+          <div class="teams">${gameData.TeamA} vs ${gameData.TeamB}</div>
+          <div class="tip ${isVip && isVipAuthenticated ? 'vip-unlocked' : ''}">Tip: <strong>${gameData.Tip}</strong></div>
+          <div class="odds">Odds: ${gameData.Odds}</div>
+          <div class="countdown ended" style="background: ${won ? '#22c55e' : (lost ? '#ef4444' : '#666')}; color: white; ${isVip ? 'position: relative; z-index: 5; border: 2px solid #DAA520; box-shadow: 0 0 10px rgba(218, 165, 32, 0.4); font-weight: 700;' : ''}">
+            ${resultLabel}
+          </div>
+        `;
+        
+        historyCards.appendChild(card);
+      });
+      
+      if (historyGames.length === 0) {
+        historyCards.innerHTML = '<div style="text-align: center; color: #aaa; padding: 40px;">No ended games yet</div>';
+      }
+    }
+
+    function populateSportButtons(sports) {
+      const sportButtonsContainer = document.getElementById("sportButtons");
+      if (!sportButtonsContainer) return;
+      
+      sportButtonsContainer.innerHTML = '';
+      
+      const vipButton = document.createElement("button");
+      vipButton.id = "vipFilterBtn";
+      vipButton.className = "sport-btn vip-filter-btn";
+      vipButton.textContent = "VIP";
+      vipButton.addEventListener("click", () => {
+        if (!vipButton.classList.contains('active')) {
+          if (!isVipAuthenticated) {
+            showVipModal();
+            return;
+          }
+        }
+        
+        vipButton.classList.toggle("active");
+        vipFilterActive = vipButton.classList.contains("active");
+        applyFilters();
+      });
+      sportButtonsContainer.appendChild(vipButton);
+      
+      const sortedSports = Array.from(sports).sort();
+      
+      sortedSports.forEach(sport => {
+        const button = document.createElement("button");
+        button.className = "sport-btn";
+        button.textContent = sport;
+        
+        button.addEventListener("click", () => {
+          button.classList.toggle("active");
+          
+          if (button.classList.contains("active")) {
+            selectedSports.add(sport);
+          } else {
+            selectedSports.delete(sport);
+          }
+          
+          applyFilters();
+        });
+        
+        sportButtonsContainer.appendChild(button);
+      });
+    }
+
+    function populateFilters(data) {
+      const unique = {country: new Set(), tipType: new Set(), sport: new Set()};
+      const countryLeagues = new Map();
+      
+      data.forEach(row => {
+        if (row.Country) unique.country.add(row.Country);
+        if (row.TipType) unique.tipType.add(row.TipType);
+        if (row.Sport) unique.sport.add(row.Sport);
+        
+        if (row.Country && row.League) {
+          if (!countryLeagues.has(row.Country)) {
+            countryLeagues.set(row.Country, {
+              leagues: new Set(),
+              countryCode: row.CountryCode || null
+            });
+          }
+          countryLeagues.get(row.Country).leagues.add(row.League);
+        }
+      });
+      
+      populateSportButtons(unique.sport);
+      
+      for (const [key, set] of Object.entries(unique)) {
+        if (key === 'country' || key === 'sport') continue;
+        const el = filters[key];
+        if (el && key === 'tipType') {
+          [...set].sort().forEach(val => {
+            const opt = document.createElement("option");
+            opt.value = val;
+            opt.textContent = val;
+            el.appendChild(opt);
+          });
+        }
+      }
+      
+      populateCountryLeagueFilter(countryLeagues);
+    }
+
+    function populateCountryLeagueFilter(countryLeagues) {
+      if (!filters.countryLeague) return;
+      
+      const container = filters.countryLeague;
+      container.innerHTML = '';
+      
+      const sortedCountries = Array.from(countryLeagues.keys()).sort();
+      
+      sortedCountries.forEach(country => {
+        const countryData = countryLeagues.get(country);
+        const leagues = Array.from(countryData.leagues).sort();
+        
+        const countryItem = document.createElement('div');
+        countryItem.className = 'country-item';
+        
+        const countryHeader = document.createElement('div');
+        countryHeader.className = 'country-header';
+        countryHeader.innerHTML = `
+          ${countryData.countryCode ? `<img src="${getCountryFlag(countryData.countryCode)}" alt="${country}" class="country-flag" onerror="this.style.display='none'">` : ''}
+          <span class="country-name">${country}</span>
+          <span class="expand-icon">▶</span>
+        `;
+        
+        const leaguesList = document.createElement('div');
+        leaguesList.className = 'leagues-list';
+        
+        leagues.forEach(league => {
+          const leagueItem = document.createElement('div');
+          leagueItem.className = 'league-item';
+          leagueItem.textContent = league;
+          leagueItem.addEventListener('click', (e) => {
+            e.stopPropagation();
+            leagueItem.classList.toggle('selected');
+            
+            if (leagueItem.classList.contains('selected')) {
+              selectedLeagues.add(league);
+            } else {
+              selectedLeagues.delete(league);
+            }
+            applyFilters();
+          });
+          
+          leaguesList.appendChild(leagueItem);
+        });
+        
+        countryHeader.addEventListener('click', () => {
+          countryItem.classList.toggle('expanded');
+          countryHeader.classList.toggle('selected');
+          
+          if (countryHeader.classList.contains('selected')) {
+            selectedCountries.add(country);
+          } else {
+            selectedCountries.delete(country);
+            leagues.forEach(league => {
+              selectedLeagues.delete(league);
+            });
+            leaguesList.querySelectorAll('.league-item').forEach(item => {
+              item.classList.remove('selected');
+            });
+          }
+          applyFilters();
+        });
+        
+        countryItem.appendChild(countryHeader);
+        countryItem.appendChild(leaguesList);
+        container.appendChild(countryItem);
+      });
+    }
+
+    function applyFilters() {
+      if (!filters.search || !filters.tipType || !filters.odds) return;
+      
+      const searchTerm = filters.search.value.toLowerCase().trim();
+      const t = filters.tipType.value;
+      const minSelectedOdd = parseFloat(filters.odds.value);
+
+      const filtered = allData.filter(row => {
+        const searchMatch = !searchTerm || 
+          row.TeamA?.toLowerCase().includes(searchTerm) ||
+          row.TeamB?.toLowerCase().includes(searchTerm) ||
+          row.Country?.toLowerCase().includes(searchTerm) ||
+          row.League?.toLowerCase().includes(searchTerm);
+        
+        const passSport = selectedSports.size === 0 || selectedSports.has(row.Sport);
+        
+        const isVip = row.VIP && row.VIP.toLowerCase() === 'yes';
+        const passVip = !vipFilterActive || isVip;
+        
+        const betId = generateBetId(row);
+        const isFavorited = favoriteBets.has(betId);
+        const passFavorites = !showFavoritesOnly || isFavorited;
+        
+        const passCountryLeague = (selectedCountries.size === 0 && selectedLeagues.size === 0) ||
+          selectedCountries.has(row.Country) ||
+          selectedLeagues.has(row.League);
+        
+        const passTip = !t || row.TipType === t;
+        
+        const odds = parseFloat(row.Odds);
+        const passOdds = isNaN(minSelectedOdd) || odds >= minSelectedOdd;
+        
+        return searchMatch && passSport && passVip && passFavorites && passCountryLeague && passTip && passOdds;
+      });
+      
+      renderCards(filtered);
+    }
+
+    function saveFavorites() {
+      if (quickStatsEnabled) updateQuickStats();
+      console.log('Favorites saved:', favoriteBets.size, 'items');
+    }
+
+    // Load data and initialize
+    Papa.parse(sheetURL, {
+      download: true,
+      header: true,
+      complete: function(results) {
+        allData = results.data.filter(row => row.TeamA && row.TeamB && row.Odds);
+        populateFilters(allData);
+        renderCards(allData);
+        if (quickStatsEnabled) updateQuickStats();
+        Object.values(filters).forEach(el => {
+          if (el && el.addEventListener) {
+            el.addEventListener('change', applyFilters);
+          }
+        });
+      }
+    });
+
+    // Load VIP credentials on page load
+    loadVipCredentials();
+
+    // Initialize all features when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      initializeBetDetailModal();
+      initializeFavoritesToggle();
+      initializeInterfaceSettings();
+      initializeLeaderboard();
+      updateVipFeaturesVisibility();
+      
+      // Start auto-refresh by default
+      startAutoRefresh();
+      
+      // Add interface elements to sidebar
+      const sidebar = document.querySelector('.sidebar');
+      if (sidebar) {
+        // Add live indicator
+        const liveIndicator = document.createElement('div');
+        liveIndicator.id = 'liveIndicator';
+        liveIndicator.className = 'live-indicator';
+        liveIndicator.style.display = 'none';
+        liveIndicator.innerHTML = '<div class="live-dot"></div><span>Live Updates Active</span>';
+        sidebar.insertBefore(liveIndicator, sidebar.children[1]);
+        
+        // Add quick stats
+        const quickStats = document.createElement('div');
+        quickStats.className = 'quick-stats';
+        quickStats.style.display = 'none';
+        quickStats.innerHTML = `
+          <h3>Quick Stats</h3>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <span class="stat-value" id="totalBetsCount">0</span>
+              <div class="stat-label">Total Bets</div>
+            </div>
+            <div class="stat-item stat-vip">
+              <span class="stat-value" id="vipBetsCount">0</span>
+              <div class="stat-label">VIP Bets</div>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value" id="liveBetsCount">0</span>
+              <div class="stat-label">Live Now</div>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value" id="favoritesCount">0</span>
+              <div class="stat-label">Favorites</div>
+            </div>
+          </div>
+        `;
+        sidebar.insertBefore(quickStats, sidebar.children[2]);
+      }
+    });
+
+    // Clean up intervals when page is unloaded
+    window.addEventListener('beforeunload', () => {
+      countdownIntervals.forEach(interval => clearInterval(interval));
+      stopAutoRefresh();
+    });
+  </script>
+</body>
+</html> (error) {
         console.error('Error loading VIP credentials:', error);
       }
     }
@@ -2840,6 +3419,9 @@
         // Update VIP features
         updateVipFeaturesVisibility();
         
+        // Update leaderboard progress for authenticated user
+        updateCurrentUserProgress();
+        
         applyFilters();
       } else {
         if (errorEl) {
@@ -2861,6 +3443,19 @@
         vipBtn.classList.remove('active');
         vipFilterActive = false;
       }
+      
+      // Reset user progress
+      currentUserProgress = {
+        rank: 0,
+        points: 0,
+        winRate: 0,
+        streak: 0,
+        totalBets: 0,
+        wonBets: 0,
+        challenges: new Map(),
+        achievements: new Set(),
+        rewards: new Map()
+      };
       
       // Update VIP features
       updateVipFeaturesVisibility();
